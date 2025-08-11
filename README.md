@@ -1,2 +1,3 @@
 # Karina_Front
-카리나는 사랑입니다
+<img src="https://img.hankyung.com/photo/202507/03.39032136.1.jpg" alt="karina" />
+<center 카리나는 사랑입니다 />
