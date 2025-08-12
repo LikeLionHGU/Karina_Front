@@ -12,6 +12,7 @@
 `npm install`
 
 ## Deploy command
+```vite bulid```
 
 ## Run command
 
