@@ -133,10 +133,10 @@ function Header() {
           </PostButton>
 
           <ProfileSection>
-            <ProfileIcon onClick={() => navigate("/profile")}>
+            <ProfileIcon onClick={() => navigate("/mypage")}>
               <img src={ProfileDefault} alt="Profile" />
             </ProfileIcon>
-            <UserName onClick={() => navigate("/profile")}>
+            <UserName onClick={() => navigate("/mypage")}>
               장세혁
               <ChevronDownIcon />
             </UserName>

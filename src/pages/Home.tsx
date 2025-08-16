@@ -370,14 +370,22 @@ function Home() {
   };
 
   const handleCardClick = (fish: any) => {
-    setSelectedFish(fish);
-    setIsModalOpen(true);
+    // Detail 페이지로 이동
+    navigate(`/detail/${fish.id}`);
+
+    // 모달 띄우기
+    // handleOpenModal(fish);
   };
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setSelectedFish(null);
   };
+
+  // const handleOpenModal = (fish: any) => {
+  //   setSelectedFish(fish);
+  //   setIsModalOpen(true);
+  // };
 
   const renderPaginationButtons = () => {
     const buttons = [];

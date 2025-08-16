@@ -1,6 +1,8 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Landing from "./pages/Landing";
 import Home from "./pages/Home";
+import Detail from "./pages/Detail";
+import Mypage from "./pages/Mypage";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import styled from "styled-components";
@@ -26,6 +28,8 @@ function App() {
           <Routes>
             <Route path="/" element={<Landing />} />
             <Route path="/home" element={<Home />} />
+            <Route path="/detail/:fishId" element={<Detail />} />
+            <Route path="/mypage" element={<Mypage />} />
           </Routes>
         </MainContent>
         <Footer />
