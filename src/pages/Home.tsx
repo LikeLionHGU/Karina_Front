@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { useState } from "react";
+import FishModal from "../components/FishModal";
 
 const Container = styled.div`
   width: 100%;
@@ -246,6 +247,8 @@ const PageEllipsis = styled.span`
 function Home() {
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedFish, setSelectedFish] = useState<any>(null);
   const itemsPerPage = 9;
 
   const allFishData = [
@@ -366,6 +369,16 @@ function Home() {
     }
   };
 
+  const handleCardClick = (fish: any) => {
+    setSelectedFish(fish);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedFish(null);
+  };
+
   const renderPaginationButtons = () => {
     const buttons = [];
 
@@ -419,7 +432,7 @@ function Home() {
 
       <FishGrid>
         {currentFishData.map((fish, index) => (
-          <FishCard key={index}>
+          <FishCard key={index} onClick={() => handleCardClick(fish)}>
             <FishImageSection>🐟</FishImageSection>
             <FishInfoSection>
               <LocationInfo>
@@ -471,6 +484,14 @@ function Home() {
       </FishGrid>
 
       <Pagination>{renderPaginationButtons()}</Pagination>
+
+      {selectedFish && (
+        <FishModal
+          isOpen={isModalOpen}
+          onClose={handleCloseModal}
+          fishData={selectedFish}
+        />
+      )}
     </Container>
   );
 }
