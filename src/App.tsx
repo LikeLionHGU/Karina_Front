@@ -3,6 +3,8 @@ import Landing from "./pages/Landing";
 import Home from "./pages/Home";
 import Detail from "./pages/Detail";
 import Mypage from "./pages/Mypage";
+import EditPost from "./pages/EditPost";
+import UpdateProfile from "./pages/UpdateProfile";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import styled from "styled-components";
@@ -30,6 +32,8 @@ function App() {
             <Route path="/home" element={<Home />} />
             <Route path="/detail/:fishId" element={<Detail />} />
             <Route path="/mypage" element={<Mypage />} />
+            <Route path="/mypage/posts" element={<EditPost />} />
+            <Route path="/mypage/profile" element={<UpdateProfile />} />
           </Routes>
         </MainContent>
         <Footer />
