@@ -6,6 +6,7 @@ import Mypage from "./pages/Mypage";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import styled from "styled-components";
+import FisherLogin  from "./pages/FisherLogin";
 
 import "./App.css";
 
@@ -28,6 +29,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Landing />} />
             <Route path="/home" element={<Home />} />
+            <Route path="/fisherLogin" element={<FisherLogin />} />
             <Route path="/detail/:fishId" element={<Detail />} />
             <Route path="/mypage" element={<Mypage />} />
           </Routes>

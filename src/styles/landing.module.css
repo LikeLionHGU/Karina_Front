@@ -1,0 +1,110 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Pretendard';
+}
+
+
+.landingHeader{
+    width: 100vw;
+    height: 759px;
+    flex-shrink: 0;
+    border-radius: 0 0 0 500px;
+    background: var(--Secondary-1, #F4F8FE);
+    display: flex;
+    align-items: center; 
+    justify-content: center; 
+    
+}
+
+.landingBody{
+    width: 100vw;
+    height: 139.43vw;
+    margin: 0;
+    padding: 0;
+}
+
+
+/* Main Title */
+.introduction{
+    font-size: clamp(24px, 2.5vw, 50px);
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+    text-align:center;
+    top: 255px;
+}
+
+.introduction h1 {
+    color: var(--Black-5, #151A20);
+    margin: 0;
+    margin-bottom: clamp(20px, 3vw, 40px);
+}
+
+.introduction .highlight {
+    color: var(--Primary-2, #0966FF);
+}
+
+.introduction p {
+    color: var(--Black-4, #454545);
+    font-size: clamp(20px, 1.6vw, 28px);
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+}
+
+/*버튼*/
+
+.buttonContainer {
+    padding-top: 71px;
+    margin: 0 auto;
+    
+
+    }
+.buttonContainer .fisher{
+    width: 235px;
+    height: 65px;
+    flex-shrink: 0;
+    border-radius: 15px;
+    background: var(--Primary-2, #0966FF);
+    border: 2px;
+    /*글자 CSS*/
+    color: #FFF;
+    font-size: 30px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 45px; /* 150% */
+    margin-right: 55px;
+    /* ✅ 호버 효과 + 부드러운 애니메이션 */
+    transition: all 0.3s ease;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(9, 102, 255, 0.3);
+    cursor: pointer;
+}
+
+.buttonContainer  .factory{
+    width: 235px;
+    height: 65px;
+    flex-shrink: 0;
+    border-radius: 15px;
+    border: 2px solid var(--Primary-2, #0966FF);
+    /*border-radius: 0 0 0 500px;*/
+    background: var(--Secondary-1, #F4F8FE);
+    /*글자 CSS*/
+    color: #FFF;
+    font-size: 30px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 45px; /* 150% */
+    margin-right: 55px;color: var(--Primary-2, #0966FF);
+    font-size: 30px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 45px; /* 150% */
+    /* 호버 효과 */
+    transition: all 0.3s ease;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(9, 102, 255, 0.3);
+    cursor: pointer;
+}
