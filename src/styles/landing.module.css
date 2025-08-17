@@ -59,8 +59,9 @@
 .buttonContainer {
     padding-top: 71px;
     margin: 0 auto;
+    
 
-}
+    }
 .buttonContainer .fisher{
     width: 235px;
     height: 65px;
@@ -75,6 +76,11 @@
     font-weight: 600;
     line-height: 45px; /* 150% */
     margin-right: 55px;
+    /* ✅ 호버 효과 + 부드러운 애니메이션 */
+    transition: all 0.3s ease;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(9, 102, 255, 0.3);
+    cursor: pointer;
 }
 
 .buttonContainer  .factory{
@@ -96,4 +102,9 @@
     font-style: normal;
     font-weight: 600;
     line-height: 45px; /* 150% */
+    /* ✅ 호버 효과 + 부드러운 애니메이션 */
+    transition: all 0.3s ease;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(9, 102, 255, 0.3);
+    cursor: pointer;
 }
