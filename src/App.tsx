@@ -1,9 +1,4 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-<<<<<<< HEAD
-import Landing from './pages/Landing'
-import Main from './pages/Home'
-import FisherLogin  from "./pages/FisherLogin";
-=======
 import Landing from "./pages/Landing";
 import Home from "./pages/Home";
 import Detail from "./pages/Detail";
@@ -11,7 +6,7 @@ import Mypage from "./pages/Mypage";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import styled from "styled-components";
->>>>>>> main
+import FisherLogin  from "./pages/FisherLogin";
 
 import "./App.css";
 
@@ -27,17 +22,6 @@ const MainContent = styled.main`
 
 function App() {
   return (
-<<<<<<< HEAD
-    <>
-      <BrowserRouter>
-      <div className="App">
-        <Routes>
-          <Route path="/" element={<Landing />} />
-          <Route path="/main" element={<Main />} />
-          <Route path="/fisherLogin" element={<FisherLogin />} />
-        </Routes>
-      </div>
-=======
     <BrowserRouter>
       <AppContainer>
         <Header />
@@ -45,13 +29,13 @@ function App() {
           <Routes>
             <Route path="/" element={<Landing />} />
             <Route path="/home" element={<Home />} />
+            <Route path="/fisherLogin" element={<FisherLogin />} />
             <Route path="/detail/:fishId" element={<Detail />} />
             <Route path="/mypage" element={<Mypage />} />
           </Routes>
         </MainContent>
         <Footer />
       </AppContainer>
->>>>>>> main
     </BrowserRouter>
   );
 }
