@@ -38,7 +38,8 @@ function Landing() {
           </div>
         </section>
         
-      </div>
+
+     
     </div>
       
     </>
