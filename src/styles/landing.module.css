@@ -6,7 +6,7 @@
 }
 
 
-.landingHeader{
+.landingBanner{
     width: 100vw;
     height: 759px;
     flex-shrink: 0;
@@ -20,9 +20,8 @@
 
 .landingBody{
     width: 100vw;
-    height: 139.43vw;
-    margin: 0;
-    padding: 0;
+    min-height: 139.43vw;
+    background: #FFF;
 }
 
 
@@ -76,12 +75,16 @@
     font-weight: 600;
     line-height: 45px; /* 150% */
     margin-right: 55px;
-    /* ✅ 호버 효과 + 부드러운 애니메이션 */
+}
+
+.buttonContainer .fisher:hover{
+    /* 호버 효과 + 부드러운 애니메이션 */
     transition: all 0.3s ease;
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(9, 102, 255, 0.3);
     cursor: pointer;
 }
+
 
 .buttonContainer  .factory{
     width: 235px;
@@ -102,9 +105,93 @@
     font-style: normal;
     font-weight: 600;
     line-height: 45px; /* 150% */
-    /* 호버 효과 */
+
+}
+
+.buttonContainer .factory:hover{
+    /* 호버 효과 + 부드러운 애니메이션 */
     transition: all 0.3s ease;
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(9, 102, 255, 0.3);
+    box-shadow: 0 0 15px rgba(9, 102, 255, 0.3);
     cursor: pointer;
+}
+
+/*두번째 문단 */
+.SecondIntroduction{
+    font-style: normal;
+    line-height: normal;
+    text-align:center;
+    margin-top: 133px;
+
+}
+
+.SecondIntroduction .detail{
+    color: var(--Secondary-5, #899EBB);
+    font-size: clamp(22px, 1.6vw, 30px);
+    font-weight: 600;
+    line-height: 45px; /* 150% */
+    margin-bottom: 28px;
+}
+
+.SecondIntroduction h1{
+    color: var(--Black-4, #454545);
+    font-weight: 700;
+    font-size: clamp(45px, 1.2vw, 50px);
+}
+
+.SecondIntroduction p{
+    color: var(--Black-4, #454545);
+    font-size: clamp(25px, 3vw, 30px);
+    font-weight: 600;
+    margin-top:28px;
+}
+
+/*파란 배너  */
+.BlueContainer {
+    margin-top: 114px;
+    width: 100vw;
+    min-height: 627px;
+    flex-shrink: 0;
+    background: var(--Primary-2, #0966FF);
+}
+
+.BlueContainer .MainTitle{
+    padding-top:87px;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    margin-left: 20.3vw;   /* 1920px 기준 390px */
+   
+}
+
+.BlueContainer h1{
+    color: var(--White-1, #F8FBFE);
+    font-size: clamp(45px, 1.2vw, 50px);
+    font-style: normal;
+    font-weight: 700;
+
+}
+
+.ProcessContainer{
+    display:flex;
+    margin-left: 20.3vw;
+    margin-top:101px;
+}
+
+/*마지막 문단*/
+.ThridIntroduction{
+    font-style: normal;
+    line-height: normal;
+    text-align:center;
+    margin-top: 266px;
+
+}
+
+.ThridIntroduction h1{
+    color: var(--Secondary-3, #A5BEE0);
+    font-size: 50px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+
 }
