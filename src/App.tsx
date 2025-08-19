@@ -7,6 +7,7 @@ import Header from "./components/Header";
 import Footer from "./components/Footer";
 import styled from "styled-components";
 import FisherLogin  from "./pages/FisherLogin";
+import FactoryLogin from "./pages/FactoryLogin";
 
 import "./App.css";
 
@@ -30,6 +31,7 @@ function App() {
             <Route path="/" element={<Landing />} />
             <Route path="/home" element={<Home />} />
             <Route path="/fisherLogin" element={<FisherLogin />} />
+            <Route path="/FactoryLogin" element={<FactoryLogin />} />
             <Route path="/detail/:fishId" element={<Detail />} />
             <Route path="/mypage" element={<Mypage />} />
           </Routes>

@@ -1,0 +1,67 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Pretendard';
+}
+
+body {
+    background-color: #FFF;
+    width: 100vw;
+    min-height: 100vh;
+}
+
+.FactoryLoginHeader{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top:100px;
+    gap:38px;
+}
+
+.FactoryLoginHeader h1{
+    color: var(--Black-5, #151A20);
+    font-size: clamp(24px, 2.5vw, 50px);
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+}
+
+.LoginStatus{
+    display:flex;
+    width: 560px;
+    align-items: center;
+    justify-content: center;
+    height: 85px;
+    flex-shrink: 0;
+    border-radius: 40px;
+    background: var(--Black-1, #E6E6E6);
+}
+
+.LoginStatus .Factory{
+    display:flex;
+    align-items: center;
+    justify-content: center;
+    width: 271px;
+    height: 69px;
+    flex-shrink: 0;
+    border-radius: 40px;
+    background: var(--Primary-2, #0966FF);
+    
+}
+
+.LoginStatus .Fisher{
+    display:flex;
+    align-items: center;
+    justify-content: center;
+    
+}
+
+
+.IdAndPassword{
+    margin-top:115px;
+    display:flex;
+    flex-direction: column;
+    align-items: center;
+    gap:78px;
+}
