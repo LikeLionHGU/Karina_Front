@@ -4,7 +4,7 @@ import styled from "styled-components";
 import cameraImage from '../assets/icons/camera.png';
 import docsImage from '../assets/icons/docs.png';
 import matchImage from '../assets/icons/match.png';
-
+import LineIcon from "../assets/icons/line.svg";
 const Highlight = styled.span`
   color: var(--Primary-2, #0966FF);
 `;
@@ -75,6 +75,44 @@ const ArrowHead = styled.div`
     border-top: 5px solid transparent;
     border-left: 5px solid #F8FBFE;
     border-right: 5px solid transparent;
+`;
+
+/*마지막 문단 */
+const LineAndText = styled.div`
+  display:flex;
+  justify-content:center;
+`
+const GrayLine = styled.img`
+  margin-left:23px;
+  padding-top:5px;
+  img{
+    width: 225px;
+    height: 20px;
+    flex-shrink: 0;
+  }
+
+`
+
+/*svg파일이 없어서 CSS코드로 대체*/
+const BlueLine = styled.div`
+  margin-right:20px;
+  display:flex;
+  align-items: center;
+
+`
+const BlueLineHead= styled.div`
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  background-color: #0966FF; 
+  border-radius: 50%; 
+`;
+
+const BlueLineBody = styled.div`
+  width: 270px;
+  height: 2px;               
+  background-color: #0966FF; 
+  flex-shrink: 0;
 `;
 
 
@@ -162,11 +200,26 @@ function Landing() {
             </div>
         </div>
 
-        {/*마지막 문단*/}
-        <div className = {styles.ThridIntroduction}>
-          <h1>AI가 분석해 준 정보를 등록하면</h1>
-        </div>
+        {/*파란 배너 아래 문단*/}
+        <section className = {styles.ThridIntroduction}>
+          <LineAndText>
+            <h1>AI가 분석해 준 정보를 등록하면</h1>
+            <GrayLine src={LineIcon} alt="line" />
+          </LineAndText>
+          <LineAndText>
+            <BlueLine>
+              <BlueLineBody />
+              <BlueLineHead />
+            </BlueLine>
+            <h1><Highlight>필요한 곳과 바로</Highlight> 연결됩니다</h1>
+          </LineAndText>
+        </section>
 
+        {/*마지막 문단*/}
+        <section className = {styles.LastIntroduction}>
+          <p >등록된 혼획물 데이터를 기반으로</p>
+          <p>필요로 하는 기업, 가게, 소비자와 연결될 수 있어요</p>
+        </section>
         
     </div>
       
