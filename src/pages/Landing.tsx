@@ -128,7 +128,6 @@ function Landing() {
   }
   return (
     <>
-    <div className = {styles.landingBody}>
       <div className={styles.landingBanner}>
          {/* 첫 문단*/}
         <section className = {styles.introduction}>
@@ -221,7 +220,6 @@ function Landing() {
           <p>필요로 하는 기업, 가게, 소비자와 연결될 수 있어요</p>
         </section>
         
-    </div>
       
     </>
   )

@@ -3,8 +3,7 @@ function FisherLogin() {
 
   return (
     <>
-      <div>
-      </div>
+      
     </>
   )
 }
