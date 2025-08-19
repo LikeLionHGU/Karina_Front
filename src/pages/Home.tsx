@@ -8,7 +8,6 @@ const Container = styled.div`
   max-width: 1200px;
   margin: 0 auto 100px auto;
   padding: 40px 20px;
-  background-color: #f8f9fa;
 `;
 
 const Title = styled.h1`
