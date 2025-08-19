@@ -5,6 +5,11 @@
     font-family: 'Pretendard';
 }
 
+body {
+    background-color: #FFF;
+    width: 100vw;
+    min-height: 139.43vw;
+}
 
 .landingBanner{
     width: 100vw;
@@ -16,12 +21,6 @@
     align-items: center; 
     justify-content: center; 
     
-}
-
-.landingBody{
-    width: 100vw;
-    min-height: 139.43vw;
-    background: #FFF;
 }
 
 
@@ -178,11 +177,13 @@
     margin-top:101px;
 }
 
-/*마지막 문단*/
+/*파란 배너 밑 문단*/
 .ThridIntroduction{
+    display:flex;
+    flex-direction: column;
+    gap: 39px;
     font-style: normal;
     line-height: normal;
-    text-align:center;
     margin-top: 266px;
 
 }
@@ -195,3 +196,19 @@
     line-height: normal;
 
 }
+
+/*마지막 문단*/
+.LastIntroduction{
+    margin-top:88px;
+    margin-bottom:137px;
+    text-align: center;
+    color: var(--Black-4, #454545);
+    font-size: clamp(25px, 3vw, 30px);
+    font-style: normal;
+    font-weight: 600;
+    line-height: 45px; 
+}
+
+/*.LastIntroduction .first{
+   text-align: center;
+}*/
