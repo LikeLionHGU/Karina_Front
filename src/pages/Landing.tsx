@@ -120,11 +120,11 @@ function Landing() {
   const navigate = useNavigate();
 
   const onFisherClick = () => {
-    navigate(`/FisherLogin`);
+    navigate(`/Login`);
   }
 
   const onFactoryClick =  () => {
-    navigate(`/FactoryLogin`);
+    navigate(`/Login`);
   }
   return (
     <>

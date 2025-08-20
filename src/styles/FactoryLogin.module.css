@@ -27,7 +27,7 @@ body {
     line-height: normal;
 }
 
-.LoginStatus{
+.LoginToggle{
     display:flex;
     width: 560px;
     align-items: center;
@@ -35,27 +35,17 @@ body {
     height: 85px;
     flex-shrink: 0;
     border-radius: 40px;
+    padding-left:7px;
     background: var(--Black-1, #E6E6E6);
 }
 
-.LoginStatus .Factory{
-    display:flex;
-    align-items: center;
-    justify-content: center;
-    width: 271px;
-    height: 69px;
-    flex-shrink: 0;
-    border-radius: 40px;
-    background: var(--Primary-2, #0966FF);
-    
+.LoginToggle:hover{
+    transition: all 0.3s ease;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(9, 102, 255, 0.3);
+    cursor: pointer;
 }
 
-.LoginStatus .Fisher{
-    display:flex;
-    align-items: center;
-    justify-content: center;
-    
-}
 
 
 .IdAndPassword{
@@ -63,5 +53,11 @@ body {
     display:flex;
     flex-direction: column;
     align-items: center;
-    gap:78px;
+    gap:40px;
+}
+
+.IdSavedAndSearch{
+    display:flex;
+    width: 658px;
+    height: 81px;
 }
