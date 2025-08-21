@@ -37,7 +37,8 @@ body {
 
 }
 
-.membertypeContainer{
+/*회원구분&가입정보 세션 CSS 공유*/
+.sectionContainer{
     display:flex;
     flex-direction:column;
     width: 59.375vw;
@@ -45,7 +46,14 @@ body {
     border-bottom: 2px solid var(--Secondary-5, #899EBB);
 }
 
-.membertypeContainer h1{
+.sectionContainer .userInfo{
+    display:flex;
+    align-items: center;
+    gap:61px;
+    margin:160px 0 43px; 
+}
+
+.sectionContainer h1{
     color: var(--Black-4, #454545);
     font-size: 30px;
     font-style: normal;
@@ -53,4 +61,97 @@ body {
     line-height: 45px; /* 150% */
     margin-top:160px;
     margin-bottom:43px;
+}
+
+.sectionContainer .infoTitle{
+    color: var(--Black-4, #454545);
+    font-size: 30px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 45px; /* 150% */
+}
+
+.sectionContainer span{
+    color: var(--Black-4, #454545);
+    font-size: clamp(15px, 2.5vw, 20px);
+    font-style: normal;
+    font-weight: 700;
+    line-height: 30px; /* 150% */
+}
+
+.fileChipText{
+    display:flex;
+    flex-direction:column;
+    gap:1px;
+    margin-right:clamp(100px, 4vw, 200px);
+}
+
+.fileName{
+    color: var(--Black-4, #454545);
+    font-size: clamp(15px, 2.5vw, 20px);
+    font-style: normal;
+    font-weight: 700;
+    line-height: 30px; /* 150% */
+}
+
+.fileStatus{
+    color: var(--Secondary-5, #899EBB);
+    font-size: 17px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+}
+
+.infoInputContainer{
+    width: 59.375vw;        /* 줄(타이틀 라인)과 동일한 폭 */
+    margin: 70px auto 0;    /* 가운데 */
+    display:flex;
+    flex-direction: column;
+    gap: 24px;              /* 적당히 */
+}
+
+.idValid{
+    display:flex;
+    flex-direction:column;
+}
+
+.isValid{
+    color: var(--Secondary-5, #0968ed);
+    padding-top:10px;
+    font-size: 15px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+}
+
+.addressInputBox{
+    display:flex;
+    flex-direction: column;
+    gap:17px;
+}
+
+.addressSearchLine{
+    display:flex;
+    align-items: center;
+    gap: 16px;   /* 가로 간격 */
+}
+
+.next{
+  appearance: none;
+  -webkit-appearance: none;
+  display: block;               /* ← 블록으로 */
+  width: 235px;
+  height: 65px;
+  border-radius: 15px;
+  background: var(--Primary-2, #0966FF);
+  margin: 100px auto 0;         /* ← 가운데 정렬 */
+  cursor: pointer;
+  /*폰트*/
+  color: #FFF;
+  font-size: clamp(20px, 2vw, 25px);
+  font-weight: 600;
+  line-height: normal;          /* 높이와 불일치 방지 */
+  display: flex;                /* 텍스트 수직/수평 중앙 */
+  align-items: center;
+  justify-content: center;
 }
