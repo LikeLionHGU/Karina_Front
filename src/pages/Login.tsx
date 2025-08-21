@@ -3,7 +3,6 @@ import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import { useState} from "react";
 import axios from "axios";
-
 /*비밀번호&아이디 입력 칸*/
   const InputAndTitle = styled.div`
     display:flex;
@@ -40,32 +39,49 @@ import axios from "axios";
 
 function Login() {
   /*Styled-component에서 쓸 prpos의 변수 타입 지정*/
-  interface BannerProps {
+interface BannerProps {
     active: boolean;
   }
-  const navigate = useNavigate();
-  const [isActive, setIsActive] = useState('factory'); // 'factory' 또는 'fisher'
-  const [userId, setUserId] = useState('');
-  const [userPassword, setUserPassword] = useState('');
 
-  /*onChange로 받는 아이디 저장*/
-  const handleIdChange = (event : React.ChangeEvent<HTMLInputElement>) => {
-    setUserId(event.target.value);
-  };
-  /*onChange로 받는 패스워드 저장*/
-  const handlePasswordChange = (event : React.ChangeEvent<HTMLInputElement>) => {
-    setUserPassword(event.target.value);
-  };
-  const handleToggle = (status: string) => {
-    setIsActive(status);
-  };
+const Input = styled.input`
+    -webkit-appearance: none; /* 웹킷 브라우저에서 기본 스타일 제거 */
+    -moz-appearance: none; /* 모질라 브라우저에서 기본 스타일 제거 */
+    appearance: none; /* 기본 브라우저에서 기본 스타일 제거 */
+    width: 658px;
+    height: 81px;
+    flex-shrink: 0;
+    border-radius: 20px;
+    border: 1.5px solid var(--Secondary-3, #A5BEE0);
+    padding-left: 10px;
+    &::placeholder {
+      margin-left: 5px;
+      color: var(--Secondary-5, #899EBB);
+      font-size: clamp(15px, 1.5vw, 20px);
+      font-style: normal;
+      font-weight: 700;
+      line-height: 30px; /* 150% */
+    }
+  `
+  /*비밀번호&아이디 입력 칸*/
+  const InputAndTitle = styled.div`
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+  `
+  const InputTitle = styled.h1`
+    color: var(--Black-4, #454545);
+    font-size: clamp(20px, 3vw, 26px);
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+    margin-bottom: 8px;
+  `
 
   /* 글자 및 배너를 감싸는 컴포넌트를 만들어 1:1 비율로 있도록 함 */
   /* 동시에 이 컴포넌트에 폰트 CSS를 적용해 글자 컴포넌트를 따로 만들지 않음 */
 
   const FactoryBanner = styled.div<BannerProps>`
     flex: 1; /* 부모 컨테이너에 flex가 적용되어 있을 때 1:1 비율로 공간을 차지 */
-    padding-left:7px;
     display:flex;
     align-items: center;
     justify-content: center;
@@ -101,7 +117,6 @@ function Login() {
     line-height: 45px;
     cursor: pointer;
   `
-  
   const LoginComplete = styled.div`
     margin: 0 auto;
     display:flex;
@@ -131,6 +146,27 @@ function Login() {
     cursor: pointer;
     }
  `
+function Login() {
+  /*Styled-component에서 쓸 prpos의 변수 타입 지정*/
+  
+  const navigate = useNavigate();
+  const [isActive, setIsActive] = useState('factory'); // 'factory' 또는 'fisher'
+  const [userId, setUserId] = useState('');
+  const [userPassword, setUserPassword] = useState('');
+
+  /*onChange로 받는 아이디 저장*/
+  const handleIdChange = (event : React.ChangeEvent<HTMLInputElement>) => {
+    setUserId(event.target.value);
+  };
+  /*onChange로 받는 패스워드 저장*/
+  const handlePasswordChange = (event : React.ChangeEvent<HTMLInputElement>) => {
+    setUserPassword(event.target.value);
+  };
+  const handleToggle = (status: string) => {
+    setIsActive(status);
+  };
+
+  
 /*백엔드한테 데이터 보내기*/
 const onSubmitClick = async (event : React.MouseEvent<HTMLInputElement>) => {
   event.preventDefault();
@@ -203,18 +239,11 @@ const onSubmitClick = async (event : React.MouseEvent<HTMLInputElement>) => {
             onChange={handlePasswordChange} />
         </InputAndTitle>
       </section>
-      {isActive === 'fisher' ?
-        <LoginComplete onClick = {onSubmitClick}>
+      <LoginComplete onClick = {onSubmitClick}>
           <h1>
-            어민 로그인
+            {isActive === 'fisher' ? '어민 로그인' : '공장/연구소 로그인' }
           </h1>
-        </LoginComplete>
-        :<LoginComplete onClick = {onSubmitClick}>
-          <h1>
-            공장 / 연구소 로그인
-          </h1>
-        </LoginComplete>
-      }
+      </LoginComplete>
     </>
   );
 }
