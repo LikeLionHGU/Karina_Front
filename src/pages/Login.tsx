@@ -151,7 +151,7 @@ const onSubmitClick = async (event : React.MouseEvent<HTMLInputElement>) => {
       console.log(`${pair[0]}:`, pair[1]);
     }
 
-    const response = await axios.post(`https://koyangyee.info/comment/login`, formData, {
+    const response = await axios.post(`https://javadream.info/login`, formData, {
       headers: { "Content-Type": "multipart/form-data" },
       withCredentials: true,
     });

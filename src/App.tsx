@@ -7,6 +7,7 @@ import Header from "./components/Header";
 import Footer from "./components/Footer";
 import styled from "styled-components";
 import Login from "./pages/Login";
+import Signup from "./pages/Signup";
 
 import "./App.css";
 
@@ -32,6 +33,7 @@ function App() {
             <Route path="/Login" element={<Login />} />
             <Route path="/detail/:fishId" element={<Detail />} />
             <Route path="/mypage" element={<Mypage />} />
+            <Route path="/signup" element={<Signup />} />
           </Routes>
         </MainContent>
         <Footer />
