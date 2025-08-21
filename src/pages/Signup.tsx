@@ -66,13 +66,11 @@ const UploadBtn = styled.button`
   width: 181.886px;
   height: 42px;
   flex-shrink: 0;
-  width: 181.886px;
-  height: 42px;
-  flex-shrink: 0;
-  display: grid;
-  place-content: center;
+  border-radius: 15px;
+  border: 2px solid var(--Primary-2, #0966FF);
   cursor: pointer;
   background: #fff;
+  /*텍스트 css*/
   color: var(--Primary-2, #0966FF);
   text-align: center;
   font-size: 17px;

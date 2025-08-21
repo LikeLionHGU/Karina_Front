@@ -3,30 +3,11 @@ import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import { useState} from "react";
 import axios from "axios";
-
-function Login() {
-  /*Styled-component에서 쓸 prpos의 변수 타입 지정*/
+ /*Styled-component에서 쓸 prpos의 변수 타입 지정*/
   interface BannerProps {
     active: boolean;
   }
-  const navigate = useNavigate();
-  const [isActive, setIsActive] = useState('factory'); // 'factory' 또는 'fisher'
-  const [userId, setUserId] = useState('');
-  const [userPassword, setUserPassword] = useState('');
-
-  /*onChange로 받는 아이디 저장*/
-  const handleIdChange = (event : React.ChangeEvent<HTMLInputElement>) => {
-    setUserId(event.target.value);
-  };
-  /*onChange로 받는 패스워드 저장*/
-  const handlePasswordChange = (event : React.ChangeEvent<HTMLInputElement>) => {
-    setUserPassword(event.target.value);
-  };
-  const handleToggle = (status: string) => {
-    setIsActive(status);
-  };
-
-  /* 글자 및 배너를 감싸는 컴포넌트를 만들어 1:1 비율로 있도록 함 */
+ /* 글자 및 배너를 감싸는 컴포넌트를 만들어 1:1 비율로 있도록 함 */
   /* 동시에 이 컴포넌트에 폰트 CSS를 적용해 글자 컴포넌트를 따로 만들지 않음 */
 
   const FactoryBanner = styled.div<BannerProps>`
@@ -130,6 +111,26 @@ function Login() {
     cursor: pointer;
     }
  `
+
+function Login() {
+  const navigate = useNavigate();
+  const [isActive, setIsActive] = useState('factory'); // 'factory' 또는 'fisher'
+  const [userId, setUserId] = useState('');
+  const [userPassword, setUserPassword] = useState('');
+
+  /*onChange로 받는 아이디 저장*/
+  const handleIdChange = (event : React.ChangeEvent<HTMLInputElement>) => {
+    setUserId(event.target.value);
+  };
+  /*onChange로 받는 패스워드 저장*/
+  const handlePasswordChange = (event : React.ChangeEvent<HTMLInputElement>) => {
+    setUserPassword(event.target.value);
+  };
+  const handleToggle = (status: string) => {
+    setIsActive(status);
+  };
+
+ 
 /*백엔드한테 데이터 보내기*/
 const onSubmitClick = async (event : React.MouseEvent<HTMLInputElement>) => {
   event.preventDefault();
