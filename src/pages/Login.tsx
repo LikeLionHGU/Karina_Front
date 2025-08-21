@@ -3,45 +3,8 @@ import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import { useState} from "react";
 import axios from "axios";
-/*비밀번호&아이디 입력 칸*/
-  const InputAndTitle = styled.div`
-    display:flex;
-    flex-direction:column;
-    gap:8px;
-  `
-  const Input = styled.input`
-    -webkit-appearance: none; /* 웹킷 브라우저에서 기본 스타일 제거 */
-    -moz-appearance: none; /* 모질라 브라우저에서 기본 스타일 제거 */
-    appearance: none; /* 기본 브라우저에서 기본 스타일 제거 */
-    width: 658px;
-    height: 81px;
-    flex-shrink: 0;
-    border-radius: 20px;
-    border: 1.5px solid var(--Secondary-3, #A5BEE0);
-    padding-left: 10px;
-    &::placeholder {
-      margin-left: 5px;
-      color: var(--Secondary-5, #899EBB);
-      font-size: clamp(15px, 1.5vw, 20px);
-      font-style: normal;
-      font-weight: 700;
-      line-height: 30px; /* 150% */
-    }
-  `
-  const InputTitle = styled.h1`
-    color: var(--Black-4, #454545);
-    font-size: clamp(20px, 3vw, 26px);
-    font-style: normal;
-    font-weight: 600;
-    line-height: normal;
-    margin-bottom: 8px;
-  `
 
-function Login() {
-  /*Styled-component에서 쓸 prpos의 변수 타입 지정*/
-interface BannerProps {
-    active: boolean;
-  }
+interface BannerProps { active: boolean; }
 
 const Input = styled.input`
     -webkit-appearance: none; /* 웹킷 브라우저에서 기본 스타일 제거 */
