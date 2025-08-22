@@ -7,6 +7,9 @@ import { faImage } from "@fortawesome/free-regular-svg-icons";
 import { faFile } from "@fortawesome/free-regular-svg-icons";
 import axios from 'axios';
 // 컴포넌트 상단 (TS라면)
+
+export {};
+
 declare global {
   interface Window {
     daum: any;
@@ -428,7 +431,7 @@ function Signup() {
       loginId: userId.trim(),
       password: userPassword,           // 비밀번호는 trim X
       name: userName.trim(),
-      phone_number: `${phoneFirst}-${phoneMiddle}-${phoneEnd}`,
+      phone_number: phoneHyphen,
       main_address: mainAddress,        // 예: "포항시"
       detail_address: detailAddress.trim(),
     };
