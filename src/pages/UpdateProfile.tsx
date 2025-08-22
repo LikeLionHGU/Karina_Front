@@ -4,7 +4,7 @@ import LeftSidebar from "../components/LeftSidebar";
 
 declare global {
   interface Window {
-    daum?: any;
+    daum: any;
   }
 }
 
