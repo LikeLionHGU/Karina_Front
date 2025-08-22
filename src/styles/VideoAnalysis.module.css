@@ -1,0 +1,57 @@
+#root {
+  align-items: center;
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+}
+
+.icon {
+  width: 100px;
+  height: 100px;
+  pointer-events: none;
+}
+
+.file {
+  display: none;
+}
+
+.file::file-selector-button {
+  font-size: 14px;
+  background: #fff;
+  border: 1px solid #111;
+  border-radius: 12px;
+  padding: 4px 32px;
+  cursor: pointer;
+}
+
+.preview {
+
+    width: 11180px;
+    height: 610px;
+    flex-shrink: 0;
+    margin-top:122px;
+    border-radius: 30px;
+    border: 3px solid #AFCAF5;
+    background: var(--Secondary-1, #F4F8FE);
+    padding: 70px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+.preview:hover {
+  border-color: #111;
+}
+
+.preview_msg {
+  font-weight: 500;
+  font-size: 18px;
+  margin: 20px 0 10px;
+}
+
+.preview_desc {
+  margin: 0;
+  font-size: 14px;
+}
