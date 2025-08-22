@@ -23,6 +23,13 @@ const Subtitle = styled.p`
   font-size: 14px;
 `;
 
+const Divider = styled.hr`
+  border: none;
+  height: 1px;
+  background: #e9ecef;
+  margin: 24px 0;
+`;
+
 const ContentSection = styled.div`
   display: grid;
   grid-template-columns: 200px 1fr;
@@ -36,7 +43,7 @@ const MainContent = styled.div`
 `;
 
 const Section = styled.div`
-  margin-bottom: 40px;
+  margin-bottom: 100px;
 `;
 
 const SectionHeader = styled.div`
@@ -58,7 +65,7 @@ const ViewAllButton = styled.button`
   color: #4a90e2;
   font-size: 14px;
   cursor: pointer;
-  text-decoration: underline;
+  text-decoration: none;
 
   &:hover {
     color: #357abd;
@@ -67,8 +74,9 @@ const ViewAllButton = styled.button`
 
 const TableContainer = styled.div`
   overflow-x: auto;
-  border: 1px solid #f0f0f0;
+  border: 2px solid #f0f0f0;
   border-radius: 8px;
+  font-size: 1rem;
 `;
 
 const Table = styled.table`
@@ -77,31 +85,25 @@ const Table = styled.table`
 `;
 
 const TableHeader = styled.thead`
-  background: #f8f9fa;
+  background: white;
 `;
 
 const TableHeaderCell = styled.th`
   padding: 16px 12px;
   text-align: center;
-  font-size: 14px;
   font-weight: 600;
   color: #666;
-  border-bottom: 1px solid #e0e0e0;
+  border-bottom: 2px solid #e0e0e0;
 `;
 
 const TableRow = styled.tr`
   &:hover {
     background: #f8f9fa;
   }
-
-  &:not(:last-child) {
-    border-bottom: 1px solid #f0f0f0;
-  }
 `;
 
 const TableCell = styled.td`
-  padding: 16px 12px;
-  font-size: 14px;
+  padding: 24px 12px;
   color: #333;
   text-align: center;
 `;
@@ -109,42 +111,21 @@ const TableCell = styled.td`
 const StatusBadge = styled.span<{ status: string }>`
   padding: 6px 12px;
   border-radius: 12px;
-  font-size: 12px;
   font-weight: 600;
-  background: ${(props) => {
-    switch (props.status) {
-      case "매칭대기":
-        return "#fff3e0";
-      case "매칭완료":
-        return "#e8f5e8";
-      default:
-        return "#f5f5f5";
-    }
-  }};
-  color: ${(props) => {
-    switch (props.status) {
-      case "매칭대기":
-        return "#f57c00";
-      case "매칭완료":
-        return "#388e3c";
-      default:
-        return "#666";
-    }
-  }};
+  color: #0966ff;
 `;
 
 const ActionButton = styled.button`
-  padding: 8px 16px;
-  background: #4a90e2;
-  color: white;
-  border: none;
+  padding: 8px 36px;
+  background-color: white;
+  color: #0966ff;
+  border: 2px solid #0966ff;
   border-radius: 20px;
-  font-size: 12px;
   font-weight: 600;
   cursor: pointer;
 
   &:hover {
-    background: #357abd;
+    background: #f0f0f0;
   }
 `;
 
@@ -224,8 +205,8 @@ function EditPost() {
   return (
     <MypageContainer>
       <Title>마이페이지</Title>
-      <Subtitle>마이페이지에서 매칭, 수주, 거래 내역을 관리해 보세요</Subtitle>
-      <hr />
+      <Subtitle>마이페이지에서 등록, 조회, 거래 내역을 한눈에 확인하세요.</Subtitle>
+      <Divider />
       <ContentSection>
         <LeftSidebar activeMenu="posts" />
         <MainContent>
@@ -233,15 +214,15 @@ function EditPost() {
           <Section>
             <SectionHeader>
               <SectionTitle>내가 쓴 글</SectionTitle>
-              <ViewAllButton>전체보기 &gt;</ViewAllButton>
+              <ViewAllButton>더보기 &gt;</ViewAllButton>
             </SectionHeader>
             <TableContainer>
               <Table>
                 <TableHeader>
                   <tr>
-                    <TableHeaderCell>온라인 종류</TableHeaderCell>
-                    <TableHeaderCell>포스팅 일시 / 시간</TableHeaderCell>
-                    <TableHeaderCell>수주 마감 기한</TableHeaderCell>
+                    <TableHeaderCell>혼획물 종류</TableHeaderCell>
+                    <TableHeaderCell>어획 일시</TableHeaderCell>
+                    <TableHeaderCell>수거 마감 일시</TableHeaderCell>
                     <TableHeaderCell>매칭 현황</TableHeaderCell>
                     <TableHeaderCell></TableHeaderCell>
                   </tr>
@@ -273,15 +254,15 @@ function EditPost() {
           <Section>
             <SectionHeader>
               <SectionTitle>매칭 완료된 글</SectionTitle>
-              <ViewAllButton>전체보기 &gt;</ViewAllButton>
+              <ViewAllButton>더보기 &gt;</ViewAllButton>
             </SectionHeader>
             <TableContainer>
               <Table>
                 <TableHeader>
                   <tr>
-                    <TableHeaderCell>온라인 종류</TableHeaderCell>
-                    <TableHeaderCell>포스팅 일시 / 시간</TableHeaderCell>
-                    <TableHeaderCell>수주 마감 기한</TableHeaderCell>
+                    <TableHeaderCell>혼획물 종류</TableHeaderCell>
+                    <TableHeaderCell>어획 일시</TableHeaderCell>
+                    <TableHeaderCell>수거 마감 일시</TableHeaderCell>
                     <TableHeaderCell>매칭 현황</TableHeaderCell>
                   </tr>
                 </TableHeader>

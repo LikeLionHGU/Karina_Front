@@ -15,14 +15,26 @@ const Title = styled.h1`
   font-size: 28px;
   font-weight: bold;
   margin-bottom: 8px;
-  color: #333;
+  color: #0966ff;
 `;
 
 const Subtitle = styled.p`
   text-align: center;
   margin-bottom: 60px;
   color: #999;
+
+  /* Subhead */
   font-size: 14px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: normal;
+`;
+
+const Divider = styled.hr`
+  border: none;
+  height: 1px;
+  background: #e9ecef;
+  margin: 24px 0;
 `;
 
 const ContentSection = styled.div`
@@ -41,18 +53,20 @@ const SectionHeader = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 30px;
+  margin-bottom: 20px;
 `;
 
 const SectionTitle = styled.h2`
   font-size: 18px;
   font-weight: bold;
   color: #333;
-  margin-bottom: 20px;
 `;
 
 const TableContainer = styled.div`
   overflow-x: auto;
+  border: 2px solid #f0f0f0;
+  border-radius: 8px;
+  font-size: 1rem;
 `;
 
 const Table = styled.table`
@@ -61,17 +75,15 @@ const Table = styled.table`
 `;
 
 const TableHeader = styled.thead`
-  background: #f8f9fa;
+  background: white;
 `;
 
 const TableHeaderCell = styled.th`
   padding: 16px 12px;
   text-align: center;
-  font-size: 14px;
   font-weight: 600;
   color: #666;
-  border-bottom: 1px solid #e0e0e0;
-  background: #f8f9fa;
+  border-bottom: 2px solid #e0e0e0;
 `;
 
 const TableRow = styled.tr`
@@ -81,21 +93,18 @@ const TableRow = styled.tr`
 `;
 
 const TableCell = styled.td`
-  padding: 16px 12px;
-  font-size: 14px;
+  padding: 24px 12px;
   color: #333;
-  border-bottom: 1px solid #f0f0f0;
   text-align: center;
 `;
 
 const ActionButton = styled.button`
-  padding: 10px 30px 10px 30px;
-  color: #357abd;
-  background-color: #fff;
-  border: 2px solid #4a90e2;
-  border-radius: 15px;
-  font-size: 12px;
-  font-weight: bold;
+  padding: 8px 36px;
+  background-color: white;
+  color: #0966ff;
+  border: 2px solid #0966ff;
+  border-radius: 20px;
+  font-weight: 600;
   cursor: pointer;
 
   &:hover {
@@ -124,8 +133,10 @@ function Mypage() {
   return (
     <MypageContainer>
       <Title>마이페이지</Title>
-      <Subtitle>마이페이지에서 매칭, 수주, 거래 내역을 관리해 보세요</Subtitle>
-      <hr />
+      <Subtitle>
+        마이페이지에서 등록, 조회, 거래 내역을 한눈에 확인하세요.
+      </Subtitle>
+      <Divider />
       <ContentSection>
         <LeftSidebar activeMenu="alarm" />
         <MainContent>
@@ -140,6 +151,7 @@ function Mypage() {
                   <TableHeaderCell>담당자 정보</TableHeaderCell>
                   <TableHeaderCell>매칭 신청 일시</TableHeaderCell>
                   <TableHeaderCell>매칭 신청 내용</TableHeaderCell>
+                  <TableHeaderCell></TableHeaderCell>
                 </tr>
               </TableHeader>
               <tbody>

@@ -7,7 +7,7 @@ const Container = styled.div`
   width: 100%;
   max-width: 1200px;
   margin: 0 auto 100px auto;
-  padding: 40px 20px;
+  padding: 60px 20px;
 `;
 
 const Title = styled.h1`
@@ -19,7 +19,7 @@ const Title = styled.h1`
 `;
 
 const Highlight = styled.span`
-  color: #4a90e2;
+  color: #0966FF;
 `;
 
 const Subtitle = styled.p`

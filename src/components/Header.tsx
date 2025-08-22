@@ -1,6 +1,7 @@
 import styled from "styled-components";
 import ProfileDefault from "../assets/profile_default.svg";
 import { useNavigate } from "react-router-dom";
+import { useState, useRef, useEffect } from "react";
 
 const ChevronDownIcon = () => (
   <svg
@@ -27,6 +28,7 @@ const HeaderContainer = styled.header`
   position: sticky;
   top: 0;
   z-index: 100;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 `;
 
 const HeaderContent = styled.div`
@@ -76,6 +78,22 @@ const ProfileSection = styled.div`
   display: flex;
   align-items: center;
   gap: 10px;
+  position: relative; /* anchor for dropdown */
+`;
+
+const LoginButton = styled.button`
+  padding: 8px 32px;
+  color: #fff;
+  background: #0966ff;
+  border: none;
+  border-radius: 16px;
+  cursor: pointer;
+
+  /* Button 2 */
+  font-size: 15px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: normal;
 `;
 
 const ProfileIcon = styled.div`
@@ -105,7 +123,6 @@ const UserName = styled.span`
   cursor: pointer;
 
   /* Button 2 */
-  font-family: Pretendard;
   font-size: 15px;
   font-style: normal;
   font-weight: 600;
@@ -116,8 +133,67 @@ const UserName = styled.span`
   }
 `;
 
+const Dropdown = styled.div`
+  position: absolute;
+  right: 0;
+  top: 120%;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 6px 18px rgba(9, 102, 255, 0.12);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  z-index: 200;
+`;
+
+const DropdownButton = styled.button<{ primary?: boolean }>`
+  width: 100%;
+  padding: 5px 12px;
+  background: #FFF;
+  color: #333;
+  border: none;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: left;
+  font-size: 1rem;
+
+  &:hover {
+    background: #0966FF;
+    color: white;
+  }
+`;
+
 function Header() {
   const navigate = useNavigate();
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    }
+
+    function handleEsc(e: KeyboardEvent) {
+      if (e.key === "Escape") setOpen(false);
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("keydown", handleEsc);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleEsc);
+    };
+  }, []);
+
+  const handleLogout = () => {
+    // 실제 로그아웃 로직을 여기에 연결하세요 (토큰 삭제 등)
+    alert("로그아웃 되었습니다.");
+    navigate("/");
+  };
 
   return (
     <HeaderContainer>
@@ -131,14 +207,32 @@ function Header() {
             혼획물 등록하기
           </PostButton>
 
-          <ProfileSection>
-            <ProfileIcon onClick={() => navigate("/mypage")}>
+          <ProfileSection ref={ref}>
+            <LoginButton onClick={() => navigate("/login")}>
+              (임시) 로그인 / 회원가입
+            </LoginButton>
+            <ProfileIcon onClick={() => setOpen((s) => !s)}>
               <img src={ProfileDefault} alt="Profile" />
             </ProfileIcon>
-            <UserName onClick={() => navigate("/mypage")}>
+            <UserName onClick={() => setOpen((s) => !s)}>
               장세혁
               <ChevronDownIcon />
             </UserName>
+
+            {open && (
+              <Dropdown>
+                <DropdownButton primary onClick={() => navigate("/mypage")}>
+                  마이페이지
+                </DropdownButton>
+                <DropdownButton
+                  onClick={() => {
+                    handleLogout();
+                  }}
+                >
+                  로그아웃
+                </DropdownButton>
+              </Dropdown>
+            )}
           </ProfileSection>
         </NavSection>
       </HeaderContent>

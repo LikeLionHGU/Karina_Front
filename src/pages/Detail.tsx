@@ -6,8 +6,8 @@ import ConfirmModal from "../components/ConfirmModal";
 const DetailContainer = styled.div`
   max-width: 1200px;
   margin: 0 auto;
-  padding: 40px 20px;
-  background: #f8f9fa;
+  padding: 40px 20px 200px 0;
+  background: #FFF;
   min-height: 100vh;
 `;
 
