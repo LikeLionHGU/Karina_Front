@@ -4,22 +4,17 @@ import axios from 'axios';
 import UploadBox from '../components/UploadBox';
 import Processing from '../components/Processing';
 import Result from '../components/Result';
-/*import { useNavigate } from 'react-router-dom';*/
 
 type Step = 'idle' | 'processing' | 'done' | 'error';
-const token = localStorage.getItem('jwt'); // 저장한 키 이름에 맞게
-
 
 export default function VideoAnalysisPage() {
-  /*const navigate = useNavigate();*/
   const [step, setStep] = useState<Step>('idle');
-  const [result, setResult] = useState<any>(null);
+  const [resultList, setResultList] = useState<any>(null);
+  const [articleId, setArticleId] = useState<number | null>(null);
   const [error, setError] = useState('');
   const abortRef = useRef<AbortController | null>(null);
-  
-  const handleSelect = async (file: File) => {
-    console.log('file명:', file);
-    console.log('토큰:', token);
+
+  const postVideo = async (file: File) => {
     const form = new FormData();
     form.append('video', file);
 
@@ -28,18 +23,57 @@ export default function VideoAnalysisPage() {
     abortRef.current = ctrl;
 
     try {
+      const token = localStorage.getItem('jwt') ?? '';
       const res = await axios.post(
-        `${import.meta.env.VITE_API_URL}/fisher/post/video`, form, {
-        headers: token ? { Authorization: `Bearer ${token}` } : undefined,
-        withCredentials: false,
-        signal: ctrl.signal,
-      });
-      console.log('response:', res.data);
-      setResult(res.data);  // response로 받아온 물고기 종류
+        `${import.meta.env.VITE_API_URL}/fisher/post/video`,
+        form,
+        {
+          headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+          signal: ctrl.signal,
+        }
+      );
+
+      setResultList(res.data.analysisResult); // { "전갱이": 29, ... }
+      setArticleId(res.data.articleId);       // 123
       setStep('done');
-    } catch (error: any) {
-      if (axios.isCancel(error)) return;
-      setError(error?.message ?? '분석 중 오류가 발생했습니다.');
+    } catch (e: any) {
+      if (axios.isCancel(e)) return;
+      setError(e?.message ?? '분석 중 오류가 발생했습니다.');
+      setStep('error');
+    }
+  };
+
+  // 재분석(수정 요청) — FormData로 articleId 전송
+  const reanalyze = async () => {
+    if (!articleId) return;
+
+    setStep('processing');
+    const ctrl = new AbortController();
+    abortRef.current = ctrl;
+
+    try {
+      const fd = new FormData();
+      const requestData = {
+        articleId : articleId
+      }
+
+      const token = localStorage.getItem('jwt') ?? '';
+      const res = await axios.put(
+        `${import.meta.env.VITE_API_URL}/fisher/post/edit/info`,
+        requestData,
+        {
+          headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+          signal: ctrl.signal,
+        }
+      );
+
+      // 이전 데이터 초기화 & 첫 분석 화면으로 넘겨줌
+        setResultList(null);
+        setArticleId(null);
+        setStep('idle');         
+    } catch (e: any) {
+      if (axios.isCancel(e)) return;
+      setError(e?.message ?? '재분석 요청 중 오류가 발생했습니다.');
       setStep('error');
     }
   };
@@ -48,10 +82,16 @@ export default function VideoAnalysisPage() {
 
   return (
     <main>
-      {step === 'idle' && <UploadBox handleSelect={handleSelect} />}
+      {step === 'idle' && <UploadBox handleSelect={postVideo} />}
       {step === 'processing' && <Processing />}
-      {/*부모 요소에서 onReset함수 만들어 다시 분석 가능하도록*/}
-      {step === 'done' && result && <Result data={result} onReset={() => { setResult(null); setStep('idle'); setStep('idle'); }} />}
+
+      {step === 'done' && resultList && (
+        <Result
+          data={resultList}
+          onReset={reanalyze}          //  여기서 함수 “참조”만 넘기고,
+        />
+      )}
+
       {step === 'error' && (
         <div>
           <p>{error}</p>

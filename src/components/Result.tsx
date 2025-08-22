@@ -1,15 +1,107 @@
+// components/Result.tsx
+import styled from "styled-components";
+import { useNavigate } from "react-router-dom";
+
+//받아오는 데이터 ->Map list
+type AnalysisMap = Record<string, number>;
+
 type ResultProps = {
-  data: any;
-  onReset: () => void; // 부모가 내려준 콜백
+  data: AnalysisMap | null | undefined;   // 서버 응답의 analysisResult
+  onReset: () => void;                    // 다시 분석하기 콜백
 };
 
-export default function Result({ data, onReset }: ResultProps) {
-    return (
-        <>
-            <section>
-                {/* 결과 표시 */}
-                <button onClick={onReset}>다시 분석하기</button>
-            </section>
-        </>
-    )
+const Grid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 32px;
+  width: min(1024px, 90vw);
+  margin: 40px auto;
+`;
+
+const Card = styled.div`
+  background: #f4f8fe;
+  border: 1px solid #e6eefc;
+  border-radius: 16px;
+  padding: 36px 28px;
+  text-align: center;
+`;
+
+const FishName = styled.h3`
+  color: #0966ff;
+  font-size: clamp(18px, 2.2vw, 24px);
+  font-weight: 700;
+  margin: 0 0 14px;
+`;
+
+const Count = styled.p`
+  color: #7f7f7f;
+  font-size: clamp(14px, 1.6vw, 18px);
+  margin: 0;
+`;
+
+const Buttons = styled.div`
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  margin: 28px 0 8px;
+`;
+
+const GhostButton = styled.button`
+  height: 40px;
+  padding: 0 20px;
+  border-radius: 10px;
+  border: 2px solid #0966ff;
+  background: #fff;
+  color: #0966ff;
+  font-weight: 600;
+  cursor: pointer;
+`;
+
+const PrimaryButton = styled.button`
+  height: 40px;
+  padding: 0 24px;
+  border-radius: 10px;
+  border: 0;
+  background: #0966ff;
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+`;
+
+// 숫자 → "약 52마리" 같은 표시로
+const formatCount = (n: number) => `약 ${n}마리`;
+
+export default function Result({ data, onReset}: ResultProps) {
+  const navigate = useNavigate();
+  // 1) 방어 코드: 데이터 없거나 형태가 아니면 빈 배열
+  const entries = Object.entries(data ?? {}) // => [ ["fish", num] ...]
+
+  // 2) 정렬(내림차순) 후 최대 3개만 노출
+  const top3 = entries.sort((a, b) => b[1] - a[1]).slice(0, 3);
+
+  return (
+    <section>
+      <Grid>
+        {top3.map(([name, count]) => (
+          <Card key={name}>
+            <FishName>{name}</FishName>
+            <Count>{formatCount(count)}</Count>
+          </Card>
+        ))}
+
+        {/* 아무 데이터도 없을 때*/}
+        {top3.length === 0 && (
+          <Card>
+            <FishName>결과 없음</FishName>
+            <Count>재분석을 시도해 주세요</Count>
+          </Card>
+        )}
+      </Grid>
+
+      <Buttons>
+        <GhostButton onClick={onReset}>다시 분석하기</GhostButton>
+        <PrimaryButton onClick={() => navigate(`/article`)}>다음</PrimaryButton>
+      </Buttons>
+    </section>
+  );
 }
