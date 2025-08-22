@@ -116,12 +116,13 @@ function Landing() {
   const navigate = useNavigate();
 
   const onFisherClick = () => {
-    navigate(`/FisherLogin`);
-  };
+    navigate(`/login`);
+  }
 
-  const onFactoryClick = () => {
-    navigate(`/FactoryLogin`);
-  };
+  const onFactoryClick =  () => {
+    navigate(`/login`);
+  }
+  
   return (
     <>
       <div className={styles.landingBanner}>
