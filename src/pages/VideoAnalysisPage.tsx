@@ -1,29 +1,63 @@
-import styles from '../styles/VideoAnalysis.module.css';
+// pages/VideoAnalysisPage.tsx
+import { useEffect, useRef, useState } from 'react';
+import axios from 'axios';
+import UploadBox from '../components/UploadBox';
+import Processing from '../components/Processing';
+import Result from '../components/Result';
+/*import { useNavigate } from 'react-router-dom';*/
+
+type Step = 'idle' | 'processing' | 'done' | 'error';
+const token = localStorage.getItem('jwt'); // 저장한 키 이름에 맞게
 
 
+export default function VideoAnalysisPage() {
+  /*const navigate = useNavigate();*/
+  const [step, setStep] = useState<Step>('idle');
+  const [result, setResult] = useState<any>(null);
+  const [error, setError] = useState('');
+  const abortRef = useRef<AbortController | null>(null);
+  
+  const handleSelect = async (file: File) => {
+    console.log('file명:', file);
+    console.log('토큰:', token);
+    const form = new FormData();
+    form.append('video', file);
 
-function VideoAnalysisPage () {
-    const Logo = () => (
-        <svg className="icon" x="0px" y="0px" viewBox="0 0 24 24">
-            <path fill="transparent" d="M0,0h24v24H0V0z" />
-            <path
-            fill="#000"
-            d="M20.5,5.2l-1.4-1.7C18.9,3.2,18.5,3,18,3H6C5.5,3,5.1,3.2,4.8,3.5L3.5,5.2C3.2,5.6,3,6,3,6.5V19  c0,1.1,0.9,2,2,2h14c1.1,0,2-0.9,2-2V6.5C21,6,20.8,5.6,20.5,5.2z M12,17.5L6.5,12H10v-2h4v2h3.5L12,17.5z M5.1,5l0.8-1h12l0.9,1  H5.1z"
-            />
-        </svg>
-    );
+    setStep('processing');
+    const ctrl = new AbortController();
+    abortRef.current = ctrl;
 
-    return (
-        <>
-        <label className={styles.preview}>
-            <input type="file" className={styles.file} />
-            <Logo />
-            <p className={styles.preview_msg}>파일을 선택하거나</p>
-            <p className={styles.preview_msg}>여기로 끌어다 놓으세요</p>
-        </label>
-        </>
+    try {
+      const res = await axios.post(
+        `${import.meta.env.VITE_API_URL}/fisher/post/video`, form, {
+        headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+        withCredentials: false,
+        signal: ctrl.signal,
+      });
+      console.log('response:', res.data);
+      setResult(res.data);  // response로 받아온 물고기 종류
+      setStep('done');
+    } catch (error: any) {
+      if (axios.isCancel(error)) return;
+      setError(error?.message ?? '분석 중 오류가 발생했습니다.');
+      setStep('error');
+    }
+  };
 
-    );
+  useEffect(() => () => abortRef.current?.abort(), []);
+
+  return (
+    <main>
+      {step === 'idle' && <UploadBox handleSelect={handleSelect} />}
+      {step === 'processing' && <Processing />}
+      {/*부모 요소에서 onReset함수 만들어 다시 분석 가능하도록*/}
+      {step === 'done' && result && <Result data={result} onReset={() => { setResult(null); setStep('idle'); setStep('idle'); }} />}
+      {step === 'error' && (
+        <div>
+          <p>{error}</p>
+          <button onClick={() => setStep('idle')}>다시 시도</button>
+        </div>
+      )}
+    </main>
+  );
 }
-
-export default VideoAnalysisPage;
