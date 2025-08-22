@@ -400,15 +400,16 @@ function Signup() {
 
     //form data 내용 확인
     try {
-      const response = await axios.post(`https://javadream.info/user/register/id_validation`, idPostData, {
+      const response = await axios.post(`http://javadream.info:8080/user/register/idValidation`, idPostData, {
         headers: { "Content-Type": "application/json" },
         withCredentials: true,
       });
 
-      if (response.data !== "Valid Id") {
-        setIdValid(true);
-      } else {
+      if (response.data !== "Valid") {
         setIdValid(false);
+      } else {
+        console.log(response.data)
+        setIdValid(true);
       } 
       } catch (error) {
           // 네트워크 오류 등 예외 발생 시
@@ -443,9 +444,10 @@ function Signup() {
     );
 
     if (selectedFile) {
-      form.append("verification", selectedFile, selectedFile.name);
+      form.append("file", 
+        selectedFile, selectedFile.name);
     }
-    //form data 내용 확인
+    //form data 내용 확인1
 
     try {
       console.log("FormData 내용:");
@@ -453,7 +455,7 @@ function Signup() {
         console.log(`${pair[0]}:`, pair[1]);
       }
 
-      const response = await axios.post(`https://javadream.info/fisher/register`, form, {
+      const response = await axios.post(`http://javadream.info:8080/user/register`, form, {
         withCredentials: true,
       });
 

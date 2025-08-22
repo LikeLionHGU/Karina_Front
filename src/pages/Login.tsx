@@ -147,29 +147,46 @@ const onSubmitClick = async (event : React.MouseEvent<HTMLInputElement>) => {
   //form data 내용 확인
   try {
     console.log("FormData 내용:");
-    for (let pair of formData.entries()) {
-      console.log(`${pair[0]}:`, pair[1]);
+    for (const [k, v] of formData.entries()) console.log(k, v);
+
+    const res = await axios.post(
+      `${import.meta.env.VITE_API_URL}/user/login`,
+      formData,
+      { withCredentials: true } // Content-Type 생략
+    );
+
+    // 토큰 헤더 파싱
+    const authHeader = res.headers['authorization']; // "Bearer x.y.z" (노출 허용 필요)
+    if (authHeader) {
+      const token = authHeader.replace(/^Bearer\s+/i, '');
+      localStorage.setItem('jwt', token);
+    } else {
+      console.warn("Authorization 헤더가 없습니다. 서버의 Access-Control-Expose-Headers 설정 확인 필요.");
     }
 
-    const response = await axios.post(`http://javadream.info:8080/user/login`, formData, {
-      headers: { "Content-Type": "multipart/form-data" },
-      withCredentials: true,
-    });
+    // 성공 처리
+    alert("로그인 성공");
+    console.log("response 데이터:", res);
+    navigate("/Home");
 
-     if (response.data !== "401error") {
-      alert("로그인 성공");
-      localStorage.setItem("response", response.data);
-      navigate(`/Home`);
+  } catch (err: any) {
+    if (axios.isAxiosError(err)) {
+      // 401 등 상태 기반 메시지
+      if (err.response?.status === 401) {
+        alert("아이디/비밀번호를 확인해 주세요.");
+      } else {
+        alert(`요청 실패 (${err.response?.status ?? '네트워크 오류'})`);
+      }
+      console.error(err.response);
     } else {
-      alert("업로드 실패. 다시 시도해주세요.");
-    } 
-    } catch (error) {
-        // 네트워크 오류 등 예외 발생 시
-        alert("요청 중 오류가 발생했습니다.");
-    } finally {
-    setUserId(""); // 입력 필드 초기화
+      alert("요청 중 오류가 발생했습니다.");
+      console.error(err);
+    }
+  } finally {
+    setUserId("");
     setUserPassword("");
   }
+
 };
   return (
     <>

@@ -10,6 +10,7 @@ import Footer from "./components/Footer";
 import styled from "styled-components";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
+import VideoAnalysisPage from "./pages/VideoAnalysisPage";
 
 import "./App.css";
 
@@ -38,6 +39,7 @@ function App() {
             <Route path="/mypage" element={<Mypage />} />
             <Route path="/mypage/posts" element={<EditPost />} />
             <Route path="/mypage/profile" element={<UpdateProfile />} />
+            <Route path="/post" element={<VideoAnalysisPage />} />
           </Routes>
         </MainContent>
         <Footer />
