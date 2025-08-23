@@ -1,7 +1,12 @@
 # 💃🏻 Karina_Front
 
 <img src="https://img.hankyung.com/photo/202507/03.39032136.1.jpg" alt="karina" />
-[![단독샷캠4K 에스파 'Whiplash' 단독샷 별도녹화│aespa ONE TAKE STAGE│@SBS Inkigayo 241027](http://img.youtube.com/vi/OZytLLasceA/0.jpg)](https://youtu.be/OZytLLasceA?si=9_7HDBcNZhNckIev)
+<br />
+<a href="https://youtu.be/OZytLLasceA?si=Zr5bnznALd8Cor2e">
+<img src="https://img.youtube.com/vi/OZytLLasceA/0.jpg" alt="youtube" />
+</a>
+<br />
+
 
 <p align='center'>
 <i><strong>서로 존중하며 응원하는 프론티어들이 됩시다 🤗</strong></i>
