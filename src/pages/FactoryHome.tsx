@@ -250,6 +250,7 @@ function FactoryHome() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedFish, setSelectedFish] = useState<any>(null);
   const [allFishData, setAllFishData] = useState<any[]>([]);
+  const [searchKeyword, setSearchKeyword] = useState("");
   const itemsPerPage = 9;
 
   const getAllFishData = async () => {
@@ -270,9 +271,22 @@ function FactoryHome() {
     getAllFishData();
   }, []);
 
-  const totalPages = Math.ceil(allFishData.length / itemsPerPage);
+  // 검색어로 필터링
+  const filteredFishData =
+    searchKeyword.trim() === ""
+      ? allFishData
+      : allFishData.filter(
+          (fish) =>
+            (fish.fishInfo &&
+              fish.fishInfo.join(" ").includes(searchKeyword)) ||
+            (fish.fisherName && fish.fisherName.includes(searchKeyword)) ||
+            (fish.mainAddress && fish.mainAddress.includes(searchKeyword)) ||
+            (fish.detailAddress && fish.detailAddress.includes(searchKeyword))
+        );
+
+  const totalPages = Math.ceil(filteredFishData.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
-  const currentFishData = allFishData.slice(
+  const currentFishData = filteredFishData.slice(
     startIndex,
     startIndex + itemsPerPage
   );
@@ -345,8 +359,17 @@ function FactoryHome() {
       </Subtitle>
 
       <SearchContainer>
-        <SearchInput placeholder="검색어를 입력하세요" />
-        <SearchIcon onClick={() => navigate("/search")} />
+        <SearchInput
+          placeholder="검색어를 입력하세요"
+          value={searchKeyword}
+          onChange={(e) => setSearchKeyword(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              setSearchKeyword(e.currentTarget.value);
+            }
+          }}
+        />
+        <SearchIcon onClick={() => setSearchKeyword(searchKeyword)} />
       </SearchContainer>
 
       <FishGrid>

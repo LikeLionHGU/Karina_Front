@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import { useParams, useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import ConfirmModal from "../components/ConfirmModal";
 import axios from "axios";
 
@@ -208,21 +208,21 @@ function Detail() {
     "어민 분의 확인 후 매칭이 성사될 예정입니다."
   );
   const [fishData, setFishData] = useState<any>({});
+  const { articleId } = useParams();
 
   const statusSteps = [
     { label: "대기 중", key: "waiting" },
-    { label: "매입 대기", key: "pending" },
-    { label: "매입 완료", key: "completed" },
+    { label: "매칭 대기", key: "pending" },
+    { label: "매칭 완료", key: "completed" },
   ];
 
   const getFishData = async () => {
     try {
       const token = localStorage.getItem("jwt");
       const response = await axios.get(
-        `${import.meta.env.VITE_API_URL}/factory/home`,
+        `${import.meta.env.VITE_API_URL}/factory/detail/${articleId}`,
         token ? { headers: { Authorization: `Bearer ${token}` } } : undefined
       );
-      // API 응답 데이터로 fishData 업데이트
       setFishData(response.data);
       console.log("Fetched fish detail data:", response.data);
     } catch (error) {
