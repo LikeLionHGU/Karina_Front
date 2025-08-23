@@ -1,4 +1,3 @@
-import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { useEffect, useState } from "react";
 import FishModal from "../components/FishModal";
@@ -245,18 +244,18 @@ const PageEllipsis = styled.span`
 `;
 
 function FisherHome() {
-  const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedFish, setSelectedFish] = useState<any>(null);
   const [allFishData, setAllFishData] = useState<any[]>([]);
+  const [searchKeyword, setSearchKeyword] = useState("");
   const itemsPerPage = 9;
 
   const getAllFishData = async () => {
     try {
       const token = localStorage.getItem("jwt");
       const response = await axios.get(
-        `${import.meta.env.VITE_API_URL}/home`,
+        `${import.meta.env.VITE_API_URL}/fisher/home`,
         token ? { headers: { Authorization: `Bearer ${token}` } } : undefined
       );
       // API 응답 데이터로 allFishData 업데이트
@@ -271,9 +270,22 @@ function FisherHome() {
     getAllFishData();
   }, []);
 
-  const totalPages = Math.ceil(allFishData.length / itemsPerPage);
+  // 검색어로 필터링
+  const filteredFishData =
+    searchKeyword.trim() === ""
+      ? allFishData
+      : allFishData.filter(
+          (fish) =>
+            (fish.fishInfo &&
+              fish.fishInfo.join(" ").includes(searchKeyword)) ||
+            (fish.fisherName && fish.fisherName.includes(searchKeyword)) ||
+            (fish.mainAddress && fish.mainAddress.includes(searchKeyword)) ||
+            (fish.detailAddress && fish.detailAddress.includes(searchKeyword))
+        );
+
+  const totalPages = Math.ceil(filteredFishData.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
-  const currentFishData = allFishData.slice(
+  const currentFishData = filteredFishData.slice(
     startIndex,
     startIndex + itemsPerPage
   );
@@ -346,8 +358,17 @@ function FisherHome() {
       </Subtitle>
 
       <SearchContainer>
-        <SearchInput placeholder="검색어를 입력하세요" />
-        <SearchIcon onClick={() => navigate("/search")} />
+        <SearchInput
+          placeholder="검색어를 입력하세요"
+          value={searchKeyword}
+          onChange={(e) => setSearchKeyword(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              setSearchKeyword(e.currentTarget.value);
+            }
+          }}
+        />
+        <SearchIcon onClick={() => setSearchKeyword(searchKeyword)} />
       </SearchContainer>
 
       <FishGrid>
@@ -409,7 +430,16 @@ function FisherHome() {
         <FishModal
           isOpen={isModalOpen}
           onClose={handleCloseModal}
-          fishData={selectedFish}
+          fishData={{
+            articleId: selectedFish.articleId || "",
+            mainAddress: selectedFish.mainAddress || "",
+            detailAddress: selectedFish.detailAddress || "",
+            thumbnail: selectedFish.thumbnail || "",
+            fishInfo: selectedFish.fishInfo || [],
+            fisherName: selectedFish.fisherName || "",
+            postDate: selectedFish.getDate || "",
+            status: selectedFish.status ?? 0,
+          }}
         />
       )}
     </Container>

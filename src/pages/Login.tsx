@@ -84,13 +84,13 @@ const FisherBanner = styled.div<BannerProps>`
   cursor: pointer;
 `;
 const LoginComplete = styled.div`
-  text-align:center;
+  text-align: center;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   margin-top: 100px;
-  margin-bottom:20px;
+  margin-bottom: 20px;
   width: 658px;
   height: 66px;
   flex-shrink: 0;
@@ -110,32 +110,31 @@ const LoginComplete = styled.div`
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(9, 102, 255, 0.3);
     cursor: pointer;
-    }
- `
+  }
+`;
 const SignUpText = styled(Link)`
-  margin-bottom:59px;
+  margin-bottom: 59px;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--Secondary-4, #92A9C7);
+  color: var(--Secondary-4, #92a9c7);
   font-size: 20px;
   font-weight: 600;
   cursor: pointer;
-`
+`;
 
 const ButtonContainer = styled.div`
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-
-`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+`;
 function Login() {
   /*Styled-component에서 쓸 prpos의 변수 타입 지정*/
 
   const navigate = useNavigate();
 
-  const [isActive, setIsActive] = useState('');
+  const [isActive, setIsActive] = useState("");
   const [userId, setUserId] = useState("");
   const [userPassword, setUserPassword] = useState("");
   /*onChange로 받는 아이디 저장*/
@@ -149,71 +148,72 @@ function Login() {
   const handleToggle = (status: string) => {
     setIsActive(status);
   };
- /*placeholder 텍스트 변수 선언*/
-const helperText =
-  isActive === 'fisher'
-    ? '잡아드림 어민 아이디를 입력하세요.'
-    : isActive === 'factory'
-    ? '잡아드림 공장/연구소 아이디를 입력하세요.'
-    : '역할을 선택해주세요.';
-  
- /*버튼 텍스트 변수 선언*/
-const ButtonText =
-  isActive === 'fisher'
-    ? "어민 로그인"
-    : isActive === 'factory'
-    ? "공장/연구소 로그인"
-    : '역할을 선택해주세요.';
-  
-/*백엔드한테 데이터 보내기*/
-const onSubmitClick = async (event : React.MouseEvent<HTMLInputElement>) => {
-  event.preventDefault();
-  const formData = new FormData();
+  /*placeholder 텍스트 변수 선언*/
+  const helperText =
+    isActive === "fisher"
+      ? "잡아드림 어민 아이디를 입력하세요."
+      : isActive === "factory"
+      ? "잡아드림 공장/연구소 아이디를 입력하세요."
+      : "역할을 선택해주세요.";
 
-  // 유저 아이디 추가
-  formData.append("loginId", userId)
+  /*버튼 텍스트 변수 선언*/
+  const ButtonText =
+    isActive === "fisher"
+      ? "어민 로그인"
+      : isActive === "factory"
+      ? "공장/연구소 로그인"
+      : "역할을 선택해주세요.";
 
-  //유저 비밀번호 추가
-  formData.append("password", userPassword );
-  
-  //유저 타입 추가
-  formData.append("role", isActive ); //isActive에 역할 정보 들어있음
+  /*백엔드한테 데이터 보내기*/
+  const onSubmitClick = async (event: React.MouseEvent<HTMLInputElement>) => {
+    event.preventDefault();
+    const formData = new FormData();
 
-  //form data 내용 확인
-  try {
-    console.log("FormData 내용:");
-    for (const [k, v] of formData.entries()) console.log(k, v);
-    const res = await axios.post(
-      `${import.meta.env.VITE_API_URL}/user/login`,
-      formData,
-        { withCredentials: true
-        },
-    );
+    // 유저 아이디 추가
+    formData.append("loginId", userId);
 
-    //response로 받아올 토큰 저장
-    const token = res.headers['Authorization'];
-    const role = res.data.role
-    localStorage.setItem('jwt', token);
-    localStorage.setItem('role', role) ?? '';
+    //유저 비밀번호 추가
+    formData.append("password", userPassword);
 
-    // 성공 처리
-    alert("로그인 성공");
-    console.log('JWT:', token);
-    console.log('Role:', role);
-    {
-      role === "ROLE_FACTORY"?
-      navigate("/FactoryHome"):
-      navigate("/FisherHome")
-    }
-   
+    //유저 타입 추가
+    formData.append("role", isActive); //isActive에 역할 정보 들어있음
 
+    //form data 내용 확인
+    try {
+      console.log("FormData 내용:");
+      for (const [k, v] of formData.entries()) console.log(k, v);
+      const res = await axios.post(
+        `${import.meta.env.VITE_API_URL}/user/login`,
+        formData,
+        { withCredentials: true }
+      );
+
+      //response로 받아올 토큰 저장
+      const rawToken =
+        res.headers["authorization"] || res.headers["Authorization"];
+      const token = rawToken?.startsWith("Bearer ")
+        ? rawToken.slice(7)
+        : rawToken;
+      const role = res.data.role;
+      if (token) localStorage.setItem("jwt", token);
+      localStorage.setItem("role", role) ?? "";
+
+      // 성공 처리
+      alert("로그인 성공");
+      console.log("JWT:", token);
+      console.log("Role:", role);
+      {
+        role === "ROLE_FACTORY"
+          ? navigate("/FactoryHome")
+          : navigate("/FisherHome");
+      }
     } catch (err: any) {
       if (axios.isAxiosError(err)) {
         // 401 등 상태 기반 메시지
         if (err.response?.status === 401) {
           alert("아이디/비밀번호를 확인해 주세요.");
         } else {
-          alert(`요청 실패 (${err.response?.status ?? '네트워크 오류'})`);
+          alert(`요청 실패 (${err.response?.status ?? "네트워크 오류"})`);
         }
         console.error(err.response);
       } else {
@@ -224,7 +224,6 @@ const onSubmitClick = async (event : React.MouseEvent<HTMLInputElement>) => {
       setUserId("");
       setUserPassword("");
     }
-
   };
   return (
     <>
@@ -258,7 +257,11 @@ const onSubmitClick = async (event : React.MouseEvent<HTMLInputElement>) => {
         <InputAndTitle>
           <InputTitle>비밀번호</InputTitle>
           <Input
-            placeholder={isActive === ''? '역할을 선택해 주세요.' : "비밀번호를 입력하세요."}
+            placeholder={
+              isActive === ""
+                ? "역할을 선택해 주세요."
+                : "비밀번호를 입력하세요."
+            }
             type="text"
             value={userPassword}
             onChange={handlePasswordChange}
@@ -271,8 +274,6 @@ const onSubmitClick = async (event : React.MouseEvent<HTMLInputElement>) => {
         </LoginComplete>
         <SignUpText to="/signup">회원가입</SignUpText>
       </ButtonContainer>
-      
-
     </>
   );
 }
