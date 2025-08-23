@@ -1,0 +1,96 @@
+.main{
+    display:flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 146px;
+}
+
+/* --- 공통 아이콘 --- */
+.icon {
+    width: 69px;
+    height: 69px;
+    flex-shrink: 0;
+    pointer-events: none; /* 클릭이 input(label)로 전달되도록 */
+}
+
+/* --- 파일 입력 --- */
+.file {
+  display: none; /* 기본 파일 버튼 숨김 */
+}
+
+.file::file-selector-button {
+  font-size: 14px;
+  background: #fff;
+  border: 1px solid #111;
+  border-radius: 12px;
+  padding: 4px 32px;
+  cursor: pointer;
+}
+
+/* --- 업로드 프리뷰 박스 --- */
+.preview {
+  width: 61.46vw;
+  height: 610px;
+  margin-top: 122px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  padding: 70px;
+  border: 3px solid #afcaf5;
+  border-radius: 30px;
+  background: var(--Secondary-1, #f4f8fe);
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.preview:hover {
+  border-color: #111;
+}
+
+/* --- 텍스트 --- */
+.previewMsg {
+    color: var(--Black-3, #7F7F7F);
+    margin-top:10px;
+    font-size: 18px;
+    font-weight: 500;
+}
+
+.previewDesc {
+  margin: 0;
+  font-size: 14px;
+}
+
+
+.fileChipText{
+    display:flex;
+    flex-direction:column;
+    gap:5px;
+    margin-right:clamp(100px, 4vw, 200px);
+}
+
+.fileName{
+    color: var(--Black-4, #454545);
+    font-size: clamp(20px, 2.5vw, 30px);
+    font-style: normal;
+    font-weight: 700;
+    line-height: 30px; /* 150% */
+}
+
+.fileStatus{
+    color: var(--Secondary-5, #899EBB);
+    font-size: 25px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+}
+
+.fileBeforeText{
+    display:flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top:20px;
+}

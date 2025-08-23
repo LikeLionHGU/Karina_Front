@@ -13,6 +13,8 @@ import styled from "styled-components";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import VideoAnalysisPage from "./pages/VideoAnalysisPage";
+import ProcessTest from './components/Processing';
+import AnalysisArticle from "./pages/AnalysisArticle";
 
 import "./App.css";
 
@@ -44,6 +46,9 @@ function App() {
             <Route path="/mypage/posts" element={<EditPost />} />
             <Route path="/mypage/profile" element={<UpdateProfile />} />
             <Route path="/post" element={<VideoAnalysisPage />} />
+            {/*이 경로는 나중에 지우기*/}
+            <Route path="/process" element={<ProcessTest />} /> 
+            <Route path="/article" element={<AnalysisArticle />} /> 
           </Routes>
         </MainContent>
         <Footer />

@@ -400,7 +400,7 @@ function Signup() {
 
     //form data 내용 확인
     try {
-      const response = await axios.post(`http://javadream.info:8080/user/register/idValidation`, idPostData, {
+      const response = await axios.post(`${import.meta.env.VITE_API_URL}/user/register/idValidation`, idPostData, {
         headers: { "Content-Type": "application/json" },
         withCredentials: true,
       });
@@ -455,7 +455,7 @@ function Signup() {
         console.log(`${pair[0]}:`, pair[1]);
       }
 
-      const response = await axios.post(`http://javadream.info:8080/user/register`, form, {
+      const response = await axios.post(`${import.meta.env.VITE_API_URL}/user/register`, form, {
         withCredentials: true,
       });
 

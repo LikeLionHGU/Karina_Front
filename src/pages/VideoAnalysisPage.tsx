@@ -1,29 +1,103 @@
-import styles from '../styles/VideoAnalysis.module.css';
+// pages/VideoAnalysisPage.tsx
+import { useEffect, useRef, useState } from 'react';
+import axios from 'axios';
+import UploadBox from '../components/UploadBox';
+import Processing from '../components/Processing';
+import Result from '../components/Result';
 
+type Step = 'idle' | 'processing' | 'done' | 'error';
 
+export default function VideoAnalysisPage() {
+  const [step, setStep] = useState<Step>('idle');
+  const [resultList, setResultList] = useState<any>(null);
+  const [articleId, setArticleId] = useState<number | null>(null);
+  const [error, setError] = useState('');
+  const abortRef = useRef<AbortController | null>(null);
 
-function VideoAnalysisPage () {
-    const Logo = () => (
-        <svg className="icon" x="0px" y="0px" viewBox="0 0 24 24">
-            <path fill="transparent" d="M0,0h24v24H0V0z" />
-            <path
-            fill="#000"
-            d="M20.5,5.2l-1.4-1.7C18.9,3.2,18.5,3,18,3H6C5.5,3,5.1,3.2,4.8,3.5L3.5,5.2C3.2,5.6,3,6,3,6.5V19  c0,1.1,0.9,2,2,2h14c1.1,0,2-0.9,2-2V6.5C21,6,20.8,5.6,20.5,5.2z M12,17.5L6.5,12H10v-2h4v2h3.5L12,17.5z M5.1,5l0.8-1h12l0.9,1  H5.1z"
-            />
-        </svg>
-    );
+  const postVideo = async (file: File) => {
+    const form = new FormData();
+    form.append('video', file);
 
-    return (
-        <>
-        <label className={styles.preview}>
-            <input type="file" className={styles.file} />
-            <Logo />
-            <p className={styles.preview_msg}>파일을 선택하거나</p>
-            <p className={styles.preview_msg}>여기로 끌어다 놓으세요</p>
-        </label>
-        </>
+    setStep('processing');
+    const ctrl = new AbortController();
+    abortRef.current = ctrl;
 
-    );
+    try {
+      const token = localStorage.getItem('jwt') ?? '';
+      const res = await axios.post(
+        `${import.meta.env.VITE_API_URL}/fisher/post/video`,
+        form,
+        {
+          headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+          signal: ctrl.signal,
+        }
+      );
+
+      setResultList(res.data.analysisResult); // { "전갱이": 29, ... }
+      setArticleId(res.data.articleId);       // 123
+      setStep('done');
+    } catch (e: any) {
+      if (axios.isCancel(e)) return;
+      setError(e?.message ?? '분석 중 오류가 발생했습니다.');
+      setStep('error');
+    }
+  };
+
+  // 재분석(수정 요청) — FormData로 articleId 전송
+  const reanalyze = async () => {
+    if (!articleId) return;
+
+    setStep('processing');
+    const ctrl = new AbortController();
+    abortRef.current = ctrl;
+
+    try {
+      const fd = new FormData();
+      const requestData = {
+        articleId : articleId
+      }
+
+      const token = localStorage.getItem('jwt') ?? '';
+      const res = await axios.put(
+        `${import.meta.env.VITE_API_URL}/fisher/post/edit/info`,
+        requestData,
+        {
+          headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+          signal: ctrl.signal,
+        }
+      );
+
+      // 이전 데이터 초기화 & 첫 분석 화면으로 넘겨줌
+        setResultList(null);
+        setArticleId(null);
+        setStep('idle');         
+    } catch (e: any) {
+      if (axios.isCancel(e)) return;
+      setError(e?.message ?? '재분석 요청 중 오류가 발생했습니다.');
+      setStep('error');
+    }
+  };
+
+  useEffect(() => () => abortRef.current?.abort(), []);
+
+  return (
+    <main>
+      {step === 'idle' && <UploadBox handleSelect={postVideo} />}
+      {step === 'processing' && <Processing />}
+
+      {step === 'done' && resultList && (
+        <Result
+          data={resultList}
+          onReset={reanalyze}          //  여기서 함수 “참조”만 넘기고,
+        />
+      )}
+
+      {step === 'error' && (
+        <div>
+          <p>{error}</p>
+          <button onClick={() => setStep('idle')}>다시 시도</button>
+        </div>
+      )}
+    </main>
+  );
 }
-
-export default VideoAnalysisPage;
