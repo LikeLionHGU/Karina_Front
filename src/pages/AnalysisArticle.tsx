@@ -3,6 +3,9 @@ import styles from "../styles/AnalysisArticle.module.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faImage } from "@fortawesome/free-regular-svg-icons";
 import { useState, useRef, useEffect } from "react";
+import { useParams } from 'react-router-dom'; //링크에 param으로 붙어있는 articleID 받아오기
+import { useNavigate } from "react-router-dom"; 
+import axios from "axios";
 const InputContainer = styled.div`
     display:flex;
     flex-direction:column;
@@ -122,10 +125,16 @@ const DateContent = styled.input`
         line-height: 30px; /* 150% */
     }
 `
+type Params = { articleId?: string };
 function AnalysisArticle () {
+    const navigate = useNavigate();
     const [selectedFile, setSelectedFile] = useState<File | null>(null); //사진 파일 저장
     const fileRef = useRef<HTMLInputElement>(null);
-    const [caughtDate, setCaughtDate] = useState('');
+    const [caughtDate, setCaughtDate] = useState<string>(''); //포획 날짜 데이터 저장
+    const [caughtTime, setCaughtTime] = useState<string>(''); //포획 시간 데이터 저장
+    const [pickUpDate, setPickUpDate] = useState<string>(''); //포획 날짜 데이터 저장
+    const [pickUpTime, setPickUpTime] =  useState<string>('');
+    const { articleId } = useParams<Params>(); //articleId
     /*파일 선택 관련 이벤트 관리*/
     const handleOpenFile: React.MouseEventHandler<HTMLButtonElement> = (e) => {
         e.preventDefault();
@@ -137,6 +146,66 @@ function AnalysisArticle () {
     const handleFileChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
         setSelectedFile(e.currentTarget.files?.[0] ?? null);
         console.log('업로드 파일:', selectedFile);
+    };
+
+    const onSubmitArticle: React.MouseEventHandler<HTMLButtonElement> = async (event) => {
+        event.preventDefault();
+        console.log("포획 날짜", caughtDate);
+        console.log("포획 시간", caughtTime);
+        console.log("글 아이디", articleId);
+        /*파일 업로드 여부 확인*/
+        if (!selectedFile) {
+          alert("사진 파일을 업로드해주세요.");
+          return;
+        }
+    
+        const userPayload = {
+          articleId: articleId,
+          getDate: caughtDate,
+          getTime: caughtTime,           // 비밀번호는 trim X
+          limitDate: pickUpDate,
+          limitTime: pickUpTime,
+        };
+        
+        const form = new FormData();
+        const token = localStorage.getItem("jwt");
+        form.append(
+          "info",
+          new Blob([JSON.stringify(userPayload)], { type: "application/json" }),
+        );
+    
+        if (selectedFile) {
+          form.append("thumbnail", 
+            selectedFile, selectedFile.name);
+        }
+        //form data 내용 확인1
+    
+        try {
+          console.log("FormData 내용:");
+          for (let pair of form.entries()) {
+            console.log(`${pair[0]}:`, pair[1]);
+          }
+    
+          const response = await axios.post(`${import.meta.env.VITE_API_URL}/fisher/post/info`, 
+            form, token ? { 
+                headers: { Authorization: `Bearer ${token}` },
+                withCredentials: true
+             } : undefined,
+                
+           );
+    
+          if (response.data !== "401error") {
+            alert("등록 완료!");
+            navigate(`/login`);
+          } else {
+            alert("회원가입 실패. 다시 시도해주세요.");
+          } 
+          } catch (error) {
+              // 네트워크 오류 등 예외 발생 시
+              alert("요청 중 오류가 발생했습니다.");
+          } finally {
+         
+        }
     };
 
     return (
@@ -185,23 +254,55 @@ function AnalysisArticle () {
                 <InputContainer>
                         <InputBox>
                             <InputInner>
-                                <InputTitle>혼획물 포획</InputTitle>
+                                <InputTitle>혼획물 포획 일시</InputTitle>
                                 <ButtonContainer>
                                     <DateTitle>포획 날짜</DateTitle>
                                     <DateContent
                                         type = "date"
                                         value={caughtDate}
                                         onChange={(e) =>setCaughtDate(e.target.value)}
-                                    />
-                                    
+                                    />   
                                 </ButtonContainer>
-                                
+                                <ButtonContainer>
+                                    <DateTitle>포획 날짜</DateTitle>
+                                    <DateContent
+                                        type = "time"
+                                        value={caughtTime}
+                                        onChange={(e) =>setCaughtTime(e.target.value)}
+                                    />   
+                                </ButtonContainer>       
+                            </InputInner> 
+                        </InputBox>
+                </InputContainer>
+            </div>
+
+            <div className = {styles.catchDate}>
+                <InputContainer>
+                        <InputBox>
+                            <InputInner>
+                                <InputTitle>수거 마감 일시</InputTitle>
+                                <ButtonContainer>
+                                    <DateTitle>마감 날짜</DateTitle>
+                                    <DateContent
+                                        type = "date"
+                                        value={pickUpDate}
+                                        onChange={(e) =>setPickUpDate(e.target.value)}
+                                    />   
+                                </ButtonContainer>
+                                <ButtonContainer>
+                                    <DateTitle>마감 시간</DateTitle>
+                                    <DateContent
+                                        type = "time"
+                                        value={pickUpTime}
+                                        onChange={(e) =>setPickUpTime(e.target.value)}
+                                    />   
+                                </ButtonContainer>       
                             </InputInner> 
                         </InputBox>
                 </InputContainer>
             </div>
             
-
+        <button onClick = {onSubmitArticle}>등록 완료</button>
         </>
     )
 
