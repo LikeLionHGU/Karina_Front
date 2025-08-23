@@ -1,7 +1,8 @@
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import FishModal from "../components/FishModal";
+import axios from "axios";
 
 const Container = styled.div`
   width: 100%;
@@ -19,7 +20,7 @@ const Title = styled.h1`
 `;
 
 const Highlight = styled.span`
-  color: #0966FF;
+  color: #0966ff;
 `;
 
 const Subtitle = styled.p`
@@ -243,117 +244,32 @@ const PageEllipsis = styled.span`
   font-size: 14px;
 `;
 
-function Home() {
+function FisherHome() {
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedFish, setSelectedFish] = useState<any>(null);
+  const [allFishData, setAllFishData] = useState<any[]>([]);
   const itemsPerPage = 9;
 
-  const allFishData = [
-    // 기존 데이터
-    {
-      location: "포항시 흥해읍",
-      fishName: "청어리",
-      provider: "kansas",
-      date: "2025. 08. 25",
-      status: 0,
-    },
-    {
-      location: "포항시 흥해읍",
-      fishName: "청어리",
-      provider: "kansas",
-      date: "2025. 08. 25",
-      status: 1,
-    },
-    {
-      location: "포항시 흥해읍",
-      fishName: "청어리",
-      provider: "장세혁",
-      date: "2025. 08. 25",
-      status: 2,
-    },
-    {
-      location: "포항시 흥해읍",
-      fishName: "청어리",
-      provider: "장세혁",
-      date: "2025. 08. 25",
-      status: 0,
-    },
-    {
-      location: "포항시 흥해읍",
-      fishName: "청어리",
-      provider: "장세혁",
-      date: "2025. 08. 25",
-      status: 1,
-    },
-    {
-      location: "포항시 흥해읍",
-      fishName: "청어리",
-      provider: "장세혁",
-      date: "2025. 08. 25",
-      status: 2,
-    },
-    {
-      location: "부산시 남구",
-      fishName: "고등어",
-      provider: "부산항",
-      date: "2025. 08. 26",
-      status: 0,
-    },
-    {
-      location: "인천시 중구",
-      fishName: "갈치",
-      provider: "인천항",
-      date: "2025. 08. 26",
-      status: 1,
-    },
-    {
-      location: "제주시 한림읍",
-      fishName: "옥돔",
-      provider: "제주항",
-      date: "2025. 08. 26",
-      status: 2,
-    },
-    {
-      location: "통영시 산양읍",
-      fishName: "멸치",
-      provider: "통영항",
-      date: "2025. 08. 27",
-      status: 0,
-    },
-    {
-      location: "여수시 돌산읍",
-      fishName: "갈치",
-      provider: "여수항",
-      date: "2025. 08. 27",
-      status: 1,
-    },
-    {
-      location: "울산시 동구",
-      fishName: "방어",
-      provider: "울산항",
-      date: "2025. 08. 27",
-      status: 2,
-    },
-    // 추가 데이터 (15페이지를 만들기 위해 총 90개 아이템 필요)
-    ...Array.from({ length: 78 }, (_, index) => ({
-      location: `지역 ${index + 13}`,
-      fishName: [
-        "고등어",
-        "갈치",
-        "청어리",
-        "멸치",
-        "방어",
-        "옥돔",
-        "삼치",
-        "전어",
-      ][index % 8],
-      provider: `공급업체 ${index + 13}`,
-      date: "2025. 08. 28",
-      status: index % 3,
-    })),
-  ];
+  const getAllFishData = async () => {
+    try {
+      const token = localStorage.getItem("jwt");
+      const response = await axios.get(
+        `${import.meta.env.VITE_API_URL}/home`,
+        token ? { headers: { Authorization: `Bearer ${token}` } } : undefined
+      );
+      // API 응답 데이터로 allFishData 업데이트
+      setAllFishData(response.data);
+      console.log("Fetched fish data:", response.data);
+    } catch (error) {
+      console.error("Error fetching homepage data:", error);
+    }
+  };
+
+  useEffect(() => {
+    getAllFishData();
+  }, []);
 
   const totalPages = Math.ceil(allFishData.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
@@ -368,12 +284,9 @@ function Home() {
     }
   };
 
-  const handleCardClick = (fish: any) => {
-    // Detail 페이지로 이동
-    navigate(`/detail/${fish.id}`);
-
+  const handleCardClick: (fish: any) => void = (fish: any) => {
     // 모달 띄우기
-    // handleOpenModal(fish);
+    handleOpenModal(fish);
   };
 
   const handleCloseModal = () => {
@@ -381,10 +294,10 @@ function Home() {
     setSelectedFish(null);
   };
 
-  // const handleOpenModal = (fish: any) => {
-  //   setSelectedFish(fish);
-  //   setIsModalOpen(true);
-  // };
+  const handleOpenModal = (fish: any) => {
+    setSelectedFish(fish);
+    setIsModalOpen(true);
+  };
 
   const renderPaginationButtons = () => {
     const buttons = [];
@@ -440,17 +353,17 @@ function Home() {
       <FishGrid>
         {currentFishData.map((fish, index) => (
           <FishCard key={index} onClick={() => handleCardClick(fish)}>
-            <FishImageSection>🐟</FishImageSection>
+            <FishImageSection>{fish.thumbnail || "🐟"}</FishImageSection>
             <FishInfoSection>
               <LocationInfo>
                 <LocationIcon>📍</LocationIcon>
-                {fish.location}
+                {fish.mainAddress} {fish.detailAddress}
               </LocationInfo>
 
               <FishInfo>
-                <FishName>{fish.fishName}</FishName>
+                <FishName>{fish.fishInfo[0]}</FishName>
                 <FishDetails>
-                  {fish.provider} • {fish.date}
+                  {fish.fisherName} • {fish.getDate}
                 </FishDetails>
               </FishInfo>
 
@@ -503,4 +416,4 @@ function Home() {
   );
 }
 
-export default Home;
+export default FisherHome;

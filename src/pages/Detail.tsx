@@ -1,13 +1,14 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { useParams, useNavigate } from "react-router-dom";
 import ConfirmModal from "../components/ConfirmModal";
+import axios from "axios";
 
 const DetailContainer = styled.div`
   max-width: 1200px;
   margin: 0 auto;
   padding: 40px 20px 200px 0;
-  background: #FFF;
+  background: #fff;
   min-height: 100vh;
 `;
 
@@ -65,7 +66,7 @@ const FishTitle = styled.div`
   margin: 0 0 15px 0;
 `;
 
-const FishImageContainer = styled.div`
+const FishVideoContainer = styled.div`
   width: 100%;
   position: relative;
   display: flex;
@@ -75,12 +76,10 @@ const FishImageContainer = styled.div`
   padding: 70px 40px;
 `;
 
-const FishImage = styled.img`
+const FishVideo = styled.video`
   width: 100%;
   height: auto;
-  max-height: 100%;
   object-fit: cover;
-  margin-bottom: 50px;
 `;
 
 const InfoContainer = styled.div`
@@ -201,7 +200,6 @@ const ActionButton = styled.button`
 `;
 
 function Detail() {
-  const { fishId } = useParams();
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -209,29 +207,32 @@ function Detail() {
   const [modalBody, setModalBody] = useState(
     "어민 분의 확인 후 매칭이 성사될 예정입니다."
   );
-
-  // 실제 데이터는 API에서 가져와야 하지만, 예시 데이터 사용
-  const fishData = {
-    id: fishId || "1",
-    location: "포항시 흥해읍 방등로 558 한동대학교",
-    fishName: "청어리",
-    image: "/api/placeholder/400/300",
-    details: {
-      이름: "청어리",
-      "유저 ID": "kansas0717",
-      어종: "청어리 67마리",
-      "어획 시기": "2025. 08. 15\n7시 15분",
-      연락처: "010-5036-0717",
-      마감기한: "2025. 08. 15\n7시 15분",
-    },
-    status: 1, // 0: 대기 중, 1: 매입 대기, 2: 매입 완료
-  };
+  const [fishData, setFishData] = useState<any>({});
 
   const statusSteps = [
     { label: "대기 중", key: "waiting" },
     { label: "매입 대기", key: "pending" },
     { label: "매입 완료", key: "completed" },
   ];
+
+  const getFishData = async () => {
+    try {
+      const token = localStorage.getItem("jwt");
+      const response = await axios.get(
+        `${import.meta.env.VITE_API_URL}/factory/home`,
+        token ? { headers: { Authorization: `Bearer ${token}` } } : undefined
+      );
+      // API 응답 데이터로 fishData 업데이트
+      setFishData(response.data);
+      console.log("Fetched fish detail data:", response.data);
+    } catch (error) {
+      console.error("Error fetching fish detail data:", error);
+    }
+  };
+
+  useEffect(() => {
+    getFishData();
+  }, []);
 
   const getStatusProgress = (currentStatus: number) => {
     return (currentStatus / (statusSteps.length - 1)) * 100;
@@ -261,16 +262,22 @@ function Detail() {
       <BackButton onClick={() => navigate(-1)}>← 뒤로 가기</BackButton>
 
       <ContentCard>
-        {/* 왼쪽: 이미지 섹션 */}
-        <FishImageContainer>
-          <FishImage
-            src="https://images.unsplash.com/photo-1544551763-46a013bb70d5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80"
-            alt={fishData.fishName}
-            onError={(e) => {
-              (e.target as HTMLImageElement).src =
-                "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 300'><rect width='400' height='300' fill='%23e3f2fd'/><g><path d='M120 150 Q200 100 280 150 Q200 200 120 150 Z' fill='%234a90e2' opacity='0.8'/><circle cx='160' cy='140' r='3' fill='white'/><path d='M100 150 Q120 130 120 150 Q120 170 100 150 Z' fill='%234a90e2' opacity='0.6'/></g><text x='200' y='250' font-family='Arial' font-size='16' text-anchor='middle' fill='%234a90e2'>청어리</text></svg>";
-            }}
-          />
+        {/* 왼쪽: 영상 섹션 */}
+        <FishVideoContainer>
+          <FishVideo
+            controls
+            // poster={
+            //   fishData.thumbnail ||
+            //   "https://via.placeholder.com/800x600.png?text=Loading..."
+            // }
+          >
+            <source src={fishData.video} type="video/mp4" />
+            {/* 브라우저가 video를 지원하지 않으면 대체 텍스트/이미지 */}
+            <img
+              src="https://via.placeholder.com/800x600.png?text=Video+not+supported"
+              alt={fishData.fishName || ""}
+            />
+          </FishVideo>
 
           <StatusSection>
             <StatusTracker>
@@ -295,7 +302,7 @@ function Detail() {
               ))}
             </StatusTracker>
           </StatusSection>
-        </FishImageContainer>
+        </FishVideoContainer>
 
         {/* 오른쪽: 정보 섹션 */}
         <InfoContainer>
@@ -313,7 +320,7 @@ function Detail() {
                   <React.Fragment key={label}>
                     <InfoLabel>{label}</InfoLabel>
                     <InfoValue style={{ whiteSpace: "pre-line" }}>
-                      {value}
+                      {String(value)}
                     </InfoValue>
                   </React.Fragment>
                 ))}

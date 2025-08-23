@@ -1,12 +1,10 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useEffect } from "react";
 import styled from "styled-components";
 import LeftSidebar from "../components/LeftSidebar";
-
-declare global {
-  interface Window {
-    daum: any;
-  }
-}
+import axios from "axios";
+import DefaultImage from "../assets/profile/default.jpg";
+import SuccessModal from "../components/SuccessModal";
+import ErrorModal from "../components/ErrorModal";
 
 const MypageContainer = styled.div`
   max-width: 1200px;
@@ -20,14 +18,19 @@ const Title = styled.h1`
   font-size: 28px;
   font-weight: bold;
   margin-bottom: 8px;
-  color: #333;
+  color: #0966ff;
 `;
 
 const Subtitle = styled.p`
   text-align: center;
   margin-bottom: 60px;
   color: #999;
+
+  /* Subhead */
   font-size: 14px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: normal;
 `;
 
 const Divider = styled.hr`
@@ -85,6 +88,8 @@ const ProfileImage = styled.div`
   color: #999;
   margin-bottom: 8px;
   cursor: pointer;
+  background-image: url(${DefaultImage});
+  background-size: cover;
 `;
 
 const ProfileName = styled.h3`
@@ -197,45 +202,54 @@ const SaveButton = styled.button`
   }
 `;
 
+type FormDataType = {
+  id: string;
+  name: string;
+  currentPassword: string;
+  newPassword: string;
+  phone1: string;
+  phone2: string;
+  phone3: string;
+  postcode: string;
+  mainAddress: string;
+  detailAddress: string;
+};
+
 function UpdateProfile() {
-  const [formData, setFormData] = useState({
-    id: "Karina0717",
-    name: "카리나",
+  const [formData, setFormData] = useState<FormDataType>({
+    id: "",
+    name: "",
     currentPassword: "",
     newPassword: "",
-    confirmPassword: "",
     phone1: "010",
-    phone2: "5028",
-    phone3: "0717",
+    phone2: "",
+    phone3: "",
     postcode: "",
     mainAddress: "",
     detailAddress: "",
   });
 
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
+  const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
-  const openFileDialog = () => {
-    fileInputRef.current?.click();
-  };
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const url = URL.createObjectURL(file);
-      setPreviewUrl((prev) => {
-        if (prev) URL.revokeObjectURL(prev);
-        return url;
-      });
-      // 필요하면 file 자체를 formData에 저장하도록 확장 가능
+  const fetchUserData = async () => {
+    try {
+      // localStorage에서 JWT 토큰 가져오기
+      const token = localStorage.getItem("jwt");
+      const response = await axios.get(
+        `${import.meta.env.VITE_API_URL}/mypage/profile`,
+        token ? { headers: { Authorization: `Bearer ${token}` } } : undefined
+      );
+      setFormData(response.data);
+    } catch (error) {
+      console.error("Error fetching user data:", error);
     }
   };
 
   useEffect(() => {
-    return () => {
-      if (previewUrl) URL.revokeObjectURL(previewUrl);
-    };
-  }, [previewUrl]);
+    fetchUserData();
+  }, []);
 
   const handleInputChange = (
     e: React.ChangeEvent<
@@ -282,20 +296,36 @@ function UpdateProfile() {
       postcode.open();
     } catch (err) {
       console.error("우편번호 스크립트 로드 실패", err);
-      alert("우편번호 검색을 사용할 수 없습니다. 네트워크를 확인해주세요.");
+      setIsErrorModalOpen(true);
+      setErrorMessage(
+        "우편번호 검색을 사용할 수 없습니다. 네트워크를 확인해주세요."
+      );
     }
   };
 
   const handleSave = () => {
     console.log("저장된 정보:", formData);
     // 여기에 API 호출 로직을 추가할 수 있습니다
-    alert("회원 정보가 성공적으로 업데이트되었습니다!");
+    setIsSuccessModalOpen(true);
+    // 필요시 fetchUserData()로 최신 정보 다시 불러오기
+    fetchUserData();
   };
+
+  // 모달 닫기 핸들러
+  const handleSuccessModalClose = () => {
+    setIsSuccessModalOpen(false);
+    // window.location.reload();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const handleErrorModalClose = () => setIsErrorModalOpen(false);
 
   return (
     <MypageContainer>
       <Title>마이페이지</Title>
-      <Subtitle>마이페이지에서 등록, 조회, 거래 내역을 한눈에 확인하세요.</Subtitle>
+      <Subtitle>
+        마이페이지에서 등록, 조회, 거래 내역을 한눈에 확인하세요.
+      </Subtitle>
       <Divider />
       <ContentSection>
         <LeftSidebar activeMenu="profile" />
@@ -303,30 +333,9 @@ function UpdateProfile() {
           <FormContainer>
             <ProfileSection>
               <ProfileImageContainer>
-                <input
-                  type="file"
-                  accept="image/*"
-                  ref={fileInputRef}
-                  style={{ display: "none" }}
-                  onChange={handleFileChange}
-                />
-                <ProfileImage
-                  onClick={openFileDialog}
-                  style={
-                    previewUrl
-                      ? {
-                          backgroundImage: `url(${previewUrl})`,
-                          backgroundSize: "cover",
-                          backgroundPosition: "center",
-                          color: "transparent",
-                        }
-                      : undefined
-                  }
-                >
-                  {previewUrl ? "" : "👤"}
-                </ProfileImage>
+                <ProfileImage></ProfileImage>
               </ProfileImageContainer>
-              <ProfileName>카리나</ProfileName>
+              <ProfileName>{formData.name}</ProfileName>
             </ProfileSection>
 
             <FormGroup>
@@ -344,7 +353,7 @@ function UpdateProfile() {
             </FormGroup>
 
             <FormGroup>
-              <Label htmlFor="currentPassword">현재 비밀번호</Label>
+              <Label htmlFor="currentPassword">새 비밀번호</Label>
               <Input
                 type="password"
                 id="currentPassword"
@@ -355,14 +364,13 @@ function UpdateProfile() {
             </FormGroup>
 
             <FormGroup>
-              <Label htmlFor="newPassword">새 비밀번호</Label>
+              <Label htmlFor="newPassword">비밀번호 확인</Label>
               <Input
                 type="password"
                 id="newPassword"
                 name="newPassword"
                 value={formData.newPassword}
                 onChange={handleInputChange}
-                placeholder="비밀번호는 영문/숫자/특수문자 2가지 이상 조합 8~20자 이내 입력"
               />
             </FormGroup>
 
@@ -386,7 +394,6 @@ function UpdateProfile() {
                   name="phone2"
                   value={formData.phone2}
                   onChange={handleInputChange}
-                  placeholder="5028"
                   maxLength={4}
                 />
                 <Input
@@ -394,7 +401,6 @@ function UpdateProfile() {
                   name="phone3"
                   value={formData.phone3}
                   onChange={handleInputChange}
-                  placeholder="0717"
                   maxLength={4}
                 />
               </PhoneGroup>
@@ -440,6 +446,16 @@ function UpdateProfile() {
 
             <SaveButton onClick={handleSave}>저장하기</SaveButton>
           </FormContainer>
+          {/* 성공/에러 모달 렌더링 */}
+          <SuccessModal
+            isOpen={isSuccessModalOpen}
+            onClose={handleSuccessModalClose}
+          />
+          <ErrorModal
+            isOpen={isErrorModalOpen}
+            onClose={handleErrorModalClose}
+            message={errorMessage}
+          />
         </MainContent>
       </ContentSection>
     </MypageContainer>

@@ -1,6 +1,5 @@
-import styled, { keyframes } from "styled-components";
+import styled from "styled-components";
 import type { ReactNode } from "react";
-import { useEffect, useState } from "react";
 
 interface MenuCardProps {
   isPrimary?: boolean;
@@ -8,30 +7,25 @@ interface MenuCardProps {
   inactiveIcon?: ReactNode;
   title: string;
   onClick: () => void;
-  /** optional trigger from parent (e.g. activeMenu change) to play animation */
-  animateKey?: string | number | null;
+  className?: string; // Optional className prop for additional styling
 }
 
-// subtle lift+scale animation
-const clickAnim = keyframes`
-  0% { transform: translateY(0) scale(1); }
-  40% { transform: translateY(-6px) scale(1.03); }
-  100% { transform: translateY(0) scale(1); }
-`;
-
-const Card = styled.div<{ isPrimary?: boolean; animating?: boolean }>`
+// styled-components v5 이상에서 shouldForwardProp 사용
+const Card = styled.div.withConfig({
+  shouldForwardProp: (prop) => prop !== "isPrimary",
+})<{ isPrimary?: boolean }>`
   background: ${(props) => (props.isPrimary ? "#0966FF" : "transparent")};
   padding: 12px 16px;
   display: flex;
   align-items: center;
   gap: 12px;
   cursor: pointer;
-  transition: all 0.18s ease;
   border-radius: ${(props) => (props.isPrimary ? "14px" : "8px")};
-  ${(p) => (p.animating ? `animation: ${clickAnim} 360ms ease;` : "")}
 `;
 
-const IconContainer = styled.div<{ isPrimary?: boolean }>`
+const IconContainer = styled.div.withConfig({
+  shouldForwardProp: (prop) => prop !== "isPrimary",
+})<{ isPrimary?: boolean }>`
   width: 30px;
   height: 30px;
   display: flex;
@@ -54,7 +48,9 @@ const MenuContent = styled.div`
   flex: 1;
 `;
 
-const MenuTitle = styled.h3<{ isPrimary?: boolean }>`
+const MenuTitle = styled.h3.withConfig({
+  shouldForwardProp: (prop) => prop !== "isPrimary",
+})<{ isPrimary?: boolean }>`
   font-size: 0.9rem;
   font-weight: 700;
   color: ${(props) => (props.isPrimary ? "#F8FBFE" : "#8aa0c7")};
@@ -67,32 +63,14 @@ function MenuCard({
   inactiveIcon,
   title,
   onClick,
-  animateKey,
 }: MenuCardProps) {
-  const [animating, setAnimating] = useState(false);
-
-  useEffect(() => {
-    if (animateKey != null) {
-      setAnimating(true);
-      const t = setTimeout(() => setAnimating(false), 400);
-      return () => clearTimeout(t);
-    }
-    return;
-  }, [animateKey]);
-
   const handleClick = () => {
-    setAnimating(true);
     onClick();
   };
   const displayedIcon = isPrimary ? icon : inactiveIcon ?? icon;
 
   return (
-    <Card
-      isPrimary={isPrimary}
-      animating={animating}
-      onClick={handleClick}
-      onAnimationEnd={() => setAnimating(false)}
-    >
+    <Card isPrimary={isPrimary} onClick={handleClick}>
       <IconContainer isPrimary={isPrimary}>{displayedIcon}</IconContainer>
       <MenuContent>
         <MenuTitle isPrimary={isPrimary}>{title}</MenuTitle>
