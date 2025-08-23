@@ -11,7 +11,7 @@ const InputContainer = styled.div`
 `
 const InputTitle = styled.h1`
     color: var(--Black-4, #454545);
-    font-size: clamp(15px, 2.5vw, 22px);
+    font-size: clamp(15px, 2.5vw, 20px);
     font-style: normal;
     font-weight: 600;
     line-height: 45px; /* 150% */
@@ -79,6 +79,25 @@ const FileIcon = styled(FontAwesomeIcon)`
   vertical-align: middle;  /* 텍스트와 수직 정렬시 유용 */
 `
 
+/*날짜 및 시간 입력*/
+const DateInput = styled.input.attrs({ type: 'date' })`
+  /* 스타일 */
+  width: fit-content;
+  height: 40px;
+  border: 1px solid #A5BEE0;
+  border-radius: 6px;
+  padding: 0 10px;
+`;
+
+/*날짜 및 시간 input창 이름*/
+const DateInputTitle = styled.h1`
+    color: var(--Black-4, #454545);
+    font-size: clamp(12px, 1.6vw, 17px);
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+    margin-left:47px;
+`
 
 function AnalysisArticle () {
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -136,6 +155,18 @@ function AnalysisArticle () {
                 </InputContainer>
             </div>
             
+            <div className = {styles.catchDate}>
+                <InputContainer>
+                    <InputInner>
+                        <InputTitle>혼획물 포획 일시</InputTitle>
+                        <InputLine>
+                            <DateInputTitle/>
+                            <DateInput placeholder="날짜를 선택해 주세요." />
+                        </InputLine>
+                    </InputInner>
+                
+                </InputContainer>
+            </div>
 
         </>
     )
