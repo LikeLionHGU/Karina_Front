@@ -4,11 +4,14 @@ interface FishModalProps {
   isOpen: boolean;
   onClose: () => void;
   fishData: {
-    location: string;
-    fishName: string;
-    provider: string;
-    date: string;
+    articleId?: string;
+    mainAddress: string;
+    detailAddress: string;
+    fishInfo: Array<string>;
+    fisherName: string;
+    postDate: string;
     status: number;
+    thumbnail?: string;
   };
 }
 
@@ -58,7 +61,7 @@ const CloseButton = styled.button`
   }
 `;
 
-const FishImage = styled.div`
+const FishImage = styled.div<{ thumbnail?: string }>`
   width: 100%;
   padding: 40px 50px 0px 50px;
   display: flex;
@@ -69,7 +72,7 @@ const FishImage = styled.div`
     content: "";
     width: 100%;
     height: 300px;
-    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 250'%3E%3Crect width='400' height='250' fill='%23e3f2fd'/%3E%3Ctext x='200' y='125' font-family='Arial' font-size='60' text-anchor='middle' fill='%234a90e2'%3E🐟%3C/text%3E%3C/svg%3E")
+    background: url(${(props) => props.thumbnail || "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 250'%3E%3Crect width='400' height='250' fill='%23e3f2fd'/%3E%3Ctext x='200' y='125' font-family='Arial' font-size='60' text-anchor='middle' fill='%234a90e2'%3E🐟%3C/text%3E%3C/svg%3E"})
       center/cover;
     border-radius: 12px 12px 0px 0px;
     display: block;
@@ -138,22 +141,22 @@ function FishModal({ isOpen, onClose, fishData }: FishModalProps) {
       <ModalContent>
         <CloseButton onClick={onClose}>×</CloseButton>
 
-        <FishImage />
+        <FishImage thumbnail={fishData.thumbnail} />
 
         <ModalInfoSection>
           <LocationContainer>
             <LocationIcon>📍</LocationIcon>
-            <LocationText>{fishData.location}</LocationText>
+            <LocationText>{fishData.mainAddress}</LocationText>
           </LocationContainer>
 
-          <FishTitle>{fishData.fishName}</FishTitle>
+          <FishTitle>{fishData.fishInfo?.[0] || ""}</FishTitle>
 
           <InfoGrid>
-            <InfoLabel>유저 ID</InfoLabel>
-            <InfoValue>kansas0717</InfoValue>
+            <InfoLabel>어부</InfoLabel>
+            <InfoValue>{fishData.fisherName}</InfoValue>
 
             <InfoLabel>어종</InfoLabel>
-            <InfoValue>{fishData.fishName} 67마리</InfoValue>
+            <InfoValue>{fishData.fishInfo?.[1] || ""}</InfoValue>
           </InfoGrid>
         </ModalInfoSection>
       </ModalContent>
