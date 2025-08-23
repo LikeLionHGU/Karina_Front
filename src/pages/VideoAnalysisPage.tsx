@@ -58,6 +58,7 @@ export default function VideoAnalysisPage() {
       }
 
       const token = localStorage.getItem('jwt') ?? '';
+      console.log(token)
       const res = await axios.put(
         `${import.meta.env.VITE_API_URL}/fisher/post/edit/info`,
         requestData,

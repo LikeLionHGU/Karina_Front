@@ -10,18 +10,24 @@ const InputContainer = styled.div`
     gap:25px;
 `
 const InputTitle = styled.h1`
-    color: var(--Black-4, #454545);
-    font-size: clamp(15px, 2.5vw, 22px);
-    font-style: normal;
-    font-weight: 600;
-    line-height: 45px; /* 150% */
-`
-const InputInner = styled.div`
-    width:65vw;
-`
+  color: var(--Black-4, #454545);
+  font-size: clamp(15px, 2.5vw, 22px);
+  font-weight: 600;
+  line-height: 45px;
+`;
+
 const InputLine = styled.div`
-    display:flex;
-`
+  display: flex;
+  justify-content: center;   // 그대로
+  align-items: center;
+  gap: 16px;
+`;
+
+const InputInner = styled.div`
+  display:flex;
+  flex-direction:column;
+`;
+
 /*파일 컨테이너*/
 const FileContent = styled.div`
     width: fit-content;                /* 남은 공간 전부 차지 */
@@ -38,7 +44,7 @@ const FileContent = styled.div`
         white-space: nowrap;
         padding-right:127px;
         color: var(--Secondary-5, #899EBB);
-        font-size: clamp(15px, 1.6vw, 20px);
+        font-size: clamp(10px, 1.6vw, 15px);
         font-style: normal;
         font-weight: 700;
         line-height: 30px; /* 150% */
@@ -78,11 +84,41 @@ const FileIcon = styled(FontAwesomeIcon)`
   font-size: 50px;
   vertical-align: middle;  /* 텍스트와 수직 정렬시 유용 */
 `
+const ButtonContainer = styled.div`
+    display:flex;
+    align-items: center;
+`
 
+/*날짜 관련*/
+const DateAndTitleContainer = styled.div`
+    display:flex;
+    gap: 47px;
+`
 
+const SelectDate = styled.input`
+    width: fit-content; 
+    height: 65px;
+    flex-shrink: 0;
+    &::placeholder {
+    margin-left: 5px;
+    color: var(--Secondary-5, #899ebb);
+    font-size: clamp(15px, 1.5vw, 20px);
+    font-style: normal;
+    font-weight: 700;
+    line-height: 30px; /* 150% */
+  }
+`
+const DateTitle = styled.h1`
+    color: var(--Black-4, #454545);
+    font-size: 26px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+`
 function AnalysisArticle () {
-    const [selectedFile, setSelectedFile] = useState<File | null>(null);
+    const [selectedFile, setSelectedFile] = useState<File | null>(null); //사진 파일 저장
     const fileRef = useRef<HTMLInputElement>(null);
+    const [caughtDate, setCaughtDate] = useState('');
     /*파일 선택 관련 이벤트 관리*/
     const handleOpenFile: React.MouseEventHandler<HTMLButtonElement> = (e) => {
         e.preventDefault();
@@ -110,29 +146,50 @@ function AnalysisArticle () {
 
             <div className = {styles.PhotoUpolad}>
                 <InputContainer>
-                    <InputInner>
-                        <InputTitle>사진 업로드</InputTitle>
                         <InputLine>
-                            <FileContent>
-                                {selectedFile ? (
-                                    // 파일이 선택됐을 때: 파일칩 렌더
-                                    <FileChip>
-                                        <FileIcon icon={faImage} /> 
-                                        <div className = {styles.fileChipText}>
-                                            <div className={styles.fileName}>{selectedFile.name}</div>
-                                            <div className={styles.fileStatus}>업로드 완료</div>
-                                        </div>
-                                    </FileChip>
-                                ) : (
-                                    // 파일이 없을 때: 안내문 렌더
-                                    <span>글 등록에 필요한 사진을 업로드하세요.</span>
-                                )}
-                            </FileContent>
-                            <HiddenFile ref={fileRef} type="file" onChange={handleFileChange} />
-                            <UploadBtn type="button" onClick={handleOpenFile}>파일 업로드</UploadBtn>
+                            <InputInner>
+                                <InputTitle>사진 업로드</InputTitle>
+                                <ButtonContainer>
+                                    <FileContent>
+                                        {selectedFile ? (
+                                            // 파일이 선택됐을 때: 파일칩 렌더
+                                            <FileChip>
+                                                <FileIcon icon={faImage} /> 
+                                                <div className = {styles.fileChipText}>
+                                                    <div className={styles.fileName}>{selectedFile.name}</div>
+                                                    <div className={styles.fileStatus}>업로드 완료</div>
+                                                </div>
+                                            </FileChip>
+                                        ) : (
+                                            // 파일이 없을 때: 안내문 렌더
+                                            <span>글 등록에 필요한 사진을 업로드하세요.</span>
+                                        )}
+                                    </FileContent>
+                                    <HiddenFile ref={fileRef} type="file" onChange={handleFileChange} />
+                                    <UploadBtn type="button" onClick={handleOpenFile}>파일 업로드</UploadBtn>
+                                </ButtonContainer>
+                                
+                            </InputInner> 
                         </InputLine>
-                    </InputInner>
-                
+                </InputContainer>
+            </div>
+
+            <div className = {styles.catchDate}>
+                <InputContainer>
+                        <InputLine>
+                            <InputInner>
+                                <InputTitle>혼획물 포획 일시</InputTitle>
+                                <DateAndTitleContainer>
+                                    <DateTitle>포획 날짜</DateTitle>
+                                    <SelectDate
+                                        type="date"
+                                        value={caughtDate}
+                                        onChange={(e) => setCaughtDate(e.target.value)}
+                                    />
+                                </DateAndTitleContainer>
+                                
+                            </InputInner> 
+                        </InputLine>
                 </InputContainer>
             </div>
             
