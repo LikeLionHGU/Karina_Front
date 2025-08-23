@@ -54,3 +54,10 @@
 .PhotoUpolad{
     margin-top:155px;
 }
+
+.catchDate{
+    display:flex;
+    margin-top:132px;
+    justify-content: center;
+    align-items: center;
+}

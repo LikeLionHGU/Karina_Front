@@ -8,20 +8,27 @@ const InputContainer = styled.div`
     flex-direction:column;
     align-items:center;
     gap:25px;
+
 `
 const InputTitle = styled.h1`
-    color: var(--Black-4, #454545);
-    font-size: clamp(15px, 2.5vw, 20px);
-    font-style: normal;
-    font-weight: 600;
-    line-height: 45px; /* 150% */
-`
+  color: var(--Black-4, #454545);
+  font-size: clamp(15px, 2.5vw, 22px);
+  font-weight: 600;
+  line-height: 45px;
+`;
+
+const InputBox = styled.div`
+  display: flex;
+  justify-content: center;   // 그대로
+  align-items: center;
+  gap: 16px;
+`;
+
 const InputInner = styled.div`
-    width:65vw;
-`
-const InputLine = styled.div`
-    display:flex;
-`
+  display:flex;
+  flex-direction:column;
+`;
+
 /*파일 컨테이너*/
 const FileContent = styled.div`
     width: fit-content;                /* 남은 공간 전부 차지 */
@@ -38,7 +45,7 @@ const FileContent = styled.div`
         white-space: nowrap;
         padding-right:127px;
         color: var(--Secondary-5, #899EBB);
-        font-size: clamp(15px, 1.6vw, 20px);
+        font-size: clamp(10px, 1.6vw, 15px);
         font-style: normal;
         font-weight: 700;
         line-height: 30px; /* 150% */
@@ -78,30 +85,47 @@ const FileIcon = styled(FontAwesomeIcon)`
   font-size: 50px;
   vertical-align: middle;  /* 텍스트와 수직 정렬시 유용 */
 `
+const ButtonContainer = styled.div`
+    display:flex;
+    align-items: center;
+`
 
-/*날짜 및 시간 입력*/
-const DateInput = styled.input.attrs({ type: 'date' })`
-  /* 스타일 */
-  width: fit-content;
-  height: 40px;
-  border: 1px solid #A5BEE0;
-  border-radius: 6px;
-  padding: 0 10px;
-`;
-
-/*날짜 및 시간 input창 이름*/
-const DateInputTitle = styled.h1`
+/*날짜 관련*/
+const DateTitle = styled.div`
+    flex:1;
+    text-align: left;
     color: var(--Black-4, #454545);
-    font-size: clamp(12px, 1.6vw, 17px);
+    font-size: clamp(15px, 1.5vw, 20px);
     font-style: normal;
     font-weight: 600;
     line-height: normal;
-    margin-left:47px;
+    
 `
-
+const DateContent = styled.input`
+    width: fit-content;                /* 남은 공간 전부 차지 */
+    display: flex;  
+    align-items: center;
+    border-radius: 5px;
+    border: 1.5px solid var(--Secondary-3, #A5BEE0);
+    height: 40px;  
+    gap: 10px;              /* 버튼 사이 간격 */
+    padding: 0 16px;
+    box-sizing: border-box;
+    
+    span{
+        white-space: nowrap;
+        padding-right:127px;
+        color: var(--Secondary-5, #899EBB);
+        font-size: clamp(10px, 1.6vw, 15px);
+        font-style: normal;
+        font-weight: 700;
+        line-height: 30px; /* 150% */
+    }
+`
 function AnalysisArticle () {
-    const [selectedFile, setSelectedFile] = useState<File | null>(null);
+    const [selectedFile, setSelectedFile] = useState<File | null>(null); //사진 파일 저장
     const fileRef = useRef<HTMLInputElement>(null);
+    const [caughtDate, setCaughtDate] = useState('');
     /*파일 선택 관련 이벤트 관리*/
     const handleOpenFile: React.MouseEventHandler<HTMLButtonElement> = (e) => {
         e.preventDefault();
@@ -129,44 +153,54 @@ function AnalysisArticle () {
 
             <div className = {styles.PhotoUpolad}>
                 <InputContainer>
-                    <InputInner>
-                        <InputTitle>사진 업로드</InputTitle>
-                        <InputLine>
-                            <FileContent>
-                                {selectedFile ? (
-                                    // 파일이 선택됐을 때: 파일칩 렌더
-                                    <FileChip>
-                                        <FileIcon icon={faImage} /> 
-                                        <div className = {styles.fileChipText}>
-                                            <div className={styles.fileName}>{selectedFile.name}</div>
-                                            <div className={styles.fileStatus}>업로드 완료</div>
-                                        </div>
-                                    </FileChip>
-                                ) : (
-                                    // 파일이 없을 때: 안내문 렌더
-                                    <span>글 등록에 필요한 사진을 업로드하세요.</span>
-                                )}
-                            </FileContent>
-                            <HiddenFile ref={fileRef} type="file" onChange={handleFileChange} />
-                            <UploadBtn type="button" onClick={handleOpenFile}>파일 업로드</UploadBtn>
-                        </InputLine>
-                    </InputInner>
-                
+                        <InputBox>
+                            <InputInner>
+                                <InputTitle>사진 업로드</InputTitle>
+                                <ButtonContainer>
+                                    <FileContent>
+                                        {selectedFile ? (
+                                            // 파일이 선택됐을 때: 파일칩 렌더
+                                            <FileChip>
+                                                <FileIcon icon={faImage} /> 
+                                                <div className = {styles.fileChipText}>
+                                                    <div className={styles.fileName}>{selectedFile.name}</div>
+                                                    <div className={styles.fileStatus}>업로드 완료</div>
+                                                </div>
+                                            </FileChip>
+                                        ) : (
+                                            // 파일이 없을 때: 안내문 렌더
+                                            <span>글 등록에 필요한 사진을 업로드하세요.</span>
+                                        )}
+                                    </FileContent>
+                                    <HiddenFile ref={fileRef} type="file" onChange={handleFileChange} />
+                                    <UploadBtn type="button" onClick={handleOpenFile}>파일 업로드</UploadBtn>
+                                </ButtonContainer>
+                                
+                            </InputInner> 
+                        </InputBox>
+                </InputContainer>
+            </div>
+
+            <div className = {styles.catchDate}>
+                <InputContainer>
+                        <InputBox>
+                            <InputInner>
+                                <InputTitle>혼획물 포획</InputTitle>
+                                <ButtonContainer>
+                                    <DateTitle>포획 날짜</DateTitle>
+                                    <DateContent
+                                        type = "date"
+                                        value={caughtDate}
+                                        onChange={(e) =>setCaughtDate(e.target.value)}
+                                    />
+                                    
+                                </ButtonContainer>
+                                
+                            </InputInner> 
+                        </InputBox>
                 </InputContainer>
             </div>
             
-            <div className = {styles.catchDate}>
-                <InputContainer>
-                    <InputInner>
-                        <InputTitle>혼획물 포획 일시</InputTitle>
-                        <InputLine>
-                            <DateInputTitle/>
-                            <DateInput placeholder="날짜를 선택해 주세요." />
-                        </InputLine>
-                    </InputInner>
-                
-                </InputContainer>
-            </div>
 
         </>
     )
