@@ -1,7 +1,12 @@
 import styled from "styled-components";
-import ProfileDefault from "../assets/profile_default.svg";
+import DefaultImage from "../assets/profile/default.jpg";
 import { useNavigate } from "react-router-dom";
 import { useState, useRef, useEffect } from "react";
+import LogoutModal from "./LogoutModal";
+
+interface HeaderProps {
+  isLanding?: boolean;
+}
 
 const ChevronDownIcon = () => (
   <svg
@@ -40,18 +45,20 @@ const HeaderContent = styled.div`
   align-items: center;
 `;
 
-const Logo = styled.div`
+const Logo = styled.div<{ $disabled?: boolean }>`
   width: 100px;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  cursor: pointer;
+  cursor: ${(props) => (props.$disabled ? "default" : "pointer")};
+  opacity: ${(props) => (props.$disabled ? 0.5 : 1)};
 
   img {
     width: 70%;
     height: 70%;
     object-fit: contain;
+    pointer-events: ${(props) => (props.$disabled ? "none" : "auto")};
   }
 `;
 
@@ -108,14 +115,9 @@ const ProfileIcon = styled.div`
   cursor: pointer;
   overflow: hidden;
   position: relative;
-
-  img {
-    width: 70%;
-    height: 70%;
-    object-fit: contain;
-    max-width: 42px;
-    max-height: 42px;
-  }
+  background-image: url(${DefaultImage});
+  background-size: cover;
+  background-position: center;
 `;
 
 const UserName = styled.span`
@@ -148,9 +150,9 @@ const Dropdown = styled.div`
 `;
 
 const DropdownButton = styled.button<{ primary?: boolean }>`
-  width: 100%;
+  width: 110%;
   padding: 5px 12px;
-  background: #FFF;
+  background: #fff;
   color: #333;
   border: none;
   border-radius: 12px;
@@ -160,15 +162,39 @@ const DropdownButton = styled.button<{ primary?: boolean }>`
   font-size: 1rem;
 
   &:hover {
-    background: #0966FF;
-    color: white;
+    color: #0966ff;
   }
 `;
 
-function Header() {
+function Header({ isLanding = false }: HeaderProps) {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
+  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
+  const [isLogoutSuccess, setIsLogoutSuccess] = useState(false);
   const ref = useRef<HTMLDivElement | null>(null);
+
+  const handleLogoClick = () => {
+    if (isLanding) return;
+    const role = localStorage.getItem("role");
+    if (role === "fisher") {
+      navigate("/home/fisher");
+    } else if (role === "factory") {
+      navigate("/home/factory");
+    } else {
+      navigate("/");
+    }
+  };
+
+  const handleMyPageClick = () => {
+    const role = localStorage.getItem("role");
+    if (role === "fisher") {
+      navigate("/mypage/request");
+    } else if (role === "factory") {
+      navigate("/mypage/matching");
+    } else {
+      navigate("/mypage");
+    }
+  };
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -190,15 +216,31 @@ function Header() {
   }, []);
 
   const handleLogout = () => {
-    // 실제 로그아웃 로직을 여기에 연결하세요 (토큰 삭제 등)
-    alert("로그아웃 되었습니다.");
-    navigate("/");
+    setIsLogoutModalOpen(true);
+    setIsLogoutSuccess(false);
+  };
+
+  const handleLogoutConfirm = () => {
+    localStorage.removeItem("token");
+    setIsLogoutSuccess(true);
+  };
+
+  const handleLogoutClose = () => {
+    if (isLogoutSuccess) {
+      setIsLogoutModalOpen(false);
+      setIsLogoutSuccess(false);
+      navigate("/");
+    }
+    else {
+      setIsLogoutModalOpen(false);
+      setIsLogoutSuccess(false);
+    }
   };
 
   return (
     <HeaderContainer>
       <HeaderContent>
-        <Logo onClick={() => navigate("/home")}>
+        <Logo onClick={handleLogoClick} $disabled={isLanding}>
           <img src="/logo.svg" alt="Logo" />
         </Logo>
 
@@ -211,28 +253,28 @@ function Header() {
             <LoginButton onClick={() => navigate("/login")}>
               (임시) 로그인 / 회원가입
             </LoginButton>
-            <ProfileIcon onClick={() => setOpen((s) => !s)}>
-              <img src={ProfileDefault} alt="Profile" />
-            </ProfileIcon>
+            <ProfileIcon onClick={() => setOpen((s) => !s)}></ProfileIcon>
             <UserName onClick={() => setOpen((s) => !s)}>
-              장세혁
+              카리나
               <ChevronDownIcon />
             </UserName>
 
             {open && (
               <Dropdown>
-                <DropdownButton primary onClick={() => navigate("/mypage")}>
+                <DropdownButton primary onClick={handleMyPageClick}>
                   마이페이지
                 </DropdownButton>
-                <DropdownButton
-                  onClick={() => {
-                    handleLogout();
-                  }}
-                >
-                  로그아웃
-                </DropdownButton>
+                <DropdownButton onClick={handleLogout}>로그아웃</DropdownButton>
               </Dropdown>
             )}
+            <LogoutModal
+              isOpen={isLogoutModalOpen}
+              onClose={handleLogoutClose}
+              onConfirm={handleLogoutConfirm}
+              title="로그아웃하시겠습니까?"
+              body="로그아웃 시 홈으로 이동합니다."
+              isSuccess={isLogoutSuccess}
+            />
           </ProfileSection>
         </NavSection>
       </HeaderContent>

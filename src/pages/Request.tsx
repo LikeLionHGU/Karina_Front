@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import styled from "styled-components";
 import LeftSidebar from "../components/LeftSidebar";
 import AcceptModal from "../components/AcceptModal";
+import axios from "axios";
 
 const MypageContainer = styled.div`
   max-width: 1200px;
@@ -112,8 +113,17 @@ const ActionButton = styled.button`
   }
 `;
 
-function Mypage() {
+type RequestRow = {
+  factoryName: string;
+  phoneNumber: string;
+  requestDate: string;
+  fishInfo: string;
+  // Add other fields if needed
+};
+
+function Request() {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [requestData, setRequestData] = useState<RequestRow[]>([]);
 
   const handleAcceptClick = () => {
     setIsModalOpen(true);
@@ -130,6 +140,24 @@ function Mypage() {
     // 여기에 API 호출이나 상태 업데이트 로직을 추가할 수 있습니다
   };
 
+  const fetchRequestData = async () => {
+    try {
+      // localStorage에서 JWT 토큰 가져오기
+      const token = localStorage.getItem("jwt");
+      const response = await axios.get(
+        `${import.meta.env.VITE_API_URL}/mypage/request`,
+        token ? { headers: { Authorization: `Bearer ${token}` } } : undefined
+      );
+      setRequestData(response.data);
+    } catch (error) {
+      console.error("Error fetching request data:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchRequestData();
+  }, []);
+
   return (
     <MypageContainer>
       <Title>마이페이지</Title>
@@ -138,7 +166,7 @@ function Mypage() {
       </Subtitle>
       <Divider />
       <ContentSection>
-        <LeftSidebar activeMenu="alarm" />
+        <LeftSidebar activeMenu="request" />
         <MainContent>
           <SectionHeader>
             <SectionTitle>매칭 신청 내역</SectionTitle>
@@ -148,24 +176,41 @@ function Mypage() {
               <TableHeader>
                 <tr>
                   <TableHeaderCell>기관명</TableHeaderCell>
-                  <TableHeaderCell>담당자 정보</TableHeaderCell>
+                  <TableHeaderCell>전화번호</TableHeaderCell>
                   <TableHeaderCell>매칭 신청 일시</TableHeaderCell>
                   <TableHeaderCell>매칭 신청 내용</TableHeaderCell>
                   <TableHeaderCell></TableHeaderCell>
                 </tr>
               </TableHeader>
               <tbody>
-                <TableRow>
-                  <TableCell>옥수수 연구소</TableCell>
-                  <TableCell>박서연 010-5036-0717</TableCell>
-                  <TableCell>2025 / 08 / 28</TableCell>
-                  <TableCell>청어리 14667마리</TableCell>
-                  <TableCell>
-                    <ActionButton onClick={handleAcceptClick}>
-                      매칭 수락하기
-                    </ActionButton>
-                  </TableCell>
-                </TableRow>
+                {requestData.length === 0 ? (
+                  <tr>
+                    <TableCell
+                      colSpan={5}
+                      style={{
+                        textAlign: "center",
+                        color: "#999",
+                        padding: "48px 0",
+                      }}
+                    >
+                      매칭 신청 내역이 없습니다.
+                    </TableCell>
+                  </tr>
+                ) : (
+                  requestData.map((row, index) => (
+                    <TableRow key={index}>
+                      <TableCell>{row.factoryName}</TableCell>
+                      <TableCell>{row.phoneNumber}</TableCell>
+                      <TableCell>{row.requestDate}</TableCell>
+                      <TableCell>{row.fishInfo}</TableCell>
+                      <TableCell>
+                        <ActionButton onClick={handleAcceptClick}>
+                          매칭 수락하기
+                        </ActionButton>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
               </tbody>
             </Table>
           </TableContainer>
@@ -184,4 +229,4 @@ function Mypage() {
   );
 }
 
-export default Mypage;
+export default Request;

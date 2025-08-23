@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import LeftSidebar from "../components/LeftSidebar";
-import EditModal from "../components/EditModal";
+import CancelModal from "../components/CancelModal";
 import axios from "axios";
 import { useEffect, useState } from "react";
 
@@ -125,16 +125,16 @@ const ActionButton = styled.button`
   }
 `;
 
-function EditPost() {
+function Matching() {
   const [, setPostData] = useState<any>(null);
-  const [myPosts, setMyPosts] = useState<myPostRow[]>([]);
+  const [currentPosts, setCurrentPosts] = useState<currentPostRow[]>([]);
   const [completedPosts, setCompletedPosts] = useState<CompletedPostRow[]>([]);
 
   // Modal state and handlers
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
   const [, setEditArticleId] = useState<any>(null);
 
-  type myPostRow = {
+  type currentPostRow = {
     articleId: any;
     fishInfo: string;
     getDate: string;
@@ -162,7 +162,7 @@ function EditPost() {
   const fetchPostData = async () => {
     try {
       setPostData(null);
-      setMyPosts([]);
+      setCurrentPosts([]);
       setCompletedPosts([]);
       // localStorage에서 JWT 토큰 가져오기
       const token = localStorage.getItem("jwt");
@@ -171,26 +171,26 @@ function EditPost() {
         token ? { headers: { Authorization: `Bearer ${token}` } } : undefined
       );
       setPostData(response.data);
-      setMyPosts(response.data.myPosts);
+      setCurrentPosts(response.data.currentPosts);
       setCompletedPosts(response.data.completedPosts);
     } catch (error) {
       console.error("Error fetching post data:", error);
     }
   };
 
-  const handleEdit = (articleId: any) => {
+  const handleCancel = (articleId: any) => {
     setEditArticleId(articleId);
-    setIsEditModalOpen(true);
+    setIsCancelModalOpen(true);
   };
 
-  const handleEditModalClose = () => {
-    setIsEditModalOpen(false);
+  const handleCancelModalClose = () => {
+    setIsCancelModalOpen(false);
     setEditArticleId(null);
   };
 
-  const handleEditModalSubmit = () => {
-    // TODO: implement edit submit logic using editArticleId and form data
-    setIsEditModalOpen(false);
+  const handleCancelModalSubmit = () => {
+    // TODO: implement cancel submit logic using editArticleId
+    setIsCancelModalOpen(false);
     setEditArticleId(null);
   };
 
@@ -202,12 +202,12 @@ function EditPost() {
       </Subtitle>
       <Divider />
       <ContentSection>
-        <LeftSidebar activeMenu="posts" />
+        <LeftSidebar activeMenu="matching" />
         <MainContent>
           {/* 내가 쓴 글 섹션 */}
           <Section>
             <SectionHeader>
-              <SectionTitle>내가 쓴 글</SectionTitle>
+              <SectionTitle>매칭 신청 현황 목록</SectionTitle>
               <ViewAllButton>더보기 &gt;</ViewAllButton>
             </SectionHeader>
             <TableContainer>
@@ -218,11 +218,11 @@ function EditPost() {
                     <TableHeaderCell>어획 일시</TableHeaderCell>
                     <TableHeaderCell>수거 마감 기한</TableHeaderCell>
                     <TableHeaderCell>매칭 현황</TableHeaderCell>
-                    <TableHeaderCell>수정하기</TableHeaderCell>
+                    <TableHeaderCell>취소하기</TableHeaderCell>
                   </tr>
                 </TableHeader>
                 <tbody>
-                  {myPosts.length === 0 ? (
+                  {currentPosts.length === 0 ? (
                     <tr>
                       <TableCell
                         colSpan={4}
@@ -236,7 +236,7 @@ function EditPost() {
                       </TableCell>
                     </tr>
                   ) : (
-                    myPosts.map((row, index) => (
+                    currentPosts.map((row, index) => (
                       <TableRow key={index}>
                         <TableCell>{row.fishInfo}</TableCell>
                         <TableCell>{row.getTime}</TableCell>
@@ -244,19 +244,21 @@ function EditPost() {
                         <TableCell>{row.status}</TableCell>
                         <TableCell>
                           <ActionButton
-                            onClick={() => handleEdit(row.articleId)}
+                            onClick={() => handleCancel(row.articleId)}
                           >
-                            수정하기
+                            취소하기
                           </ActionButton>
                         </TableCell>
                       </TableRow>
                     ))
                   )}
                 </tbody>
-                <EditModal
-                  isOpen={isEditModalOpen}
-                  onClose={handleEditModalClose}
-                  onSubmit={handleEditModalSubmit}
+                <CancelModal
+                  isOpen={isCancelModalOpen}
+                  onClose={handleCancelModalClose}
+                  onConfirm={handleCancelModalSubmit}
+                  title="매칭 취소"
+                  body="정말로 매칭을 취소하시겠습니까?"
                 />
               </Table>
             </TableContainer>
@@ -313,4 +315,4 @@ function EditPost() {
   );
 }
 
-export default EditPost;
+export default Matching;
