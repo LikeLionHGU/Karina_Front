@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import axios from "axios";
+import { Link } from "react-router-dom";
 
 interface BannerProps {
   active: boolean;
@@ -83,18 +84,18 @@ const FisherBanner = styled.div<BannerProps>`
   cursor: pointer;
 `;
 const LoginComplete = styled.div`
-  margin: 0 auto;
+  text-align:center;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  margin-top: 127px;
+  margin-top: 100px;
+  margin-bottom:20px;
   width: 658px;
   height: 66px;
   flex-shrink: 0;
   border-radius: 10px;
   background: var(--Primary-2, #0966ff);
-  /*푸터와의 간격*/
-  margin-bottom: 133px;
   /*폰트 스타일 CSS*/
   h1 {
     color: #fff;
@@ -111,7 +112,24 @@ const LoginComplete = styled.div`
     cursor: pointer;
     }
  `
+const SignUpText = styled(Link)`
+  margin-bottom:59px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--Secondary-4, #92A9C7);
+  font-size: 20px;
+  font-weight: 600;
+  cursor: pointer;
+`
 
+const ButtonContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+`
 function Login() {
   /*Styled-component에서 쓸 prpos의 변수 타입 지정*/
 
@@ -131,13 +149,20 @@ function Login() {
   const handleToggle = (status: string) => {
     setIsActive(status);
   };
-
  /*placeholder 텍스트 변수 선언*/
 const helperText =
   isActive === 'fisher'
     ? '잡아드림 어민 아이디를 입력하세요.'
     : isActive === 'factory'
     ? '잡아드림 공장/연구소 아이디를 입력하세요.'
+    : '역할을 선택해주세요.';
+  
+ /*버튼 텍스트 변수 선언*/
+const ButtonText =
+  isActive === 'fisher'
+    ? "어민 로그인"
+    : isActive === 'factory'
+    ? "공장/연구소 로그인"
     : '역할을 선택해주세요.';
   
 /*백엔드한테 데이터 보내기*/
@@ -231,9 +256,14 @@ const onSubmitClick = async (event : React.MouseEvent<HTMLInputElement>) => {
           />
         </InputAndTitle>
       </section>
-      <LoginComplete onClick={onSubmitClick}>
-        <h1>{isActive === "fisher" ? "어민 로그인" : "공장/연구소 로그인"}</h1>
-      </LoginComplete>
+      <ButtonContainer>
+        <LoginComplete onClick={onSubmitClick}>
+          <h1>{ButtonText}</h1>
+        </LoginComplete>
+        <SignUpText to="/signup">회원가입</SignUpText>
+      </ButtonContainer>
+      
+
     </>
   );
 }
