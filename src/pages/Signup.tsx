@@ -432,9 +432,9 @@ function Signup() {
       loginId: userId.trim(),
       password: userPassword,           // 비밀번호는 trim X
       name: userName.trim(),
-      phone_number: phoneHyphen,
-      main_address: mainAddress,        // 예: "포항시"
-      detail_address: detailAddress.trim(),
+      phoneNumber: phoneHyphen,
+      mainAddress: mainAddress,        // 예: "포항시"
+      detailAddress: detailAddress.trim(),
     };
     
     const form = new FormData();

@@ -8,6 +8,7 @@ const InputContainer = styled.div`
     flex-direction:column;
     align-items:center;
     gap:25px;
+
 `
 const InputTitle = styled.h1`
   color: var(--Black-4, #454545);
@@ -16,7 +17,7 @@ const InputTitle = styled.h1`
   line-height: 45px;
 `;
 
-const InputLine = styled.div`
+const InputBox = styled.div`
   display: flex;
   justify-content: center;   // 그대로
   align-items: center;
@@ -90,30 +91,36 @@ const ButtonContainer = styled.div`
 `
 
 /*날짜 관련*/
-const DateAndTitleContainer = styled.div`
-    display:flex;
-    gap: 47px;
-`
-
-const SelectDate = styled.input`
-    width: fit-content; 
-    height: 65px;
-    flex-shrink: 0;
-    &::placeholder {
-    margin-left: 5px;
-    color: var(--Secondary-5, #899ebb);
-    font-size: clamp(15px, 1.5vw, 20px);
-    font-style: normal;
-    font-weight: 700;
-    line-height: 30px; /* 150% */
-  }
-`
-const DateTitle = styled.h1`
+const DateTitle = styled.div`
+    flex:1;
+    text-align: left;
     color: var(--Black-4, #454545);
-    font-size: 26px;
+    font-size: clamp(15px, 1.5vw, 20px);
     font-style: normal;
     font-weight: 600;
     line-height: normal;
+    
+`
+const DateContent = styled.input`
+    width: fit-content;                /* 남은 공간 전부 차지 */
+    display: flex;  
+    align-items: center;
+    border-radius: 5px;
+    border: 1.5px solid var(--Secondary-3, #A5BEE0);
+    height: 40px;  
+    gap: 10px;              /* 버튼 사이 간격 */
+    padding: 0 16px;
+    box-sizing: border-box;
+    
+    span{
+        white-space: nowrap;
+        padding-right:127px;
+        color: var(--Secondary-5, #899EBB);
+        font-size: clamp(10px, 1.6vw, 15px);
+        font-style: normal;
+        font-weight: 700;
+        line-height: 30px; /* 150% */
+    }
 `
 function AnalysisArticle () {
     const [selectedFile, setSelectedFile] = useState<File | null>(null); //사진 파일 저장
@@ -146,7 +153,7 @@ function AnalysisArticle () {
 
             <div className = {styles.PhotoUpolad}>
                 <InputContainer>
-                        <InputLine>
+                        <InputBox>
                             <InputInner>
                                 <InputTitle>사진 업로드</InputTitle>
                                 <ButtonContainer>
@@ -170,26 +177,27 @@ function AnalysisArticle () {
                                 </ButtonContainer>
                                 
                             </InputInner> 
-                        </InputLine>
+                        </InputBox>
                 </InputContainer>
             </div>
 
             <div className = {styles.catchDate}>
                 <InputContainer>
-                        <InputLine>
+                        <InputBox>
                             <InputInner>
-                                <InputTitle>혼획물 포획 일시</InputTitle>
-                                <DateAndTitleContainer>
+                                <InputTitle>혼획물 포획</InputTitle>
+                                <ButtonContainer>
                                     <DateTitle>포획 날짜</DateTitle>
-                                    <SelectDate
-                                        type="date"
+                                    <DateContent
+                                        type = "date"
                                         value={caughtDate}
-                                        onChange={(e) => setCaughtDate(e.target.value)}
+                                        onChange={(e) =>setCaughtDate(e.target.value)}
                                     />
-                                </DateAndTitleContainer>
+                                    
+                                </ButtonContainer>
                                 
                             </InputInner> 
-                        </InputLine>
+                        </InputBox>
                 </InputContainer>
             </div>
             
