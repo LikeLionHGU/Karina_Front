@@ -11,14 +11,16 @@
 </p>
 
 <br />
+<br />
 
 <p align='center'>
   <a href="https://youtu.be/OZytLLasceA?si=Zr5bnznALd8Cor2e">
     <img src="https://i.ytimg.com/vi/OZytLLasceA/hq720.jpg" alt="youtube" />
   </a>
-  <p align='center'> 개발하다가 힘들 때 힐링하러 가기 ↑ </p>
+  <p align='center'> 개발하다가 힘들 때 힐링하러 가기(클릭) ↑ </p>
 </p>
 
+<br />
 <br />
 
 ## Before run
