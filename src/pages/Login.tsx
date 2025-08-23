@@ -183,20 +183,29 @@ const onSubmitClick = async (event : React.MouseEvent<HTMLInputElement>) => {
   try {
     console.log("FormData 내용:");
     for (const [k, v] of formData.entries()) console.log(k, v);
-    //헤더에 보낼 토큰 저장
-    const token = localStorage.getItem('jwt') ?? '';
     const res = await axios.post(
       `${import.meta.env.VITE_API_URL}/user/login`,
       formData,
-        { withCredentials: true,
-          headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+        { withCredentials: true
         },
     );
 
+    //response로 받아올 토큰 저장
+    const token = res.headers['Authorization'];
+    const role = res.data.role
+    localStorage.setItem('jwt', token);
+    localStorage.setItem('role', role) ?? '';
+
     // 성공 처리
     alert("로그인 성공");
-    console.log("response 데이터:", res);
-    navigate("/Home");
+    console.log('JWT:', token);
+    console.log('Role:', role);
+    {
+      role === "ROLE_FACTORY"?
+      navigate("/FactoryHome"):
+      navigate("/FisherHome")
+    }
+   
 
     } catch (err: any) {
       if (axios.isAxiosError(err)) {
