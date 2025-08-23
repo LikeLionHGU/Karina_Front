@@ -1,9 +1,11 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Landing from "./pages/Landing";
-import Home from "./pages/Home";
+import FisherHome from "./pages/FisherHome";
+import FactoryHome from "./pages/FactoryHome";
 import Detail from "./pages/Detail";
-import Mypage from "./pages/Mypage";
+import Request from "./pages/Request";
 import EditPost from "./pages/EditPost";
+import Matching from "./pages/Matching";
 import UpdateProfile from "./pages/UpdateProfile";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
@@ -31,11 +33,13 @@ function App() {
         <MainContent>
           <Routes>
             <Route path="/" element={<Landing />} />
-            <Route path="/home" element={<Home />} />
+            <Route path="/home/fisher" element={<FisherHome />} />
+            <Route path="/home/factory" element={<FactoryHome />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/detail/:fishId" element={<Detail />} />
-            <Route path="/mypage" element={<Mypage />} />
+            <Route path="/mypage/request" element={<Request />} />
+            <Route path="/mypage/matching" element={<Matching />} />
             <Route path="/mypage/posts" element={<EditPost />} />
             <Route path="/mypage/profile" element={<UpdateProfile />} />
           </Routes>
