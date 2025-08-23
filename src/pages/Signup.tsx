@@ -461,7 +461,6 @@ function Signup() {
 
       if (response.data !== "401error") {
         alert("회원가입 성공");
-        localStorage.setItem("response", response.data);
         navigate(`/login`);
       } else {
         alert("회원가입 실패. 다시 시도해주세요.");
