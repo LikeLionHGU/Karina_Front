@@ -109,11 +109,13 @@ const Input = styled.input`
     cursor: pointer;
     }
  `
+
+ 
 function Login() {
   /*Styled-component에서 쓸 prpos의 변수 타입 지정*/
   
   const navigate = useNavigate();
-  const [isActive, setIsActive] = useState('factory'); // 'factory' 또는 'fisher'
+  const [isActive, setIsActive] = useState('');
   const [userId, setUserId] = useState('');
   const [userPassword, setUserPassword] = useState('');
 
@@ -128,7 +130,13 @@ function Login() {
   const handleToggle = (status: string) => {
     setIsActive(status);
   };
-
+ /*placeholder 텍스트 변수 선언*/
+const helperText =
+  isActive === 'fisher'
+    ? '잡아드림 어민 아이디를 입력하세요.'
+    : isActive === 'factory'
+    ? '잡아드림 공장/연구소 아이디를 입력하세요.'
+    : '역할을 선택해주세요.';
   
 /*백엔드한테 데이터 보내기*/
 const onSubmitClick = async (event : React.MouseEvent<HTMLInputElement>) => {
@@ -148,21 +156,15 @@ const onSubmitClick = async (event : React.MouseEvent<HTMLInputElement>) => {
   try {
     console.log("FormData 내용:");
     for (const [k, v] of formData.entries()) console.log(k, v);
-
+    //헤더에 보낼 토큰 저장
+    const token = localStorage.getItem('jwt') ?? '';
     const res = await axios.post(
       `${import.meta.env.VITE_API_URL}/user/login`,
       formData,
-      { withCredentials: true } // Content-Type 생략
+        { withCredentials: true,
+          headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+        },
     );
-
-    // 토큰 헤더 파싱
-    const authHeader = res.headers['authorization']; // "Bearer x.y.z" (노출 허용 필요)
-    if (authHeader) {
-      const token = authHeader.replace(/^Bearer\s+/i, '');
-      localStorage.setItem('jwt', token);
-    } else {
-      console.warn("Authorization 헤더가 없습니다. 서버의 Access-Control-Expose-Headers 설정 확인 필요.");
-    }
 
     // 성공 처리
     alert("로그인 성공");
@@ -205,7 +207,7 @@ const onSubmitClick = async (event : React.MouseEvent<HTMLInputElement>) => {
       <InputAndTitle>
         <InputTitle>아이디</InputTitle>
           <Input
-            placeholder={isActive === 'fisher' ? "잡아드림 어민 아이디를 입력하세요." : "잡아드림 공장/연구소 아이디를 입력하세요."}
+            placeholder={helperText}
             type="text"
             value={userId}  
             onChange={handleIdChange}
@@ -213,7 +215,7 @@ const onSubmitClick = async (event : React.MouseEvent<HTMLInputElement>) => {
       </InputAndTitle>
         <InputAndTitle>
           <InputTitle>비밀번호</InputTitle>
-          <Input placeholder="비밀번호를 입력하세요."
+          <Input placeholder={isActive === ''? '역할을 선택해 주세요.' : "비밀번호를 입력하세요."}
             type="text"
             value={userPassword}
             onChange={handlePasswordChange} />
