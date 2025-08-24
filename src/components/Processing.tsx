@@ -21,6 +21,8 @@ export default function Processing() {
             <div className = {styles.iconAndText}>
                 <Icon src={fishImg} alt="카메라"/>
                 <h1>혼획물 <Highlight>분석</Highlight> 중</h1>
+                <p>약 <Highlight>1~5분</Highlight>정도 소요됩니다!</p> 
+                <div className = {styles.loader10} />
             </div>
            
         </section>

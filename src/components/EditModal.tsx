@@ -172,11 +172,7 @@ const EditModal: React.FC<EditModalProps> = ({
     }
   }, [initialData, isOpen]);
 
-  // 디버깅: initialData, form, input value 상태 출력
-  useEffect(() => {
-    console.log("EditModal initialData:", initialData);
-    console.log("EditModal form:", form);
-  }, [initialData, form]);
+
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] || null;

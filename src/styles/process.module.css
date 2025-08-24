@@ -10,6 +10,7 @@ body {
     display:flex;
     flex-direction: column;
     align-items: center;
+    margin-bottom: 20vh;
     
  
 }
@@ -20,10 +21,90 @@ body {
     align-items: center;
 }
 
+.iconAndText p{
+    margin-top:20px;
+    color: var(--Black-3, #7F7F7F);
+    font-size: clamp(15px, 3vw, 20px);
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+}
+
 .main h1{
     color: var(--Black-3, #7F7F7F);
     font-size: clamp(20px, 3vw, 30px);
     font-style: normal;
     font-weight: 700;
     line-height: normal;
+}
+
+/* 로딩 애니메이션 */
+.loader10 {
+    margin-top: 30px;
+    position: relative;
+    width: var(--size, 12px);
+    height: var(--size, 12px);
+    border-radius: 50%;
+    color: var(--color, #0966ff); /* 기본 파랑으로 변경 */
+    background: currentColor;
+    animation: loader10m var(--speed, 3s) ease-in-out infinite;
+}
+
+/* 왼쪽 점 */
+.loader10::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: calc(-2.1 * var(--size, 12px));
+  width: var(--size, 12px);
+  height: var(--size, 12px);
+  border-radius: 50%;
+  background: currentColor;
+  animation: loader10g var(--speed, 3s) ease-in-out infinite;
+}
+
+/* 오른쪽 점 */
+.loader10::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: calc(2.1 * var(--size, 12px));
+  width: var(--size, 12px);
+  height: var(--size, 12px);
+  border-radius: 50%;
+  background: currentColor;
+  animation: loader10d var(--speed, 3s) ease-in-out infinite;
+}
+
+/* 라벨 */
+.label {
+  margin: 0;
+  font-size: 14px;
+  color: #fff; 
+  opacity: 0.9;
+}
+
+/* 점들의 밝기 타이밍을 어긋나게 해서 순차 점멸 느낌 */
+@keyframes loader10g {
+  0%   { opacity: .2; }
+  25%  { opacity: 1;  }
+  50%  { opacity: .2; }
+  75%  { opacity: .2; }
+  100% { opacity: .2; }
+}
+
+@keyframes loader10m {
+  0%   { opacity: .2; }
+  25%  { opacity: .2; }
+  50%  { opacity: 1;  }
+  75%  { opacity: .2; }
+  100% { opacity: .2; }
+}
+
+@keyframes loader10d {
+  0%   { opacity: .2; }
+  25%  { opacity: .2; }
+  50%  { opacity: .2; }
+  75%  { opacity: 1;  }
+  100% { opacity: .2; }
 }
