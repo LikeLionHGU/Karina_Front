@@ -258,11 +258,11 @@ const SearchAddress = styled.button`
 function Signup() {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
-  const [isActive, setIsActive] = useState(" "); // 'factory' 또는 'fisher
-  const [userId, setUserId] = useState(" ");
+  const [isActive, setIsActive] = useState(""); // 'factory' 또는 'fisher
+  const [userId, setUserId] = useState("");
   const [idValid, setIdValid] = useState<boolean | null>(null);
-  const [userPassword, setUserPassword] = useState(" ");
-  const [userName, setUserName] = useState(" ");
+  const [userPassword, setUserPassword] = useState("");
+  const [userName, setUserName] = useState("");
   const [phoneFirst, setPhoneFirst] = useState("");
   const [phoneMiddle, setPhoneMiddle] = useState("");
   const [phoneEnd, setPhoneEnd] = useState("");
@@ -571,32 +571,6 @@ function Signup() {
               </h1>
             )}
           </div>
-          <IsSameBtn onClick={onCheckId}>중복확인</IsSameBtn>
-        </InfoInputLine>
-        <InfoInputLine>
-          <InfoTitle>비밀번호</InfoTitle>
-          <InfoInput
-            placeholder="비밀번호는 영문/숫자/특수문자 2가지 이상 조합 8~20자 이내 입력"
-            type="password"
-            value={userPassword}
-            onChange={handlePasswordChange}
-          />
-        </InfoInputLine>
-        <InfoInputLine>
-          <InfoTitle>이름</InfoTitle>
-          <InfoInput
-            placeholder="이름을 입력해 주세요"
-            type="text"
-            value={userId}
-            onChange={handleIdChange}
-          />
-          {idValid !== null && (
-            <h1 className={styles.isValid}>
-              {idValid
-                ? "유효한 아이디 입니다."
-                : "유효하지 않은 아이디 입니다."}
-            </h1>
-          )}
           <IsSameBtn onClick={onCheckId}>중복확인</IsSameBtn>
         </InfoInputLine>
         <InfoInputLine>
