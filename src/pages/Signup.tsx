@@ -467,7 +467,7 @@ function Signup() {
       );
       if (response.data !== "401error") {
         alert("회원가입 성공");
-        navigate(`/login`);
+        navigate('/login');
       } else {
         alert("회원가입 실패. 다시 시도해주세요.");
       }
