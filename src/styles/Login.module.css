@@ -12,27 +12,32 @@ body {
 }
 
 .FactoryLoginHeader{
+    width: 400px;
+    margin: 20px auto;
+    padding-top: 30px;
+    padding-bottom: 20px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-top:100px;
-    gap:38px;
 }
 
 .FactoryLoginHeader h1{
     color: var(--Black-5, #151A20);
-    font-size: clamp(24px, 2.5vw, 50px);
+    font-size: clamp(24px, 2.5vw, 30px);
     font-style: normal;
     font-weight: 700;
     line-height: normal;
+    margin-bottom:10px;
 }
 
 .LoginToggle{
-    display:flex;
-    width: 560px;
+    width: clamp(450px, 20vw, 550px);
+    height: 55px;
+    display: flex;
+    gap: 16px;
     align-items: center;
     justify-content: center;
-    height: 85px;
+    margin-top: 10px;
     flex-shrink: 0;
     border-radius: 40px;
     padding-left:7px;
@@ -49,7 +54,7 @@ body {
 
 
 .IdAndPassword{
-    margin-top:115px;
+    margin-top:50px;
     display:flex;
     flex-direction: column;
     align-items: center;

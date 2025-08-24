@@ -7,8 +7,12 @@ interface ConfirmModalProps {
   onConfirm: () => void;
   title: string;
   body: string;
-  isSuccess?: boolean;
+  isSuccess?: boolean;         
+  confirmText?: string; // 기본: "신청하기"
+  cancelText?: string;  // 기본: "취소하기"
+  singleText?: string;  // isSuccess=true일 때 버튼 라벨(기본: "확인")
 }
+
 
 const ModalOverlay = styled.div<{ isOpen: boolean }>`
   position: fixed;
@@ -110,6 +114,9 @@ function ConfirmModal({
   title,
   body,
   isSuccess = false,
+  confirmText,   
+  cancelText,    
+  singleText,    
 }: ConfirmModalProps) {
   if (!isOpen) return null;
 
@@ -126,12 +133,14 @@ function ConfirmModal({
         <ModalTitle>{title}</ModalTitle>
         <ModalBody>{body}</ModalBody>
         <ButtonContainer>
-          {isSuccess ? (
-            <SuccessButton onClick={onClose}>확인</SuccessButton>
-          ) : (
+           {isSuccess ? (
+              <SuccessButton onClick={onClose}>
+                {singleText ?? "확인"}       
+              </SuccessButton>
+            ) : (
             <>
-              <CancelButton onClick={onClose}>취소하기</CancelButton>
-              <ConfirmButton onClick={onConfirm}>신청하기</ConfirmButton>
+              <CancelButton onClick={onClose}>{cancelText ?? "취소하기"}</CancelButton>
+              <ConfirmButton onClick={onConfirm}>{confirmText ?? "신청하기"}</ConfirmButton>
             </>
           )}
         </ButtonContainer>

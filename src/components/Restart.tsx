@@ -20,7 +20,7 @@ export default function Restart() {
         <section className={styles.main}>
             <div className = {styles.iconAndText}>
                 <Icon src={restart} alt="돌아가기"/>
-                <h1>혼획물 <Highlight>다시 분석</Highlight> 중</h1>
+                <h1>혼획물 <Highlight>재분석 요청</Highlight> 중</h1>
             </div>
            
         </section>

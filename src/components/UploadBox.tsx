@@ -9,6 +9,10 @@ type UploadBoxProps = {
   handleSelect: (file: File) => void;
 };
 
+const Highlight = styled.span`
+  color: var(--Primary-2, #0966ff);
+`;
+
 const AnalyzeButton = styled.button`
   margin: 20px auto 133px;
   display: flex; align-items: center; justify-content: center;
@@ -50,10 +54,10 @@ function DownloadIcon() {
 
 export default function UploadBox({ handleSelect }: UploadBoxProps) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [isActive, setActive] = useState(false);         // 드래그 하이라이트
-  const dragCounter = useRef(0);                         // 자식으로 들어갈 때 깜빡임 방지
+  const [isActive, setActive] = useState(false);   // 드래그 하이라이트
+  const dragCounter = useRef(0);    // 자식으로 들어갈 때 깜빡임 방지
 
-  // --- 드래그/드롭 핸들러 ---
+  //  드래그/드롭 핸들러
   const handleDragEnter: React.DragEventHandler<HTMLLabelElement> = (e) => {
     e.preventDefault(); e.stopPropagation();
     dragCounter.current += 1;
@@ -85,15 +89,24 @@ export default function UploadBox({ handleSelect }: UploadBoxProps) {
       return;
     }
 
-    setSelectedFile(file);                               // ✅ 파일칩 UI로 전환
-    // 필요 시 바로 분석 콜백을 부르고 싶으면 다음 줄 주석 해제:
-    // handleSelect(file);
+    setSelectedFile(file); //  파일칩 UI로 전환
 
     e.dataTransfer.clearData();
   };
 
   return (
-    <div className={styles.main}>
+    <>
+      <section className={styles.title}>
+        <div className={styles.inner}>
+          <div className={styles.text}>
+            <p><Highlight>혼획물 AI 분석</Highlight>을 위해</p>
+            <p>영상을 업로드 해주세요 !</p>
+          </div>
+          <div className={styles.underLine} />
+        </div>
+      </section>
+
+      <div className={styles.main}>
       {/* label 자체를 drop zone 으로 */}
       <label
         className={`${styles.preview} ${isActive ? styles.active : ""}`}
@@ -119,7 +132,7 @@ export default function UploadBox({ handleSelect }: UploadBoxProps) {
             </div>
           </>
         ) : (
-          // ✅ 드롭해도 같은 스타일의 파일칩으로 보임
+          // 드롭해도 같은 스타일의 파일칩으로 보임
           <FileChip>
             <FileIcon icon={faFilm} />
             <div className={styles.fileChipText}>
@@ -138,5 +151,7 @@ export default function UploadBox({ handleSelect }: UploadBoxProps) {
         분석하기
       </AnalyzeButton>
     </div>
+    </>
+    
   );
 }

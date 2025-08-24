@@ -227,7 +227,6 @@ function UpdateProfile() {
   const fetchUserData = async () => {
     setIsLoading(true);
     try {
-      // localStorage에서 JWT 토큰 가져오기
       const token = hasToken() ? localStorage.getItem("jwt") : null;
       const role = localStorage.getItem("role");
 
@@ -244,7 +243,7 @@ function UpdateProfile() {
           phoneNumber: data.phoneNumber ?? "",
           mainAddress: data.mainAddress ?? "",
           detailAddress: data.detailAddress ?? "",
-          postcode: "", // UI에서만 사용, 백엔드로 전송하지 않음
+          postcode: data.postCode,
         });
       } else {
         const response = await axios.get(
@@ -259,14 +258,14 @@ function UpdateProfile() {
           phoneNumber: data.phoneNumber ?? "",
           mainAddress: data.mainAddress ?? "",
           detailAddress: data.detailAddress ?? "",
-          postcode: "", // UI에서만 사용, 백엔드로 전송하지 않음
+          postcode: data.postCode,
         });
       }
     } catch (error) {
       if (isTokenExpired(error)) {
         logout();
       } else {
-        console.error("Error fetching user data:", error);
+        // console.error("Error fetching user data:", error);
       }
     } finally {
       setIsLoading(false);
@@ -341,7 +340,6 @@ function UpdateProfile() {
       await loadDaumPostcodeScript();
       const postcode = new (window as any).daum.Postcode({
         oncomplete: function (data: any) {
-          // data.zonecode or data.postcode, and data.address or data.roadAddress
           const postcode = data.zonecode || data.postcode || "";
           const mainAddr =
             data.address || data.roadAddress || data.jibunAddress || "";
@@ -354,7 +352,7 @@ function UpdateProfile() {
       });
       postcode.open();
     } catch (err) {
-      console.error("우편번호 스크립트 로드 실패", err);
+      // console.error("우편번호 스크립트 로드 실패", err);
       setIsErrorModalOpen(true);
       setErrorMessage(
         "우편번호 검색을 사용할 수 없습니다. 네트워크를 확인해주세요."
@@ -363,34 +361,46 @@ function UpdateProfile() {
   };
 
   const handleSave = async () => {
-    // 모든 필수 입력값 체크
     if (
       !formData.phoneNumber.trim() ||
       !formData.mainAddress.trim() ||
       !formData.detailAddress.trim() ||
-      !formData.postcode.trim() ||
-      !newPassword.trim() ||
-      !confirmPassword.trim()
+      !formData.postcode.trim()
     ) {
       setIsErrorModalOpen(true);
       setErrorMessage("모든 항목을 입력해주세요");
       return;
     }
-    // 비밀번호 validation 체크
-    if (newPassword !== confirmPassword) {
-      setPasswordError("비밀번호가 일치하지 않습니다");
-      setIsErrorModalOpen(true);
-      setErrorMessage("비밀번호가 일치하지 않습니다");
-      return;
+
+    // 새 비밀번호 입력이 있을 때만 검증
+    if (newPassword || confirmPassword) {
+      if (!newPassword.trim() || !confirmPassword.trim()) {
+        setIsErrorModalOpen(true);
+        setErrorMessage("비밀번호를 모두 입력해주세요");
+        return;
+      }
+      if (newPassword !== confirmPassword) {
+        setPasswordError("비밀번호가 일치하지 않습니다");
+        setIsErrorModalOpen(true);
+        setErrorMessage("비밀번호가 일치하지 않습니다");
+        return;
+      }
     }
-    // 백엔드에 맞는 데이터 구조로 변환
-    const payload = {
+
+    // 비밀번호 입력 시만 password 포함
+    const payload: any = {
       phoneNumber: formData.phoneNumber,
       mainAddress: formData.mainAddress,
       detailAddress: formData.detailAddress,
-      password: newPassword,
-      // postcode는 백엔드로 보내지 않음
     };
+
+    // 새 비밀번호 입력이 없으면 빈 문자열로 password를 포함해서 전송
+    if (!newPassword && !confirmPassword) {
+      payload.password = "";
+    } else if (newPassword && confirmPassword && newPassword === confirmPassword) {
+      payload.password = newPassword;
+    }
+
     try {
       const token = localStorage.getItem("jwt");
       const role = localStorage.getItem("role");
@@ -426,7 +436,7 @@ function UpdateProfile() {
 
   // formData가 바뀔 때마다 로그만 찍음
   useEffect(() => {
-    console.log("formData changed:", formData);
+    // console.log("formData changed:", formData);
   }, [formData]);
 
   useEffect(() => {
