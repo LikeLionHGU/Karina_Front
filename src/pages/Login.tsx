@@ -4,6 +4,8 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
+import ErrorModal from "../components/ErrorModal";
+import ConfirmModal from "../components/ConfirmModal";
 
 interface BannerProps {
   active: boolean;
@@ -123,6 +125,11 @@ function Login() {
   const [isActive, setIsActive] = useState("");
   const [userId, setUserId] = useState("");
   const [userPassword, setUserPassword] = useState("");
+  const [errorModalOpen, setErrorModalOpen] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [confirmModalOpen, setConfirmModalOpen] = useState(false);
+  const [confirmMessage, setConfirmMessage] = useState("");
+
   const handleIdChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setUserId(event.target.value);
   };
@@ -172,31 +179,62 @@ function Login() {
       localStorage.setItem("role", role) ?? "";
       localStorage.setItem("userName", userName) ?? "";
 
-      alert("로그인 성공");
-      {
-        role === "ROLE_FACTORY"
-          ? navigate("/home/factory")
-          : navigate("/home/fisher");
-      }
+      setConfirmMessage("로그인 성공");
+      setConfirmModalOpen(true);
     } catch (err: any) {
       if (axios.isAxiosError(err)) {
         if (err.response?.status === 401) {
-          {isActive === ""?
-            alert("역할을 선택해 주세요"):
-             alert("아이디/비밀번호를 확인해 주세요.")} 
+          if (isActive === "") {
+            setErrorMessage("역할을 선택해 주세요");
+          } else {
+            setErrorMessage("아이디/비밀번호를 확인해 주세요.");
+          }
+          setErrorModalOpen(true);
         } else {
-          alert(`요청 실패 (${err.response?.status ?? "네트워크 오류"})`);
+          setErrorMessage(`요청 실패 (${err.response?.status ?? "네트워크 오류"})`);
+          setErrorModalOpen(true);
         }
       } else {
-        alert("요청 중 오류가 발생했습니다.");
+        setErrorMessage("요청 중 오류가 발생했습니다.");
+        setErrorModalOpen(true);
       }
     } finally {
       setUserId("");
       setUserPassword("");
     }
   };
+
+  const handleConfirmClose = () => {
+    setConfirmModalOpen(false);
+    const role = localStorage.getItem("role");
+    if (role === "ROLE_FACTORY") {
+      navigate("/home/factory");
+    } else {
+      navigate("/home/fisher");
+    }
+  };
+
+  const handleErrorClose = () => {
+    setErrorModalOpen(false);
+  };
+
   return (
     <>
+      <ErrorModal
+        isOpen={errorModalOpen}
+        onClose={handleErrorClose}
+        message={errorMessage}
+      />
+      <ConfirmModal
+        isOpen={confirmModalOpen}
+        title="로그인 성공"
+        body={confirmMessage}
+        isSuccess                              // 단일 버튼 모드
+        singleText="완료"                      // '확인' → '완료'
+        onClose={handleConfirmClose}           // 눌렀을 때 닫힘
+        onConfirm={handleConfirmClose}         // 타입 충족용(사용되지 않음)
+      />
+
       <div className={styles.FactoryLoginHeader}>
         <h1>로그인</h1>
         <div className={styles.LoginToggle}>

@@ -39,7 +39,7 @@ const MemberTitle = styled.div`
   h1 {
     margin: 0; /* 기본 마진 제거 */
     color: var(--Black-4, #454545);
-    font-size: 26px;
+    font-size: clamp(18px, 2.5vw, 23px);
     font-weight: 600;
     line-height: 1; /* 혹은 72px로 고정해도 됨 */
   }
@@ -77,7 +77,7 @@ const HiddenFile = styled.input.attrs({ type: "file" })`
 `;
 
 const UploadBtn = styled.button`
-  width: 181.886px;
+  width: clamp(150px, 5vw, 170px);
   height: 42px;
   flex-shrink: 0;
   border-radius: 15px;
@@ -99,20 +99,19 @@ const MemberRadio = styled.label`
   gap: 8px;
   cursor: pointer;
 `;
-
-const RadioInput = styled.input.attrs({ type: "radio" })`
+const MemberRadioInput = styled.input.attrs({ type: "radio" })`
   /* 네이티브 스타일 제거 */
   -webkit-appearance: none;
   appearance: none;
   margin: 0;
-  width: 24px;
-  height: 24px;
-  border: 2px solid #8ba0bf; /* 외곽선 */
+  width: 25px;
+  height: 25px;
+  border: 1px solid #A5BEE0;
   border-radius: 50%;
   display: grid;
   place-content: center;
   cursor: pointer;
-  background: #fff;
+  background: var(--Secondary-1, #F4F8FE);
 
   /* 안쪽 점 */
   &::after {
@@ -120,6 +119,44 @@ const RadioInput = styled.input.attrs({ type: "radio" })`
     width: 12px;
     height: 12px;
     border-radius: 50%;
+    transform: scale(0);
+    transition: transform 120ms ease-in-out;
+    background: #2f83f3;
+  }
+
+  &:checked {
+    border-color: #2f83f3;
+  }
+  &:checked::after {
+    transform: scale(1);
+  }
+
+  &:focus-visible {
+    outline: 3px solid rgba(47, 131, 243, 0.3);
+    outline-offset: 2px;
+  }
+`;
+
+const RadioInput = styled.input.attrs({ type: "radio" })`
+  /* 네이티브 스타일 제거 */
+  -webkit-appearance: none;
+  appearance: none;
+  margin: 0;
+  width: 20px;
+  height: 20px;
+  border: 1px solid #A5BEE0;
+  border-radius: 5px;
+  display: grid;
+  place-content: center;
+  cursor: pointer;
+  background: var(--Secondary-1, #F4F8FE);
+
+  /* 안쪽 점 */
+  &::after {
+    content: "";
+    width: 12px;
+    height: 12px;
+    border-radius: 5px;
     transform: scale(0);
     transition: transform 120ms ease-in-out;
     background: #2f83f3;
@@ -256,12 +293,15 @@ const SearchAddress = styled.button`
 
 /*개인정보 동의 섹션 스타일 컴포넌트*/
 const ConsentInfoSection = styled.div`
+  margin-top: 50px;
   flex: 1;
   display: flex;
   flex-direction: column;
   gap: 8px;
   padding: 0 16px;
   box-sizing: border-box;
+  border-bottom: 1px solid var(--Secondary-5, #899ebb);
+
 `;
 
 const ConsentTitleRow = styled.div`
@@ -289,10 +329,11 @@ const ConsentDesc = styled.h1`
 const ConsentBody = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 20px;
   color: var(--Black-4, #454545);
   font-size: clamp(12px, 1.2vw, 16px);
   font-weight: 400;
+  padding-bottom: 25px;
 `;
 
 const Line = styled.div`
@@ -305,9 +346,8 @@ const Line = styled.div`
 const SectionLine = styled.div`
   display: flex;
   align-items: center;
-  gap: 4px;
   color: var(--Black-5, #151A20);
-  font-size: clamp(23px, 1.2vw, 27px);
+  font-size: clamp(12px, 1.2vw, 16px);
   font-style: normal;
   font-weight: 400;
   line-height: normal;
@@ -319,6 +359,7 @@ const SubLines = styled.div`
   display: flex;
   flex-direction: column;
   padding-left: 16px;
+  gap: 8px;
 `;
 
 const ConsentRadioSection = styled.section`
@@ -417,7 +458,6 @@ function Signup() {
   /*핸들 이벤트(유저가 입력하고 값 저장)*/
   const handleFileChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
     setSelectedFile(e.currentTarget.files?.[0] ?? null);
-    console.log("업로드 파일:", selectedFile);
   };
 
   /*우편번호 검색 코드*/
@@ -470,7 +510,6 @@ function Signup() {
       if (response.data !== "Valid") {
         setIdValid(false);
       } else {
-        console.log(response.data);
         setIdValid(true);
       }
     } catch (error) {
@@ -539,7 +578,6 @@ function Signup() {
       setIsLoading(false);
       return;
     }
-    console.log(postcode);
     const userPayload = {
       role: isActive,
       loginId: userId.trim(),
@@ -559,9 +597,6 @@ function Signup() {
       form.append("file", selectedFile, selectedFile.name);
     }
     try {
-      for (let pair of form.entries()) {
-        console.log(`${pair[0]}:`, pair[1]);
-      }
       const response = await axios.post(
         `${import.meta.env.VITE_API_URL}/user/register`,
         form,
@@ -600,7 +635,7 @@ function Signup() {
           </MemberTitle>
           <MemberContent>
             <MemberRadio>
-              <RadioInput
+              <MemberRadioInput
                 name="memberType"
                 value="fisher"
                 onClick={() => setIsActive("fisher")}
@@ -608,7 +643,7 @@ function Signup() {
               <span>어민</span>
             </MemberRadio>
             <MemberRadio>
-              <RadioInput
+              <MemberRadioInput
                 name="memberType"
                 value="factory"
                 onClick={() => setIsActive("factory")}

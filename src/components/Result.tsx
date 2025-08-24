@@ -1,5 +1,6 @@
 // components/Result.tsx
 import styled from "styled-components";
+import styles from '../styles/Result.module.css'
 import { useNavigate } from "react-router-dom";
 import LoadingSpinner from "../components/LoadingSpinner";
 
@@ -15,7 +16,7 @@ const Grid = styled.div`
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: 32px;
   width: min(1024px, 90vw);
-  margin: 40px auto;
+  margin: 100px auto;
 `;
 
 const Card = styled.div`
@@ -43,7 +44,7 @@ const Buttons = styled.div`
   display: flex;
   gap: 16px;
   justify-content: center;
-  margin: 28px 0 8px;
+  margin: 50px 0 100px;
 `;
 
 // Result.tsx
@@ -81,11 +82,18 @@ export default function Result({ articleData, data, onReset, isLoading }: Result
   // 2) 정렬(내림차순) 후 최대 3개만 노출
   const top3 = entries.sort((a, b) => b[1] - a[1]).slice(0, 3);
   const handleResetClick = () => {
-    // 디버깅 로그
-    console.log("[Result] reset clicked");
     onReset(); // 부모의 reanalyze 호출
   };
   return (
+    <>
+    <section className={styles.title}>
+        <div className={styles.inner}>
+          <div className={styles.text}>
+            <p>혼획물 AI 분석이 완료되었어요 !</p>
+          </div>
+          <div className={styles.underLine} />
+        </div>
+      </section>
     <section>
       {isLoading && <LoadingSpinner />}
       <Grid>
@@ -112,5 +120,7 @@ export default function Result({ articleData, data, onReset, isLoading }: Result
         </PrimaryButton>
       </Buttons>
     </section>
+    </>
+    
   );
 }
