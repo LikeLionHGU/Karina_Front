@@ -4,6 +4,8 @@ import CancelModal from "../components/CancelModal";
 import LoadingSpinner from "../components/LoadingSpinner";
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { hasToken, isTokenExpired } from "../utils/token";
+import { logout } from "../utils/logout";
 
 const MypageContainer = styled.div`
   max-width: 1200px;
@@ -154,17 +156,23 @@ function Matching() {
       setPostData(null);
       setCurrentPosts([]);
       setCompletedPosts([]);
-      // localStorage에서 JWT 토큰 가져오기
+      if (!hasToken()) {
+        logout();
+        return;
+      }
       const token = localStorage.getItem("jwt");
       const response = await axios.get(
         `${import.meta.env.VITE_API_URL}/factory/mypage`,
         token ? { headers: { Authorization: `Bearer ${token}` } } : undefined
       );
-      console.log("Matching fetch response:", response.data);
       setPostData(response.data);
       setCurrentPosts(response.data.matchingNotSuccessList);
       setCompletedPosts(response.data.matchingSuccessList);
     } catch (error) {
+      if (isTokenExpired(error)) {
+        logout();
+        return;
+      }
       console.error("Error fetching post data:", error);
     } finally {
       setIsLoading(false);
@@ -184,6 +192,10 @@ function Matching() {
   const handleCancelModalSubmit = async () => {
     console.log("매칭 취소 요청 articleId:", editArticleId); // 값 확인
     try {
+      if (!hasToken()) {
+        logout();
+        return;
+      }
       const token = localStorage.getItem("jwt");
       await axios.post(
         `${import.meta.env.VITE_API_URL}/factory/mypage/matchingCancel`,
@@ -199,6 +211,10 @@ function Matching() {
       );
       fetchPostData();
     } catch (error) {
+      if (isTokenExpired(error)) {
+        logout();
+        return;
+      }
       console.error("매칭 취소 요청 실패:", error);
     }
     setIsCancelModalOpen(false);

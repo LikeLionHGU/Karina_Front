@@ -7,6 +7,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faImage } from "@fortawesome/free-regular-svg-icons";
 import { faFile } from "@fortawesome/free-regular-svg-icons";
 import axios from "axios";
+import { hasToken, isTokenExpired } from "../utils/token";
+import { logout } from "../utils/logout";
 // 컴포넌트 상단 (TS라면)
 
 export {};
@@ -259,14 +261,14 @@ function Signup() {
   const [isActive, setIsActive] = useState(" "); // 'factory' 또는 'fisher
   const [userId, setUserId] = useState(" ");
   const [idValid, setIdValid] = useState<boolean | null>(null);
-  const [userPassword, setUserPassword] = useState(' ');
-  const [userName, setUserName] = useState(' ');
-  const [phoneFirst, setPhoneFirst] = useState('');
-  const [phoneMiddle, setPhoneMiddle] = useState('');
-  const [phoneEnd, setPhoneEnd] = useState('');
+  const [userPassword, setUserPassword] = useState(" ");
+  const [userName, setUserName] = useState(" ");
+  const [phoneFirst, setPhoneFirst] = useState("");
+  const [phoneMiddle, setPhoneMiddle] = useState("");
+  const [phoneEnd, setPhoneEnd] = useState("");
   const [postcode, setPostcode] = useState(""); // 백엔드 측에 보내줄 우편주소
-  const [address1, setAddress1] = useState("");        // 도로명/지번 + (참고항목)
-  const [detailAddress, setDetailAddress] = useState("");  // 사용자 입력
+  const [address1, setAddress1] = useState(""); // 도로명/지번 + (참고항목)
+  const [detailAddress, setDetailAddress] = useState(""); // 사용자 입력
   const [mainAddress, setMainAddress] = useState(""); // 백엔드 측에 보내줄 주소
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [validText, setValidText] = useState<string>(""); // 화면에 보여줄 텍스트
@@ -398,10 +400,14 @@ function Signup() {
 
     //form data 내용 확인
     try {
-      const response = await axios.post(`${import.meta.env.VITE_API_URL}/user/register/idValidation`, idPostData, {
-        headers: { "Content-Type": "application/json" },
-        withCredentials: true,
-      });
+      const response = await axios.post(
+        `${import.meta.env.VITE_API_URL}/user/register/idValidation`,
+        idPostData,
+        {
+          headers: { "Content-Type": "application/json" },
+          withCredentials: true,
+        }
+      );
       const data = response.data;
       setValidText(typeof data === "string" ? data : JSON.stringify(data));
       if (response.data !== "Valid") {
@@ -420,42 +426,38 @@ function Signup() {
   ) => {
     event.preventDefault();
     setIsLoading(true);
-    const phoneHyphen = `${phoneFirst}-${phoneMiddle}-${phoneEnd}`; // 010-0000-0000
-
-    /*파일 업로드 여부 확인*/
-    if (!selectedFile) {
-      alert("인증 파일을 업로드해주세요.");
+    if (!hasToken()) {
+      logout();
       return;
     }
-
+    const phoneHyphen = `${phoneFirst}-${phoneMiddle}-${phoneEnd}`;
+    if (!selectedFile) {
+      alert("인증 파일을 업로드해주세요.");
+      setIsLoading(false);
+      return;
+    }
     const userPayload = {
-      role: isActive, // "fisher" | "factory"
+      role: isActive,
       loginId: userId.trim(),
-      password: userPassword, // 비밀번호는 trim X
+      password: userPassword,
       name: userName.trim(),
       phoneNumber: phoneHyphen,
       postCode: postcode,
-      mainAddress: mainAddress,        // 예: "포항시"
+      mainAddress: mainAddress,
       detailAddress: detailAddress.trim(),
     };
-
     const form = new FormData();
     form.append(
       "user",
       new Blob([JSON.stringify(userPayload)], { type: "application/json" })
     );
-
     if (selectedFile) {
       form.append("file", selectedFile, selectedFile.name);
     }
-    //form data 내용 확인1
-
     try {
-      console.log("FormData 내용:");
       for (let pair of form.entries()) {
         console.log(`${pair[0]}:`, pair[1]);
       }
-
       const response = await axios.post(
         `${import.meta.env.VITE_API_URL}/user/register`,
         form,
@@ -463,7 +465,6 @@ function Signup() {
           withCredentials: true,
         }
       );
-
       if (response.data !== "401error") {
         alert("회원가입 성공");
         navigate(`/login`);
@@ -471,10 +472,13 @@ function Signup() {
         alert("회원가입 실패. 다시 시도해주세요.");
       }
     } catch (error) {
-      // 네트워크 오류 등 예외 발생 시
+      if (isTokenExpired(error)) {
+        logout();
+        return;
+      }
       alert("요청 중 오류가 발생했습니다.");
     } finally {
-      setUserId(""); // 입력 필드 초기화
+      setUserId("");
       setUserPassword("");
       setIsLoading(false);
     }
@@ -550,47 +554,49 @@ function Signup() {
         </div>
       </section>
 
-      <section className = {styles.infoInputContainer}>
-          <InfoInputLine>
-            <InfoTitle>아이디</InfoTitle>
-            <div className = {styles.idValid}>
-              <InfoInput 
-              placeholder='아이디 입력 6~12자 이내 입력'
-              type="text"
-              value={userId}  
-              onChange={handleIdChange} />
-              {idValid !== null && (
-                <h1 className={styles.isValid}>
-                  {validText} 
-                  {/*idValid ? "유효한 아이디 입니다." : "유효하지 않은 아이디 입니다."*/}
-                </h1>
-              )}
-            </div>
-            <IsSameBtn onClick= {onCheckId}>중복확인</IsSameBtn>
-          </InfoInputLine>
-          <InfoInputLine>
-            <InfoTitle>비밀번호</InfoTitle>
-              <InfoInput 
-              placeholder='비밀번호는 영문/숫자/특수문자 2가지 이상 조합 8~20자 이내 입력'
-              type="password"
-              value={userPassword}  
-              onChange={handlePasswordChange} />
-          </InfoInputLine>
-          <InfoInputLine>
-            <InfoTitle>이름</InfoTitle>
-              <InfoInput 
-              placeholder='이름을 입력해 주세요'
+      <section className={styles.infoInputContainer}>
+        <InfoInputLine>
+          <InfoTitle>아이디</InfoTitle>
+          <div className={styles.idValid}>
+            <InfoInput
+              placeholder="아이디 입력 6~12자 이내 입력"
               type="text"
               value={userId}
               onChange={handleIdChange}
             />
             {idValid !== null && (
               <h1 className={styles.isValid}>
-                {idValid
-                  ? "유효한 아이디 입니다."
-                  : "유효하지 않은 아이디 입니다."}
+                {validText}
+                {/*idValid ? "유효한 아이디 입니다." : "유효하지 않은 아이디 입니다."*/}
               </h1>
             )}
+          </div>
+          <IsSameBtn onClick={onCheckId}>중복확인</IsSameBtn>
+        </InfoInputLine>
+        <InfoInputLine>
+          <InfoTitle>비밀번호</InfoTitle>
+          <InfoInput
+            placeholder="비밀번호는 영문/숫자/특수문자 2가지 이상 조합 8~20자 이내 입력"
+            type="password"
+            value={userPassword}
+            onChange={handlePasswordChange}
+          />
+        </InfoInputLine>
+        <InfoInputLine>
+          <InfoTitle>이름</InfoTitle>
+          <InfoInput
+            placeholder="이름을 입력해 주세요"
+            type="text"
+            value={userId}
+            onChange={handleIdChange}
+          />
+          {idValid !== null && (
+            <h1 className={styles.isValid}>
+              {idValid
+                ? "유효한 아이디 입니다."
+                : "유효하지 않은 아이디 입니다."}
+            </h1>
+          )}
           <IsSameBtn onClick={onCheckId}>중복확인</IsSameBtn>
         </InfoInputLine>
         <InfoInputLine>
