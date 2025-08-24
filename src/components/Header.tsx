@@ -179,7 +179,7 @@ function Header({ isLanding = false }: HeaderProps) {
     } else if (role === "ROLE_FISHER") {
       navigate("/home/fisher");
     } else {
-      navigate("/landing");
+      navigate("/");
     }
 
   };
@@ -191,7 +191,7 @@ function Header({ isLanding = false }: HeaderProps) {
     } else if (role === "ROLE_FACTORY") {
       navigate("/mypage/matching");
     } else {
-      navigate("/landing");
+      navigate("/");
     }
   };
 
