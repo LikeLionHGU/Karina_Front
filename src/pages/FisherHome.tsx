@@ -5,10 +5,12 @@ import LoadingSpinner from "../components/LoadingSpinner";
 import { useEffect, useState } from "react";
 import FishModal from "../components/FishModal";
 import axios from "axios";
+import SearchImg from "../assets/icons/SearchIcon.svg";
+import LocationImg from "../assets/icons/LocationIcon.svg";
 
 const Container = styled.div`
   width: 100%;
-  max-width: 1200px;
+  max-width: 1500px;
   margin: 0 auto 100px auto;
   padding: 60px 20px;
 `;
@@ -66,16 +68,10 @@ const SearchIcon = styled.div`
   height: 20px;
   border-radius: 50%;
   cursor: pointer;
-  position: relative;
-
-  &::after {
-    content: "🔍";
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 12px;
-  }
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
 `;
 
 const FishGrid = styled.div`
@@ -136,7 +132,13 @@ const LocationInfo = styled.div`
 `;
 
 const LocationIcon = styled.span`
-  color: #0966ff;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
 `;
 
 const FishInfo = styled.div`
@@ -405,7 +407,9 @@ function FisherHome() {
             }
           }}
         />
-        <SearchIcon onClick={() => setSearchKeyword(searchKeyword)} />
+        <SearchIcon onClick={() => setSearchKeyword(searchKeyword)}>
+          <img src={SearchImg} alt="검색" style={{ width: 20, height: 20 }} />
+        </SearchIcon>
       </SearchContainer>
       <FishGrid>
         {currentFishData.map((fish, index) => {
@@ -417,7 +421,13 @@ function FisherHome() {
               </FishImageSection>
               <FishInfoSection>
                 <LocationInfo>
-                  <LocationIcon>📍</LocationIcon>
+                  <LocationIcon>
+                    <img
+                      src={LocationImg}
+                      alt="위치"
+                      style={{ width: 20, height: 20 }}
+                    />
+                  </LocationIcon>
                   {fish.mainAddress}{" "}
                 </LocationInfo>
 
@@ -430,8 +440,8 @@ function FisherHome() {
                             .map(([name, count]) => `${name} ${count}마리`)
                             .join(", ")
                         : "";
-                      return fishInfoStr.length > 10
-                        ? fishInfoStr.slice(0, 10) + "..."
+                      return fishInfoStr.length > 15
+                        ? fishInfoStr.slice(0, 15) + "..."
                         : fishInfoStr;
                     })()}
                   </FishName>
