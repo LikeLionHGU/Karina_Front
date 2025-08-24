@@ -7,6 +7,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faImage } from "@fortawesome/free-regular-svg-icons";
 import { faFile } from "@fortawesome/free-regular-svg-icons";
 import axios from "axios";
+import ErrorModal from "../components/ErrorModal";
+import ConfirmModal from "../components/ConfirmModal";
 // 컴포넌트 상단 (TS라면)
 
 export {};
@@ -389,6 +391,26 @@ function Signup() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [validText, setValidText] = useState<string>(""); // 화면에 보여줄 텍스트
   const [consent, setConsent] = useState<"yes" | "no" | "">(""); // 동의 상태 추가
+  //모달 관련
+  const [errorOpen, setErrorOpen] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [confirmTitle, setConfirmTitle] = useState("");
+  const [confirmBody, setConfirmBody] = useState("");
+
+  //모달 함수
+  const openError = (msg: string) => { setErrorMsg(msg); setErrorOpen(true); };
+  const closeError = () => setErrorOpen(false);
+
+  const openSuccess = (title: string, body: string = "") => {
+    setConfirmTitle(title);
+    setConfirmBody(body);
+    setConfirmOpen(true);
+  };
+  const handleSuccessClose = () => {
+    setConfirmOpen(false);
+    navigate("/login");
+  };
 
   useEffect(() => {
     if (window.daum?.Postcode) return; // 이미 로드됨
@@ -514,7 +536,7 @@ function Signup() {
       }
     } catch (error) {
       // 네트워크 오류 등 예외 발생 시
-      alert("요청 중 오류가 발생했습니다.");
+      openError("요청 중 오류가 발생했습니다.");
     }
   };
   const onSubmitFile: React.MouseEventHandler<HTMLButtonElement> = async (
@@ -522,60 +544,29 @@ function Signup() {
   ) => {
     event.preventDefault();
     setErrorField(null);
-
-    if (consent !== "yes") {
-      alert("개인정보 수집 및 이용에 동의해 주세요.");
+     if (!selectedFile) {
+      openError("인증 파일을 업로드해주세요.");
+      setIsLoading(false);
       return;
     }
 
-    // 필수 입력값 검사
-    if (!userId.trim()) {
-      setErrorField("userId");
-      firstRef.current?.focus();
-      return;
-    }
-    if (!userPassword.trim()) {
-      setErrorField("userPassword");
-      // 비밀번호 input에 ref가 없으므로 아래처럼 추가 필요
-      document.getElementById("passwordInput")?.focus();
-      return;
-    }
-    if (!userName.trim()) {
-      setErrorField("userName");
-      document.getElementById("nameInput")?.focus();
-      return;
-    }
-    if (!phoneFirst || !phoneMiddle || !phoneEnd) {
-      setErrorField("phone");
-      firstRef.current?.focus();
-      return;
-    }
-    if (!postcode.trim()) {
-      setErrorField("postcode");
-      document.getElementById("postcodeInput")?.focus();
-      return;
-    }
-    if (!address1.trim()) {
-      setErrorField("address1");
-      document.getElementById("address1Input")?.focus();
-      return;
-    }
-    if (!detailAddress.trim()) {
-      setErrorField("detailAddress");
-      detailRef.current?.focus();
-      return;
-    }
-    if (!selectedFile) {
-      setErrorField("file");
-      fileRef.current?.focus();
-      return;
-    }
+
+    // 필수 입력값 검사 (필드 강조 + 포커스 유지)
+    if (!userId.trim()) { setErrorField("userId"); firstRef.current?.focus(); return; }
+    if (!userPassword.trim()) { setErrorField("userPassword"); document.getElementById("passwordInput")?.focus(); return; }
+    if (!userName.trim()) { setErrorField("userName"); document.getElementById("nameInput")?.focus(); return; }
+    if (!phoneFirst || !phoneMiddle || !phoneEnd) { setErrorField("phone"); firstRef.current?.focus(); return; }
+    if (!postcode.trim()) { setErrorField("postcode"); document.getElementById("postcodeInput")?.focus(); return; }
+    if (!address1.trim()) { setErrorField("address1"); document.getElementById("address1Input")?.focus(); return; }
+    if (!detailAddress.trim()) { setErrorField("detailAddress"); detailRef.current?.focus(); return; }
+    if (!selectedFile) { setErrorField("file"); fileRef.current?.focus(); return; }
 
     setIsLoading(true);
     const phoneHyphen = `${phoneFirst}-${phoneMiddle}-${phoneEnd}`;
-    if (!selectedFile) {
-      alert("인증 파일을 업로드해주세요.");
-      setIsLoading(false);
+   
+
+     if (consent !== "yes") {
+      openError("개인정보 수집 및 이용에 동의해 주세요.");
       return;
     }
     const userPayload = {
@@ -605,13 +596,12 @@ function Signup() {
         }
       );
       if (response.data !== "401error") {
-        alert("회원가입 성공");
-        navigate("/login");
+        openSuccess("회원가입 성공");
       } else {
-        alert("회원가입 실패. 다시 시도해주세요."); 
+        openError("회원가입 실패. 다시 시도해주세요.");
       }
     } catch (error) {
-      alert("요청 중 오류가 발생했습니다.");
+      openError("요청 중 오류가 발생했습니다.");
     } finally {
       setUserId("");
       setUserPassword("");
@@ -855,6 +845,24 @@ function Signup() {
       <button className={styles.next} onClick={onSubmitFile}>
         다음
       </button>
+
+      {/*ErrorModal */}
+      <ErrorModal
+        isOpen={errorOpen}
+        onClose={closeError}
+        message={errorMsg}
+      />
+
+      {/*ConfirmModal (성공 시) */}
+      <ConfirmModal
+        isOpen={confirmOpen}
+        onClose={handleSuccessClose}
+        onConfirm={handleSuccessClose}  /* isSuccess 모드에서 타입 충족용 */
+        title={confirmTitle}
+        body={confirmBody}              /* alert 문구엔 본문이 없어서 빈 문자열 */
+        isSuccess
+        singleText="완료"
+      />
     </>
   );
 }
