@@ -265,6 +265,7 @@ const AnalysisArticle = () => {
       );
       if (response.data !== "401error") {
         openSuccess("신청 완료", "정상적으로 접수되었습니다.");
+        navigate("/article/end");
       } else {
         openModal("등록을 실패했습니다. 다시 시도해 주세요");
       }

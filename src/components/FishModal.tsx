@@ -6,7 +6,7 @@ interface FishModalProps {
   fishData: {
     articleId?: string;
     mainAddress: string;
-    fishInfo: Array<string>;
+    fishInfo: Record<string, number>;
     fisherName: string;
     postDate: string;
     status: number;
@@ -137,6 +137,13 @@ function FishModal({ isOpen, onClose, fishData }: FishModalProps) {
     }
   };
 
+  // 어종+수량 문자열 생성
+  const fishInfoList = fishData.fishInfo
+    ? Object.entries(fishData.fishInfo).map(
+        ([name, count]) => `${name} ${count}마리`
+      )
+    : [];
+
   return (
     <ModalOverlay isOpen={isOpen} onClick={handleOverlayClick}>
       <ModalContent>
@@ -150,14 +157,16 @@ function FishModal({ isOpen, onClose, fishData }: FishModalProps) {
             <LocationText>{fishData.mainAddress}</LocationText>
           </LocationContainer>
 
-          <FishTitle>{fishData.fishInfo?.[0] || ""}</FishTitle>
+          <FishTitle>
+            {fishInfoList.length > 0 ? fishInfoList.join(", ") : ""}
+          </FishTitle>
 
           <InfoGrid>
             <InfoLabel>어부</InfoLabel>
             <InfoValue>{fishData.fisherName}</InfoValue>
 
-            <InfoLabel>어종</InfoLabel>
-            <InfoValue>{fishData.fishInfo?.[1] || ""}</InfoValue>
+            <InfoLabel>등록일</InfoLabel>
+            <InfoValue>{fishData.postDate}</InfoValue>
           </InfoGrid>
         </ModalInfoSection>
       </ModalContent>
