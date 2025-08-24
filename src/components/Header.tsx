@@ -239,12 +239,14 @@ function Header({ isLanding = false }: HeaderProps) {
             </PostButton>
           )}
           <ProfileSection ref={ref}>
-            <ProfileIcon />
             {localStorage.getItem("userName") ? (
-              <UserName onClick={() => setOpen((prev) => !prev)}>
-                {localStorage.getItem("userName")}
-                <ChevronDownIcon />
-              </UserName>
+              <>
+                <ProfileIcon />
+                <UserName onClick={() => setOpen((prev) => !prev)}>
+                  {localStorage.getItem("userName")}
+                  <ChevronDownIcon />
+                </UserName>
+              </>
             ) : (
               <LoginButton onClick={() => navigate("/login")}>
                 로그인 / 회원가입
