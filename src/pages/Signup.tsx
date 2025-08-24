@@ -258,6 +258,8 @@ function Signup() {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [isActive, setIsActive] = useState(""); // 'factory' 또는 'fisher
+  const [errorField, setErrorField] = useState<string | null>(null);
+
   const [userId, setUserId] = useState("");
   const [idValid, setIdValid] = useState<boolean | null>(null);
   const [userPassword, setUserPassword] = useState("");
@@ -343,24 +345,7 @@ function Signup() {
     console.log("업로드 파일:", selectedFile);
   };
 
-  /* '00시'로 잘라내는 코드*/
-  const extractMainCity = (data: any, addr: string) => {
-    const sgg = (data.sigungu || "").trim(); // 예: "성남시 분당구", "포항시 북구", "제주시"
-    // 2-1) sigungu에서 "○○시"만 추출
-    const cityFromSgg = sgg.match(/([^ ]+시)/)?.[1];
-    if (cityFromSgg) return cityFromSgg;
-
-    // 2-2) 최후 수단: 전체 주소 문자열에서 "○○시" 찾기
-    const cityFromAddr = addr.match(/([^ ]+시)/)?.[1];
-    if (cityFromAddr) return cityFromAddr;
-
-    // (선택) 시가 없는 지역은 군/구로 대체하고 싶다면 아래 사용
-    const alt =
-      sgg.match(/([^ ]+(군|구))/)?.[1] ||
-      addr.match(/([^ ]+(군|구))/)?.[1] ||
-      "";
-    return alt;
-  };
+  
 
   /*우편번호 검색 코드*/
   const openPostcode = () => {
@@ -385,8 +370,8 @@ function Signup() {
         }
         setPostcode(data.zonecode); // 1번째 인풋
         setAddress1(addr + extraAddr); // 2번째 인풋
-        const city = extractMainCity(data, addr);
-        setMainAddress(city); // 00시 분리 함수 가져오기
+        const fullAddress = `${addr}${extraAddr}`;   // 전체 주소
+        setMainAddress(fullAddress);
         detailRef.current?.focus(); // 3번째 인풋으로 포커스
       },
     }).open(); // ← 기본 팝업(모달 느낌)로 열림
@@ -424,6 +409,51 @@ function Signup() {
     event
   ) => {
     event.preventDefault();
+    setErrorField(null);
+
+    // 필수 입력값 검사
+    if (!userId.trim()) {
+      setErrorField("userId");
+      firstRef.current?.focus();
+      return;
+    }
+    if (!userPassword.trim()) {
+      setErrorField("userPassword");
+      // 비밀번호 input에 ref가 없으므로 아래처럼 추가 필요
+      document.getElementById("passwordInput")?.focus();
+      return;
+    }
+    if (!userName.trim()) {
+      setErrorField("userName");
+      document.getElementById("nameInput")?.focus();
+      return;
+    }
+    if (!phoneFirst || !phoneMiddle || !phoneEnd) {
+      setErrorField("phone");
+      firstRef.current?.focus();
+      return;
+    }
+    if (!postcode.trim()) {
+      setErrorField("postcode");
+      document.getElementById("postcodeInput")?.focus();
+      return;
+    }
+    if (!address1.trim()) {
+      setErrorField("address1");
+      document.getElementById("address1Input")?.focus();
+      return;
+    }
+    if (!detailAddress.trim()) {
+      setErrorField("detailAddress");
+      detailRef.current?.focus();
+      return;
+    }
+    if (!selectedFile) {
+      setErrorField("file");
+      fileRef.current?.focus();
+      return;
+    }
+
     setIsLoading(true);
     const phoneHyphen = `${phoneFirst}-${phoneMiddle}-${phoneEnd}`;
     if (!selectedFile) {
@@ -554,12 +584,16 @@ function Signup() {
               type="text"
               value={userId}
               onChange={handleIdChange}
+              ref={firstRef}
+              id="userIdInput"
             />
             {idValid !== null && (
               <h1 className={styles.isValid}>
                 {validText}
-                {/*idValid ? "유효한 아이디 입니다." : "유효하지 않은 아이디 입니다."*/}
               </h1>
+            )}
+            {errorField === "userId" && (
+              <div className={styles.inputError}>필수 정보를 입력해 주세요</div>
             )}
           </div>
           <IsSameBtn onClick={onCheckId}>중복확인</IsSameBtn>
@@ -571,7 +605,11 @@ function Signup() {
             type="password"
             value={userPassword}
             onChange={handlePasswordChange}
+            id="passwordInput"
           />
+          {errorField === "userPassword" && (
+            <div className={styles.inputError}>필수 정보를 입력해 주세요</div>
+          )}
         </InfoInputLine>
         <InfoInputLine>
           <InfoTitle>이름</InfoTitle>
@@ -580,7 +618,11 @@ function Signup() {
             type="text"
             value={userName}
             onChange={handleNameChange}
+            id="nameInput"
           />
+          {errorField === "userName" && (
+            <div className={styles.inputError}>필수 정보를 입력해 주세요</div>
+          )}
         </InfoInputLine>
         <InfoInputLine>
           <InfoTitle>전화번호</InfoTitle>
@@ -615,33 +657,38 @@ function Signup() {
               onChange={handleEndNum}
             />
           </PhoneContainer>
+          {errorField === "phone" && (
+            <div className={styles.inputError}>필수 정보를 입력해 주세요</div>
+          )}
         </InfoInputLine>
-
         <InfoInputLine>
           <InfoTitle>주소</InfoTitle>
           <div className={styles.addressInputBox}>
-            {/* 1행: 우편번호 + 버튼 */}
             <div className={styles.addressSearchLine}>
               <InfoInput
                 placeholder="우편번호"
                 type="text"
                 value={postcode}
-                readOnly // 사용자가 직접 수정 못 하게
+                readOnly
+                id="postcodeInput"
               />
               <SearchAddress type="button" onClick={openPostcode}>
                 우편번호 검색
               </SearchAddress>
             </div>
-
-            {/* 2행: 기본 주소(도로명/지번 + 참고항목) */}
+            {errorField === "postcode" && (
+              <div className={styles.inputError}>필수 정보를 입력해 주세요</div>
+            )}
             <InfoInput
               placeholder="주소"
               type="text"
               value={address1}
               readOnly
+              id="address1Input"
             />
-
-            {/* 3행: 상세 주소(사용자 입력) */}
+            {errorField === "address1" && (
+              <div className={styles.inputError}>필수 정보를 입력해 주세요</div>
+            )}
             <InfoInput
               ref={detailRef as any}
               placeholder="상세 주소를 입력해 주세요"
@@ -649,14 +696,12 @@ function Signup() {
               value={detailAddress}
               onChange={(e) => setDetailAddress(e.target.value)}
             />
+            {errorField === "detailAddress" && (
+              <div className={styles.inputError}>필수 정보를 입력해 주세요</div>
+            )}
           </div>
         </InfoInputLine>
       </section>
-      {/*<div className = {styles.agreeTitle}>
-        <span className = {styles.title}>개인정보수집동의</span>
-        <span className = {styles.detail}>개인정보 수집 및 이용에 동의</span>
-      </div>*/}
-
       <button className={styles.next} onClick={onSubmitFile}>
         다음
       </button>
