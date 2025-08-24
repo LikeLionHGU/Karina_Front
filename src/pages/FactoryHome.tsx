@@ -109,7 +109,9 @@ const FishImageSection = styled.div<FishImageSectionProps>`
   width: 100%;
   height: 160px;
   background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
-  background-image: url(${(props) => props.thumbnail || "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 250'%3E%3Crect width='400' height='250' fill='%23e3f2fd'/%3E%3Ctext x='200' y='125' font-family='Arial' font-size='60' text-anchor='middle' fill='%230966ff'%3E🐟%3C/text%3E%3C/svg%3E"});
+  background-image: url(${(props) =>
+    props.thumbnail ||
+    "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 250'%3E%3Crect width='400' height='250' fill='%23e3f2fd'/%3E%3Ctext x='200' y='125' font-family='Arial' font-size='60' text-anchor='middle' fill='%230966ff'%3E🐟%3C/text%3E%3C/svg%3E"});
   background-size: contain;
   background-position: center;
   background-repeat: no-repeat;

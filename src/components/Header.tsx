@@ -176,17 +176,22 @@ function Header({ isLanding = false }: HeaderProps) {
     const role = localStorage.getItem("role");
     if (role === "ROLE_FACTORY") {
       navigate("/home/factory");
-    } else {
+    } else if (role === "ROLE_FISHER") {
       navigate("/home/fisher");
+    } else {
+      navigate("/landing");
     }
+
   };
 
   const handleMyPageClick = () => {
     const role = localStorage.getItem("role");
     if (role === "ROLE_FISHER") {
       navigate("/mypage/request");
-    } else {
+    } else if (role === "ROLE_FACTORY") {
       navigate("/mypage/matching");
+    } else {
+      navigate("/landing");
     }
   };
 
