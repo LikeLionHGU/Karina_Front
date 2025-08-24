@@ -213,7 +213,9 @@ function Login() {
       if (axios.isAxiosError(err)) {
         // 401 등 상태 기반 메시지
         if (err.response?.status === 401) {
-          alert("아이디/비밀번호를 확인해 주세요.");
+          {isActive === ""?
+            alert("역할을 선택해 주세요"):
+             alert("아이디/비밀번호를 확인해 주세요.")} 
         } else {
           alert(`요청 실패 (${err.response?.status ?? "네트워크 오류"})`);
         }
@@ -264,7 +266,7 @@ function Login() {
                 ? "역할을 선택해 주세요."
                 : "비밀번호를 입력하세요."
             }
-            type="text"
+            type="password"
             value={userPassword}
             onChange={handlePasswordChange}
           />
