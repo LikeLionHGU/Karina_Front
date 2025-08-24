@@ -181,10 +181,10 @@ const InfoInput = styled.input`
   flex-shrink: 0;
   border-radius: 5px;
   border: 1.5px solid var(--Secondary-3, #a5bee0);
+  padding: 0 14px;
 
   &::placeholder {
     color: var(--Secondary-5, #899ebb);
-    padding-left: 10px;
     font-size: clamp(13px, 1.2vw, 17px);
     font-style: normal;
     font-weight: 700;
