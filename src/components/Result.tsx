@@ -2,14 +2,15 @@
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 
+
 //받아오는 데이터 ->Map list
 type AnalysisMap = Record<string, number>;
 
 type ResultProps = {
-  data: AnalysisMap | null | undefined;   // 서버 응답의 analysisResult
-  onReset: () => void;                    // 다시 분석하기 콜백
+  articleData: string | null;                // ← number → string으로
+  data:  AnalysisMap | null | undefined;
+  onReset: () => void;
 };
-
 const Grid = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
@@ -71,7 +72,7 @@ const PrimaryButton = styled.button`
 // 숫자 → "약 52마리" 같은 표시로
 const formatCount = (n: number) => `약 ${n}마리`;
 
-export default function Result({ data, onReset}: ResultProps) {
+export default function Result({ articleData, data, onReset}: ResultProps) {
   const navigate = useNavigate();
   // 1) 방어 코드: 데이터 없거나 형태가 아니면 빈 배열
   const entries = Object.entries(data ?? {}) // => [ ["fish", num] ...]
@@ -100,7 +101,10 @@ export default function Result({ data, onReset}: ResultProps) {
 
       <Buttons>
         <GhostButton onClick={onReset}>다시 분석하기</GhostButton>
-        <PrimaryButton onClick={() => navigate(`/article`)}>다음</PrimaryButton>
+        <PrimaryButton 
+            onClick={() => navigate(`/article/${articleData}`) }
+            disabled={articleData === null}
+        >다음</PrimaryButton>
       </Buttons>
     </section>
   );

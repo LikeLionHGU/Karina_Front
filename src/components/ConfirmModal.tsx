@@ -118,6 +118,7 @@ function ConfirmModal({
       onClose();
     }
   };
+  /*onConrrm => analysisArticle에서 사용*/
 
   return (
     <ModalOverlay isOpen={isOpen} onClick={handleOverlayClick}>
@@ -126,7 +127,7 @@ function ConfirmModal({
         <ModalBody>{body}</ModalBody>
         <ButtonContainer>
           {isSuccess ? (
-            <SuccessButton onClick={onClose}>확인</SuccessButton>
+            <SuccessButton onClick={onConfirm ?? onClose}>확인</SuccessButton>
           ) : (
             <>
               <CancelButton onClick={onClose}>취소하기</CancelButton>
