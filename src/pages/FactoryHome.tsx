@@ -1,8 +1,9 @@
 import styled from "styled-components";
 import { hasToken, isTokenExpired } from "../utils/token";
+import { logout } from "../utils/logout";
 import LoadingSpinner from "../components/LoadingSpinner";
 import { useEffect, useState } from "react";
-import axios, { AxiosError } from "axios";
+import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 const Container = styled.div`
@@ -275,10 +276,7 @@ function FactoryHome() {
       console.log("Fetched fish data:", response.data);
     } catch (error) {
       if (isTokenExpired(error)) {
-        localStorage.removeItem("jwt");
-        localStorage.removeItem("role");
-        localStorage.removeItem("userName");
-        window.location.href = "/login";
+        logout();
       }
     } finally {
       setIsLoading(false);
