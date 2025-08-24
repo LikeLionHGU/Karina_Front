@@ -254,6 +254,69 @@ const SearchAddress = styled.button`
   font-weight: 600;
   line-height: normal;
 `;
+
+/*개인정보 동의 섹션 스타일 컴포넌트*/
+const ConsentInfoSection = styled.div`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 0 16px;
+  box-sizing: border-box;
+`;
+
+const ConsentTitleRow = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+`;
+
+const ConsentTag = styled.div`
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: rgba(9, 102, 255, 0.1);
+  color: var(--Primary-2, #0966ff);
+  font-size: clamp(12px, 1.2vw, 16px);
+  font-weight: 700;
+`;
+
+const ConsentDesc = styled.div`
+  color: var(--Black-4, #454545);
+  font-size: clamp(12px, 1.2vw, 16px);
+  font-weight: 400;
+`;
+
+const ConsentBody = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  color: var(--Black-4, #454545);
+  font-size: clamp(12px, 1.2vw, 16px);
+  font-weight: 400;
+`;
+
+const Line = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 4px;
+`;
+
+const SubLines = styled.div`
+  display: flex;
+  flex-direction: column;
+  padding-left: 16px;
+  border-left: 2px solid var(--Primary-2, #0966ff);
+`;
+
+const ConsentRadioSection = styled.section`
+  width: 59.375vw;
+  margin: 16px auto 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+`;
+
 function Signup() {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
@@ -273,6 +336,7 @@ function Signup() {
   const [mainAddress, setMainAddress] = useState(""); // 백엔드 측에 보내줄 주소
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [validText, setValidText] = useState<string>(""); // 화면에 보여줄 텍스트
+  const [consent, setConsent] = useState<"yes" | "no" | "">(""); // 동의 상태 추가
 
   useEffect(() => {
     if (window.daum?.Postcode) return; // 이미 로드됨
@@ -345,8 +409,6 @@ function Signup() {
     console.log("업로드 파일:", selectedFile);
   };
 
-  
-
   /*우편번호 검색 코드*/
   const openPostcode = () => {
     if (!window.daum?.Postcode) return;
@@ -410,6 +472,11 @@ function Signup() {
   ) => {
     event.preventDefault();
     setErrorField(null);
+
+    if (consent !== "yes") {
+      alert("개인정보 수집 및 이용에 동의해 주세요.");
+      return;
+    }
 
     // 필수 입력값 검사
     if (!userId.trim()) {
@@ -701,6 +768,42 @@ function Signup() {
             )}
           </div>
         </InfoInputLine>
+        {/* 개인정보 동의 섹션 추가 */}
+        <ConsentInfoSection>
+          <ConsentTitleRow>
+            <ConsentTag>개인정보수집동의</ConsentTag>
+            <ConsentDesc>개인정보 수집 및 이용에 동의해주세요.</ConsentDesc>
+          </ConsentTitleRow>
+          <ConsentBody>
+            <Line>1. 수집 목적: 본인 확인</Line>
+            <Line>2. 수집 항목: 이름, 전화번호, 주소, 어민 허가증 정보</Line>
+            <Line>
+              3. 보유 및 이용 기간
+              <SubLines>
+                <Line>a. 매칭을 신청한 어민 분들에게 담당자의 이름, 전화번호, 회사의 위치 정보가 제공됩니다.</Line>
+                <Line>b. 매칭이 완료된 경우 매칭이 된 어민을 제외하고는 타 연구소/공장 또는 어민 분들이 귀하의 개인 정보를 보실 수 없습니다.</Line>
+              </SubLines>
+            </Line>
+          </ConsentBody>
+        </ConsentInfoSection>
+        <ConsentRadioSection>
+          <MemberRadio>
+            <RadioInput
+              name="consent"
+              checked={consent === "yes"}
+              onChange={() => setConsent("yes")}
+            />
+            <span>네, 동의합니다.</span>
+          </MemberRadio>
+          <MemberRadio>
+            <RadioInput
+              name="consent"
+              checked={consent === "no"}
+              onChange={() => setConsent("no")}
+            />
+            <span>동의하지 않습니다.</span>
+          </MemberRadio>
+        </ConsentRadioSection>
       </section>
       <button className={styles.next} onClick={onSubmitFile}>
         다음

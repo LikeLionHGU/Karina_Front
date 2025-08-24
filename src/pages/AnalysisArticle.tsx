@@ -341,7 +341,7 @@ const AnalysisArticle = () => {
                 />
               </DateAndTimeContainer>
               <DateAndTimeContainer>
-                <DateTitle>포획 날짜</DateTitle>
+                <DateTitle>포획 시간</DateTitle>
                 <DateContent
                   type="time"
                   value={caughtTime}
