@@ -2,8 +2,7 @@ import styled from "styled-components";
 import styles from "../styles/articleEnd.module.css";
 import { Link } from "react-router-dom";
 import checkLineImg from "../assets/icons/CheckLine.png";
-import outCircle from "../assets/icons/어민/Ellipse 28.svg";
-
+import inCircle from "../assets/icons/어민/Ellipse 31.svg";
 /* ====== Top Check Icon ====== */
 const CheckIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" width="150" height="150" viewBox="0 0 150 150" fill="none">
@@ -23,6 +22,13 @@ const StepperWrap = styled.div`
   min-width: 320px;
   margin: 140px 0 171px;  /* 위아래 여백은 필요에 맞게 */
 `;
+
+const Incircle = styled.img`
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+
+`
 /* 뒤에 깔리는 가로 라인 */
 const Track = styled.div`
   position: absolute;
@@ -33,11 +39,6 @@ const Track = styled.div`
   border-radius: 10px;
 `;
 
-const OutCircle = styled.img`
-  width: 100px;
-  height: 100px;
-  flex-shrink: 0;
-`;
 
 /* 원 + 텍스트를 라인 위에 배치 */
 const StepsRow = styled.ul`
@@ -57,14 +58,22 @@ const StepItem = styled.li`
   gap: 8px;               /* 원과 라벨 간격 */
 `;
 
-/* 기본 원(60px) */
 const Dot = styled.div<{ state?: "done" | "current" | "todo" }>`
-  width: 60px; height: 60px; border-radius: 50%;
+  position: relative;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+
+  /* 가운데 정렬 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
   background: ${({ state }) =>
     state === "todo" ? "var(--Primary-2, #0966FF)" :
     state === "current" ? "#A5BEE0" : "#A5BEE0"};
-  outline: ${({ state }) => (state === "current" ? "4px solid rgba(9,102,255,0.25)" : "none")};
 `;
+
 
 /* 라벨 */
 const Label = styled.div<{ active?: boolean }>`
@@ -106,7 +115,10 @@ function ArticleEnd() {
                 const state = i === 0 ? "todo" : "done";
                 return (
                     <StepItem key={label}>
-                    <Dot state={state} />
+                    <Dot state={state}>
+                        {/* 첫 단계(혹은 currentIndex)일 때만 안쪽 원 보여주기 */}
+                        {i === 0 && <Incircle src={inCircle} alt="" aria-hidden="true" />}
+                    </Dot>
                     <Label active={i === currentIndex}>{label}</Label>
                     </StepItem>
                 );

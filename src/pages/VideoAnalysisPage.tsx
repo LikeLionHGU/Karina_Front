@@ -52,7 +52,7 @@ export default function VideoAnalysisPage() {
     } catch (e: any) {
         if (axios.isAxiosError(e)) {
             console.log('status:', e.response?.status);
-            console.log('data:', e.response?.data); // ← 여기 메시지에 'Access is denied', 'Invalid CSRF' 등 단서가 나와요
+            console.log('data:', e.response?.data); // 여기 메시지에 'Access is denied', 'Invalid CSRF' 등 단서가 나와요
         }
         setStep('error');
     }
