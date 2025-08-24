@@ -1,8 +1,9 @@
-import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
+import { hasToken, isTokenExpired } from "../utils/token";
+import LoadingSpinner from "../components/LoadingSpinner";
 import { useEffect, useState } from "react";
-import FishModal from "../components/FishModal";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
+import { useNavigate } from "react-router-dom";
 
 const Container = styled.div`
   width: 100%;
@@ -41,7 +42,7 @@ const SearchContainer = styled.div`
   display: flex;
   align-items: center;
   background: white;
-  border: 2px solid #4a90e2;
+  border: 2px solid #0966ff;
   border-radius: 25px;
   padding: 12px 20px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -99,14 +100,23 @@ const FishCard = styled.div`
   }
 `;
 
-const FishImageSection = styled.div`
+interface FishImageSectionProps {
+  thumbnail?: string;
+}
+
+const FishImageSection = styled.div<FishImageSectionProps>`
   width: 100%;
   height: 160px;
   background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+  background-image: url(${(props) => props.thumbnail || "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 250'%3E%3Crect width='400' height='250' fill='%23e3f2fd'/%3E%3Ctext x='200' y='125' font-family='Arial' font-size='60' text-anchor='middle' fill='%230966ff'%3E🐟%3C/text%3E%3C/svg%3E"});
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  border-radius: 12px 12px 0 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #4a90e2;
+  color: #0966ff;
   font-size: 40px;
   position: relative;
 `;
@@ -125,7 +135,7 @@ const LocationInfo = styled.div`
 `;
 
 const LocationIcon = styled.span`
-  color: #4a90e2;
+  color: #0966ff;
 `;
 
 const FishInfo = styled.div`
@@ -178,7 +188,7 @@ const StatusProgressLine = styled.div<{ progress: number }>`
   top: 50%;
   left: 6px;
   height: 2px;
-  background-color: #4a90e2;
+  background-color: #0966ff;
   z-index: 2;
   width: calc(${(props) => props.progress}% - 12px);
   max-width: calc(100% - 12px);
@@ -191,13 +201,13 @@ const StatusDot = styled.div<{ isActive?: boolean; isCompleted?: boolean }>`
   height: 12px;
   border-radius: 50%;
   background-color: ${(props) => {
-    if (props.isCompleted) return "#4a90e2"; // 완료된 단계: 꽉찬 파란색
+    if (props.isCompleted) return "#0966ff"; // 완료된 단계: 꽉찬 파란색
     if (props.isActive) return "white"; // 현재 진행 단계: 가운데 비어있음
     return "#e0e0e0"; // 미완료 단계: 회색
   }};
   border: 2px solid
     ${(props) => {
-      if (props.isCompleted || props.isActive) return "#4a90e2";
+      if (props.isCompleted || props.isActive) return "#0966ff";
       return "#e0e0e0";
     }};
   z-index: 3;
@@ -214,7 +224,7 @@ const StatusLabels = styled.div`
 `;
 
 const StatusLabel = styled.span<{ isActive?: boolean }>`
-  color: ${(props) => (props.isActive ? "#4a90e2" : "#666")};
+  color: ${(props) => (props.isActive ? "#0966ff" : "#666")};
   font-weight: ${(props) => (props.isActive ? "700" : "normal")};
 `;
 
@@ -230,7 +240,7 @@ const PageButton = styled.button<{ isActive?: boolean }>`
   padding: 10px 14px;
   border: none;
   background-color: #f8f9fa;
-  color: ${(props) => (props.isActive ? "#4a90e2" : "#666")};
+  color: ${(props) => (props.isActive ? "#0966ff" : "#666")};
   cursor: pointer;
   font-size: 14px;
   font-weight: 500;
@@ -245,17 +255,18 @@ const PageEllipsis = styled.span`
 `;
 
 function FactoryHome() {
-  const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedFish, setSelectedFish] = useState<any>(null);
   const [allFishData, setAllFishData] = useState<any[]>([]);
   const [searchKeyword, setSearchKeyword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const itemsPerPage = 9;
+  const navigate = useNavigate();
 
   const getAllFishData = async () => {
+    setIsLoading(true);
     try {
-      const token = localStorage.getItem("jwt");
+      const token = hasToken() ? localStorage.getItem("jwt") : null;
       const response = await axios.get(
         `${import.meta.env.VITE_API_URL}/factory/home`,
         token ? { headers: { Authorization: `Bearer ${token}` } } : undefined
@@ -263,7 +274,14 @@ function FactoryHome() {
       setAllFishData(response.data);
       console.log("Fetched fish data:", response.data);
     } catch (error) {
-      console.error("Error fetching homepage data:", error);
+      if (isTokenExpired(error)) {
+        localStorage.removeItem("jwt");
+        localStorage.removeItem("role");
+        localStorage.removeItem("userName");
+        window.location.href = "/login";
+      }
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -275,14 +293,22 @@ function FactoryHome() {
   const filteredFishData =
     searchKeyword.trim() === ""
       ? allFishData
-      : allFishData.filter(
-          (fish) =>
-            (fish.fishInfo &&
-              fish.fishInfo.join(" ").includes(searchKeyword)) ||
-            (fish.fisherName && fish.fisherName.includes(searchKeyword)) ||
-            (fish.mainAddress && fish.mainAddress.includes(searchKeyword)) ||
-            (fish.detailAddress && fish.detailAddress.includes(searchKeyword))
-        );
+      : allFishData.filter((fish) => {
+          let fishInfoText = "";
+          if (typeof fish.fishInfo === "object" && fish.fishInfo !== null) {
+            fishInfoText = Object.entries(fish.fishInfo)
+              .map(([name, count]) => `${name}: ${count}`)
+              .join(", ");
+          } else if (Array.isArray(fish.fishInfo)) {
+            fishInfoText = fish.fishInfo.join(" ");
+          } else {
+            fishInfoText = String(fish.fishInfo ?? "");
+          }
+          return (
+            fishInfoText.includes(searchKeyword) ||
+            (fish.fisherName && fish.fisherName.includes(searchKeyword))
+          );
+        });
 
   const totalPages = Math.ceil(filteredFishData.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
@@ -298,19 +324,9 @@ function FactoryHome() {
   };
 
   const handleCardClick: (fish: any) => void = (fish: any) => {
-    // Detail 페이지로 이동
+    setSelectedFish(fish);
     navigate(`/detail/${fish.articleId}`);
   };
-
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-    setSelectedFish(null);
-  };
-
-  // const handleOpenModal = (fish: any) => {
-  //   setSelectedFish(fish);
-  //   setIsModalOpen(true);
-  // };
 
   const renderPaginationButtons = () => {
     const buttons = [];
@@ -351,6 +367,7 @@ function FactoryHome() {
 
   return (
     <Container>
+      {isLoading && <LoadingSpinner />}
       <Title>
         <Highlight>혼획물</Highlight> 검색하기
       </Title>
@@ -371,11 +388,12 @@ function FactoryHome() {
         />
         <SearchIcon onClick={() => setSearchKeyword(searchKeyword)} />
       </SearchContainer>
-
       <FishGrid>
         {currentFishData.map((fish, index) => (
           <FishCard key={index} onClick={() => handleCardClick(fish)}>
-            <FishImageSection>{fish.thumbnail || "🐟"}</FishImageSection>
+            <FishImageSection thumbnail={fish.thumbnail}>
+              {!fish.thumbnail && "🐟"}
+            </FishImageSection>
             <FishInfoSection>
               <LocationInfo>
                 <LocationIcon>📍</LocationIcon>
@@ -383,7 +401,15 @@ function FactoryHome() {
               </LocationInfo>
 
               <FishInfo>
-                <FishName>{fish.fishInfo[0]}</FishName>
+                <FishName>
+                  {typeof fish.fishInfo === "object" && fish.fishInfo !== null
+                    ? Object.entries(fish.fishInfo)
+                        .map(([name, count]) => `${name}: ${count}`)
+                        .join(", ")
+                    : Array.isArray(fish.fishInfo)
+                    ? fish.fishInfo.join(", ")
+                    : String(fish.fishInfo ?? "")}
+                </FishName>
                 <FishDetails>
                   {fish.fisherName} • {fish.getDate}
                 </FishDetails>
@@ -424,16 +450,7 @@ function FactoryHome() {
           </FishCard>
         ))}
       </FishGrid>
-
       <Pagination>{renderPaginationButtons()}</Pagination>
-
-      {selectedFish && (
-        <FishModal
-          isOpen={isModalOpen}
-          onClose={handleCloseModal}
-          fishData={selectedFish}
-        />
-      )}
     </Container>
   );
 }

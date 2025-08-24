@@ -1,6 +1,7 @@
 import styled from "styled-components";
 import LeftSidebar from "../components/LeftSidebar";
 import CancelModal from "../components/CancelModal";
+import LoadingSpinner from "../components/LoadingSpinner";
 import axios from "axios";
 import { useEffect, useState } from "react";
 
@@ -62,19 +63,6 @@ const SectionTitle = styled.h2`
   color: #333;
 `;
 
-const ViewAllButton = styled.button`
-  background: none;
-  border: none;
-  color: #4a90e2;
-  font-size: 14px;
-  cursor: pointer;
-  text-decoration: none;
-
-  &:hover {
-    color: #357abd;
-  }
-`;
-
 const TableContainer = styled.div`
   overflow-x: auto;
   border: 2px solid #f0f0f0;
@@ -129,10 +117,11 @@ function Matching() {
   const [, setPostData] = useState<any>(null);
   const [currentPosts, setCurrentPosts] = useState<currentPostRow[]>([]);
   const [completedPosts, setCompletedPosts] = useState<CompletedPostRow[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   // Modal state and handlers
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
-  const [, setEditArticleId] = useState<any>(null);
+  const [editArticleId, setEditArticleId] = useState<any>(null);
 
   type currentPostRow = {
     articleId: any;
@@ -141,7 +130,7 @@ function Matching() {
     getTime: string;
     limitDate: string;
     limitTime: string;
-    status: string;
+    matchingStatus: string;
   };
 
   type CompletedPostRow = {
@@ -151,7 +140,7 @@ function Matching() {
     getTime: string;
     limitDate: string;
     limitTime: string;
-    status: string;
+    matchingStatus: string;
   };
 
   useEffect(() => {
@@ -160,6 +149,7 @@ function Matching() {
   }, []);
 
   const fetchPostData = async () => {
+    setIsLoading(true);
     try {
       setPostData(null);
       setCurrentPosts([]);
@@ -167,14 +157,17 @@ function Matching() {
       // localStorage에서 JWT 토큰 가져오기
       const token = localStorage.getItem("jwt");
       const response = await axios.get(
-        `${import.meta.env.VITE_API_URL}/mypage/posts/`,
+        `${import.meta.env.VITE_API_URL}/factory/mypage`,
         token ? { headers: { Authorization: `Bearer ${token}` } } : undefined
       );
+      console.log("Matching fetch response:", response.data);
       setPostData(response.data);
-      setCurrentPosts(response.data.currentPosts);
-      setCompletedPosts(response.data.completedPosts);
+      setCurrentPosts(response.data.matchingNotSuccessList);
+      setCompletedPosts(response.data.matchingSuccessList);
     } catch (error) {
       console.error("Error fetching post data:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -188,14 +181,33 @@ function Matching() {
     setEditArticleId(null);
   };
 
-  const handleCancelModalSubmit = () => {
-    // TODO: implement cancel submit logic using editArticleId
+  const handleCancelModalSubmit = async () => {
+    console.log("매칭 취소 요청 articleId:", editArticleId); // 값 확인
+    try {
+      const token = localStorage.getItem("jwt");
+      await axios.post(
+        `${import.meta.env.VITE_API_URL}/factory/mypage/matchingCancel`,
+        { articleId: editArticleId },
+        token
+          ? {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+              withCredentials: true,
+            }
+          : undefined
+      );
+      fetchPostData();
+    } catch (error) {
+      console.error("매칭 취소 요청 실패:", error);
+    }
     setIsCancelModalOpen(false);
     setEditArticleId(null);
   };
 
   return (
     <MypageContainer>
+      {isLoading && <LoadingSpinner />}
       <Title>마이페이지</Title>
       <Subtitle>
         마이페이지에서 등록, 조회, 거래 내역을 한눈에 확인하세요.
@@ -208,7 +220,6 @@ function Matching() {
           <Section>
             <SectionHeader>
               <SectionTitle>매칭 신청 현황 목록</SectionTitle>
-              <ViewAllButton>더보기 &gt;</ViewAllButton>
             </SectionHeader>
             <TableContainer>
               <Table>
@@ -216,7 +227,7 @@ function Matching() {
                   <tr>
                     <TableHeaderCell>혼획물 종류</TableHeaderCell>
                     <TableHeaderCell>어획 일시</TableHeaderCell>
-                    <TableHeaderCell>수거 마감 기한</TableHeaderCell>
+                    <TableHeaderCell>수거 마감 일시</TableHeaderCell>
                     <TableHeaderCell>매칭 현황</TableHeaderCell>
                     <TableHeaderCell>취소하기</TableHeaderCell>
                   </tr>
@@ -238,10 +249,28 @@ function Matching() {
                   ) : (
                     currentPosts.map((row, index) => (
                       <TableRow key={index}>
-                        <TableCell>{row.fishInfo}</TableCell>
+                        <TableCell>
+                          {typeof row.fishInfo === "object" &&
+                          row.fishInfo !== null
+                            ? Object.entries(row.fishInfo)
+                                .map(([name, count]) => `${name}: ${count}`)
+                                .join(", ")
+                            : Array.isArray(row.fishInfo)
+                            ? row.fishInfo.join(", ")
+                            : String(row.fishInfo ?? "")}
+                        </TableCell>
                         <TableCell>{row.getTime}</TableCell>
                         <TableCell>{row.limitDate}</TableCell>
-                        <TableCell>{row.status}</TableCell>
+                        <TableCell
+                          style={{
+                            color:
+                              row.matchingStatus === "매칭 마감"
+                                ? "red"
+                                : "#0966FF",
+                          }}
+                        >
+                          {row.matchingStatus}
+                        </TableCell>
                         <TableCell>
                           <ActionButton
                             onClick={() => handleCancel(row.articleId)}
@@ -253,13 +282,6 @@ function Matching() {
                     ))
                   )}
                 </tbody>
-                <CancelModal
-                  isOpen={isCancelModalOpen}
-                  onClose={handleCancelModalClose}
-                  onConfirm={handleCancelModalSubmit}
-                  title="매칭 취소"
-                  body="정말로 매칭을 취소하시겠습니까?"
-                />
               </Table>
             </TableContainer>
           </Section>
@@ -268,7 +290,6 @@ function Matching() {
           <Section>
             <SectionHeader>
               <SectionTitle>매칭 완료된 글</SectionTitle>
-              <ViewAllButton>더보기 &gt;</ViewAllButton>
             </SectionHeader>
             <TableContainer>
               <Table>
@@ -276,7 +297,7 @@ function Matching() {
                   <tr>
                     <TableHeaderCell>혼획물 종류</TableHeaderCell>
                     <TableHeaderCell>어획 일시</TableHeaderCell>
-                    <TableHeaderCell>수거 마감 기한</TableHeaderCell>
+                    <TableHeaderCell>수거 마감 일시</TableHeaderCell>
                     <TableHeaderCell>매칭 현황</TableHeaderCell>
                     <TableHeaderCell></TableHeaderCell>
                   </tr>
@@ -298,10 +319,28 @@ function Matching() {
                   ) : (
                     completedPosts.map((row, index) => (
                       <TableRow key={index}>
-                        <TableCell>{row.fishInfo}</TableCell>
+                        <TableCell>
+                          {typeof row.fishInfo === "object" &&
+                          row.fishInfo !== null
+                            ? Object.entries(row.fishInfo)
+                                .map(([name, count]) => `${name}: ${count}`)
+                                .join(", ")
+                            : Array.isArray(row.fishInfo)
+                            ? row.fishInfo.join(", ")
+                            : String(row.fishInfo ?? "")}
+                        </TableCell>
                         <TableCell>{row.getTime}</TableCell>
                         <TableCell>{row.limitDate}</TableCell>
-                        <TableCell>{row.status}</TableCell>
+                        <TableCell
+                          style={{
+                            color:
+                              row.matchingStatus === "매칭 완료"
+                                ? "#0966ff"
+                                : "#999",
+                          }}
+                        >
+                          {row.matchingStatus}
+                        </TableCell>
                       </TableRow>
                     ))
                   )}
@@ -311,6 +350,13 @@ function Matching() {
           </Section>
         </MainContent>
       </ContentSection>
+      <CancelModal
+        isOpen={isCancelModalOpen}
+        onClose={handleCancelModalClose}
+        onConfirm={handleCancelModalSubmit}
+        title="매칭 취소"
+        body="정말로 매칭을 취소하시겠습니까?"
+      />
     </MypageContainer>
   );
 }

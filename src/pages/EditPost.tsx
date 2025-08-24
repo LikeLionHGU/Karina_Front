@@ -1,4 +1,7 @@
+import { hasToken, isTokenExpired } from "../utils/token";
+import { logout } from "../utils/logout";
 import styled from "styled-components";
+import LoadingSpinner from "../components/LoadingSpinner";
 import LeftSidebar from "../components/LeftSidebar";
 import EditModal from "../components/EditModal";
 import axios from "axios";
@@ -16,7 +19,7 @@ const Title = styled.h1`
   font-size: 28px;
   font-weight: bold;
   margin-bottom: 8px;
-  color: #333;
+  color: #0966ff;
 `;
 
 const Subtitle = styled.p`
@@ -24,6 +27,12 @@ const Subtitle = styled.p`
   margin-bottom: 60px;
   color: #999;
   font-size: 14px;
+
+  /* Subhead */
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: normal;
 `;
 
 const Divider = styled.hr`
@@ -60,19 +69,6 @@ const SectionTitle = styled.h2`
   font-size: 18px;
   font-weight: bold;
   color: #333;
-`;
-
-const ViewAllButton = styled.button`
-  background: none;
-  border: none;
-  color: #4a90e2;
-  font-size: 14px;
-  cursor: pointer;
-  text-decoration: none;
-
-  &:hover {
-    color: #357abd;
-  }
 `;
 
 const TableContainer = styled.div`
@@ -126,17 +122,18 @@ const ActionButton = styled.button`
 `;
 
 function EditPost() {
-  const [, setPostData] = useState<any>(null);
   const [myPosts, setMyPosts] = useState<myPostRow[]>([]);
   const [completedPosts, setCompletedPosts] = useState<CompletedPostRow[]>([]);
 
   // Modal state and handlers
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [, setEditArticleId] = useState<any>(null);
+  const [editArticleId, setEditArticleId] = useState<any>(null);
+
+  const [isLoading, setIsLoading] = useState(false);
 
   type myPostRow = {
     articleId: any;
-    fishInfo: string;
+    fishInfo: Array<string>;
     getDate: string;
     getTime: string;
     limitDate: string;
@@ -146,7 +143,7 @@ function EditPost() {
 
   type CompletedPostRow = {
     articleId: any;
-    fishInfo: string;
+    fishInfo: Array<string>;
     getDate: string;
     getTime: string;
     limitDate: string;
@@ -160,27 +157,45 @@ function EditPost() {
   }, []);
 
   const fetchPostData = async () => {
+    setIsLoading(true);
     try {
-      setPostData(null);
-      setMyPosts([]);
-      setCompletedPosts([]);
-      // localStorage에서 JWT 토큰 가져오기
-      const token = localStorage.getItem("jwt");
+      const token = hasToken() ? localStorage.getItem("jwt") : null;
       const response = await axios.get(
-        `${import.meta.env.VITE_API_URL}/mypage/posts/`,
+        `${import.meta.env.VITE_API_URL}/fisher/mypage/posts`,
         token ? { headers: { Authorization: `Bearer ${token}` } } : undefined
       );
-      setPostData(response.data);
-      setMyPosts(response.data.myPosts);
-      setCompletedPosts(response.data.completedPosts);
+      console.log("Fetched post data:", response.data);
+      setMyPosts(
+        Array.isArray(response.data.incompleteArticle)
+          ? response.data.incompleteArticle
+          : response.data.incompleteArticle
+          ? [response.data.incompleteArticle]
+          : []
+      );
+      setCompletedPosts(
+        Array.isArray(response.data.completeArticle)
+          ? response.data.completeArticle
+          : response.data.completeArticle
+          ? [response.data.completeArticle]
+          : []
+      );
     } catch (error) {
-      console.error("Error fetching post data:", error);
+      if (isTokenExpired(error)) {
+        logout();
+      } else {
+        console.error("Error fetching post data:", error);
+      }
+    } finally {
+      setIsLoading(false);
     }
   };
 
+  // 선택한 글의 데이터 가져오기
   const handleEdit = (articleId: any) => {
     setEditArticleId(articleId);
     setIsEditModalOpen(true);
+    // articleId와 initialData 전달 확인용 로그
+    console.log("EditModal articleId:", articleId);
   };
 
   const handleEditModalClose = () => {
@@ -188,14 +203,43 @@ function EditPost() {
     setEditArticleId(null);
   };
 
-  const handleEditModalSubmit = () => {
-    // TODO: implement edit submit logic using editArticleId and form data
+  // EditModal에서 수정 버튼 클릭 시 호출
+  const handleEditModalSubmit = async (form: any) => {
+    if (!editArticleId) return;
+    try {
+      const token = localStorage.getItem("jwt");
+      // 백엔드 요구 구조로 변환
+      const info = {
+        articleId: editArticleId,
+        getDate: form.getDate,
+        getTime: form.getTime,
+        dateLimit: form.limitDate,
+        timeLimit: form.limitTime,
+      };
+      const formData = new FormData();
+      formData.append(
+        "info",
+        new Blob([JSON.stringify(info)], { type: "application/json" })
+      );
+      if (form.image) {
+        formData.append("thumbnail", form.image, form.image.name);
+      }
+      await axios.put(
+        `${import.meta.env.VITE_API_URL}/fisher/mypage/posts`,
+        formData,
+        token ? { headers: { Authorization: `Bearer ${token}` } } : undefined
+      );
+      fetchPostData(); // 수정 후 데이터 갱신
+    } catch (error) {
+      console.error("Error updating article:", error);
+    }
     setIsEditModalOpen(false);
     setEditArticleId(null);
   };
 
   return (
     <MypageContainer>
+      {isLoading && <LoadingSpinner />}
       <Title>마이페이지</Title>
       <Subtitle>
         마이페이지에서 등록, 조회, 거래 내역을 한눈에 확인하세요.
@@ -208,7 +252,6 @@ function EditPost() {
           <Section>
             <SectionHeader>
               <SectionTitle>내가 쓴 글</SectionTitle>
-              <ViewAllButton>더보기 &gt;</ViewAllButton>
             </SectionHeader>
             <TableContainer>
               <Table>
@@ -216,9 +259,9 @@ function EditPost() {
                   <tr>
                     <TableHeaderCell>혼획물 종류</TableHeaderCell>
                     <TableHeaderCell>어획 일시</TableHeaderCell>
-                    <TableHeaderCell>수거 마감 기한</TableHeaderCell>
+                    <TableHeaderCell>수거 마감 일시</TableHeaderCell>
                     <TableHeaderCell>매칭 현황</TableHeaderCell>
-                    <TableHeaderCell>수정하기</TableHeaderCell>
+                    <TableHeaderCell></TableHeaderCell>
                   </tr>
                 </TableHeader>
                 <tbody>
@@ -238,10 +281,29 @@ function EditPost() {
                   ) : (
                     myPosts.map((row, index) => (
                       <TableRow key={index}>
-                        <TableCell>{row.fishInfo}</TableCell>
-                        <TableCell>{row.getTime}</TableCell>
-                        <TableCell>{row.limitDate}</TableCell>
-                        <TableCell>{row.status}</TableCell>
+                        <TableCell>
+                          {Array.isArray(row.fishInfo)
+                            ? row.fishInfo.join(", ")
+                            : typeof row.fishInfo === "object" &&
+                              row.fishInfo !== null
+                            ? Object.entries(row.fishInfo)
+                                .map(([key, value]) => `${key}: ${value}`)
+                                .join(", ")
+                            : row.fishInfo}
+                        </TableCell>
+                        <TableCell>
+                          {row.getDate} {row.getTime}
+                        </TableCell>
+                        <TableCell>
+                          {row.limitDate} {row.limitTime}
+                        </TableCell>
+                        <TableCell
+                          style={{
+                            color: row.status === "매칭 대기" ? "red" : "blue",
+                          }}
+                        >
+                          {row.status}
+                        </TableCell>
                         <TableCell>
                           <ActionButton
                             onClick={() => handleEdit(row.articleId)}
@@ -253,11 +315,6 @@ function EditPost() {
                     ))
                   )}
                 </tbody>
-                <EditModal
-                  isOpen={isEditModalOpen}
-                  onClose={handleEditModalClose}
-                  onSubmit={handleEditModalSubmit}
-                />
               </Table>
             </TableContainer>
           </Section>
@@ -266,7 +323,6 @@ function EditPost() {
           <Section>
             <SectionHeader>
               <SectionTitle>매칭 완료된 글</SectionTitle>
-              <ViewAllButton>더보기 &gt;</ViewAllButton>
             </SectionHeader>
             <TableContainer>
               <Table>
@@ -274,7 +330,7 @@ function EditPost() {
                   <tr>
                     <TableHeaderCell>혼획물 종류</TableHeaderCell>
                     <TableHeaderCell>어획 일시</TableHeaderCell>
-                    <TableHeaderCell>수거 마감 기한</TableHeaderCell>
+                    <TableHeaderCell>수거 마감 일시</TableHeaderCell>
                     <TableHeaderCell>매칭 현황</TableHeaderCell>
                     <TableHeaderCell></TableHeaderCell>
                   </tr>
@@ -296,10 +352,25 @@ function EditPost() {
                   ) : (
                     completedPosts.map((row, index) => (
                       <TableRow key={index}>
-                        <TableCell>{row.fishInfo}</TableCell>
-                        <TableCell>{row.getTime}</TableCell>
-                        <TableCell>{row.limitDate}</TableCell>
-                        <TableCell>{row.status}</TableCell>
+                        <TableCell>
+                          {Array.isArray(row.fishInfo)
+                            ? row.fishInfo.join(", ")
+                            : typeof row.fishInfo === "object" &&
+                              row.fishInfo !== null
+                            ? Object.entries(row.fishInfo)
+                                .map(([key, value]) => `${key}: ${value}`)
+                                .join(", ")
+                            : row.fishInfo}
+                        </TableCell>
+                        <TableCell>
+                          {row.getDate} {row.getTime}
+                        </TableCell>
+                        <TableCell>
+                          {row.limitDate} {row.limitTime}
+                        </TableCell>
+                        <TableCell style={{ color: "blue" }}>
+                          {row.status}
+                        </TableCell>
                       </TableRow>
                     ))
                   )}
@@ -309,6 +380,17 @@ function EditPost() {
           </Section>
         </MainContent>
       </ContentSection>
+      {/* EditModal은 테이블 아래에 위치 */}
+      {/* EditModal에 articleId와 기존 데이터 전달 */}
+      <EditModal
+        isOpen={isEditModalOpen}
+        onClose={handleEditModalClose}
+        onSubmit={handleEditModalSubmit}
+        articleId={editArticleId}
+        initialData={
+          myPosts.find((row) => row.articleId === editArticleId) || {}
+        }
+      />
     </MypageContainer>
   );
 }

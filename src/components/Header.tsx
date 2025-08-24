@@ -29,13 +29,12 @@ const ChevronDownIcon = () => (
 
 const HeaderContainer = styled.header`
   width: 100vw;
-  background-color: white;
+  background: #fff;
   position: sticky;
   top: 0;
   z-index: 100;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 `;
-
 const HeaderContent = styled.div`
   max-width: 1200px;
   margin: 0 auto;
@@ -44,7 +43,6 @@ const HeaderContent = styled.div`
   justify-content: space-between;
   align-items: center;
 `;
-
 const Logo = styled.div<{ $disabled?: boolean }>`
   width: 100px;
   display: flex;
@@ -53,41 +51,34 @@ const Logo = styled.div<{ $disabled?: boolean }>`
   gap: 8px;
   cursor: ${(props) => (props.$disabled ? "default" : "pointer")};
   opacity: ${(props) => (props.$disabled ? 0.5 : 1)};
-
-  img {
+  & img {
     width: 70%;
     height: 70%;
     object-fit: contain;
     pointer-events: ${(props) => (props.$disabled ? "none" : "auto")};
   }
 `;
-
 const NavSection = styled.div`
   display: flex;
   align-items: center;
   gap: 60px;
 `;
-
 const PostButton = styled.button`
-  color: var(--Black-4, #454545);
+  color: #454545;
   background: none;
   border: none;
   cursor: pointer;
-
-  /* Button 2 */
   font-size: 15px;
   font-style: normal;
   font-weight: 600;
   line-height: normal;
 `;
-
 const ProfileSection = styled.div`
   display: flex;
   align-items: center;
   gap: 10px;
-  position: relative; /* anchor for dropdown */
+  position: relative;
 `;
-
 const LoginButton = styled.button`
   padding: 8px 32px;
   color: #fff;
@@ -95,19 +86,16 @@ const LoginButton = styled.button`
   border: none;
   border-radius: 16px;
   cursor: pointer;
-
-  /* Button 2 */
   font-size: 15px;
   font-style: normal;
   font-weight: 600;
   line-height: normal;
 `;
-
 const ProfileIcon = styled.div`
   width: 40px;
   height: 40px;
   flex-shrink: 0;
-  background-color: var(--Black-1, #e6e6e6);
+  background: #e6e6e6;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -119,27 +107,22 @@ const ProfileIcon = styled.div`
   background-size: cover;
   background-position: center;
 `;
-
 const UserName = styled.span`
-  color: var(--Black-4, #454545);
+  color: #454545;
   cursor: pointer;
-
-  /* Button 2 */
   font-size: 15px;
   font-style: normal;
   font-weight: 600;
   line-height: normal;
-
   &:hover {
-    color: #4a90e2;
+    color: #0966ff;
   }
 `;
-
 const Dropdown = styled.div`
   position: absolute;
   right: 0;
   top: 120%;
-  background: white;
+  background: #fff;
   border-radius: 12px;
   box-shadow: 0 6px 18px rgba(9, 102, 255, 0.12);
   padding: 12px;
@@ -148,7 +131,6 @@ const Dropdown = styled.div`
   gap: 3px;
   z-index: 200;
 `;
-
 const DropdownButton = styled.button<{ primary?: boolean }>`
   width: 110%;
   padding: 5px 12px;
@@ -160,7 +142,6 @@ const DropdownButton = styled.button<{ primary?: boolean }>`
   cursor: pointer;
   text-align: left;
   font-size: 1rem;
-
   &:hover {
     color: #0966ff;
   }
@@ -173,40 +154,15 @@ function Header({ isLanding = false }: HeaderProps) {
   const [isLogoutSuccess, setIsLogoutSuccess] = useState(false);
   const ref = useRef<HTMLDivElement | null>(null);
 
-  const handleLogoClick = () => {
-    if (isLanding) return;
-    const role = localStorage.getItem("role");
-    if (role === "fisher") {
-      navigate("/home/fisher");
-    } else if (role === "factory") {
-      navigate("/home/factory");
-    } else {
-      navigate("/");
-    }
-  };
-
-  const handleMyPageClick = () => {
-    const role = localStorage.getItem("role");
-    if (role === "fisher") {
-      navigate("/mypage/request");
-    } else if (role === "factory") {
-      navigate("/mypage/matching");
-    } else {
-      navigate("/mypage");
-    }
-  };
-
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
       if (ref.current && !ref.current.contains(e.target as Node)) {
         setOpen(false);
       }
     }
-
     function handleEsc(e: KeyboardEvent) {
       if (e.key === "Escape") setOpen(false);
     }
-
     document.addEventListener("mousedown", handleClickOutside);
     document.addEventListener("keydown", handleEsc);
     return () => {
@@ -215,13 +171,34 @@ function Header({ isLanding = false }: HeaderProps) {
     };
   }, []);
 
+  const handleLogoClick = () => {
+    if (isLanding) return;
+    const role = localStorage.getItem("role");
+    if (role === "ROLE_FACTORY") {
+      navigate("/home/factory");
+    } else {
+      navigate("/home/fisher");
+    }
+  };
+
+  const handleMyPageClick = () => {
+    const role = localStorage.getItem("role");
+    if (role === "ROLE_FISHER") {
+      navigate("/mypage/request");
+    } else {
+      navigate("/mypage/matching");
+    }
+  };
+
   const handleLogout = () => {
     setIsLogoutModalOpen(true);
     setIsLogoutSuccess(false);
   };
 
   const handleLogoutConfirm = () => {
-    localStorage.removeItem("token");
+    localStorage.removeItem("jwt");
+    localStorage.removeItem("role");
+    localStorage.removeItem("userName");
     setIsLogoutSuccess(true);
   };
 
@@ -230,8 +207,7 @@ function Header({ isLanding = false }: HeaderProps) {
       setIsLogoutModalOpen(false);
       setIsLogoutSuccess(false);
       navigate("/");
-    }
-    else {
+    } else {
       setIsLogoutModalOpen(false);
       setIsLogoutSuccess(false);
     }
@@ -243,22 +219,24 @@ function Header({ isLanding = false }: HeaderProps) {
         <Logo onClick={handleLogoClick} $disabled={isLanding}>
           <img src="/logo.svg" alt="Logo" />
         </Logo>
-
         <NavSection>
           <PostButton onClick={() => navigate("/post")}>
             혼획물 등록하기
           </PostButton>
-
           <ProfileSection ref={ref}>
-            <LoginButton onClick={() => navigate("/login")}>
-              (임시) 로그인 / 회원가입
-            </LoginButton>
-            <ProfileIcon onClick={() => setOpen((s) => !s)}></ProfileIcon>
-            <UserName onClick={() => setOpen((s) => !s)}>
-              카리나
-              <ChevronDownIcon />
-            </UserName>
-
+            {localStorage.getItem("jwt") ? (
+              <>
+                <ProfileIcon onClick={() => setOpen((s) => !s)}></ProfileIcon>
+                <UserName onClick={() => setOpen((s) => !s)}>
+                  {localStorage.getItem("userName")}
+                  <ChevronDownIcon />
+                </UserName>
+              </>
+            ) : (
+              <LoginButton onClick={() => navigate("/login")}>
+                로그인 / 회원가입
+              </LoginButton>
+            )}
             {open && (
               <Dropdown>
                 <DropdownButton primary onClick={handleMyPageClick}>

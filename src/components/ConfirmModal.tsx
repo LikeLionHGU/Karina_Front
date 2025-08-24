@@ -73,7 +73,7 @@ const CancelButton = styled.button`
 
 const ConfirmButton = styled.button`
   padding: 16px 32px;
-  background: #4a90e2;
+  background: #0966ff;
   color: white;
   border: none;
   border-radius: 25px;
@@ -83,13 +83,13 @@ const ConfirmButton = styled.button`
   min-width: 170px;
 
   &:hover {
-    background: #357abd;
+    background: #0752cc;
   }
 `;
 
 const SuccessButton = styled.button`
   padding: 16px 32px;
-  background: #4a90e2;
+  background: #0966ff;
   color: white;
   border: none;
   border-radius: 25px;
@@ -99,7 +99,7 @@ const SuccessButton = styled.button`
   min-width: 170px;
 
   &:hover {
-    background: #357abd;
+    background: #0752cc;
   }
 `;
 

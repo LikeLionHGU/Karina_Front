@@ -73,7 +73,7 @@ const ButtonContainer = styled.div`
 
 const ConfirmButton = styled.button`
   padding: 12px 24px;
-  background: #4a90e2;
+  background: #0966ff;
   color: white;
   border: none;
   border-radius: 25px;
@@ -83,15 +83,11 @@ const ConfirmButton = styled.button`
   transition: all 0.3s ease;
 
   &:hover {
-    background: #357abd;
+    background: #0752cc;
   }
 `;
 
-function ErrorModal({
-  isOpen,
-  onClose,
-  message,
-}: ErrorModalProps) {
+function ErrorModal({ isOpen, onClose, message }: ErrorModalProps) {
   const handleOverlayClick = (e: React.MouseEvent) => {
     if (e.target === e.currentTarget) {
       onClose();

@@ -13,7 +13,7 @@ import styled from "styled-components";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import VideoAnalysisPage from "./pages/VideoAnalysisPage";
-import ProcessTest from './components/Processing';
+import ProcessTest from "./components/Processing";
 import AnalysisArticle from "./pages/AnalysisArticle";
 
 import "./App.css";
@@ -40,15 +40,15 @@ function App() {
             <Route path="/home/factory" element={<FactoryHome />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
-            <Route path="/detail/:fishId" element={<Detail />} />
+            <Route path="/detail/:articleId" element={<Detail />} />
             <Route path="/mypage/request" element={<Request />} />
             <Route path="/mypage/matching" element={<Matching />} />
             <Route path="/mypage/posts" element={<EditPost />} />
             <Route path="/mypage/profile" element={<UpdateProfile />} />
             <Route path="/post" element={<VideoAnalysisPage />} />
             {/*이 경로는 나중에 지우기*/}
-            <Route path="/process" element={<ProcessTest />} /> 
-            <Route path="/article" element={<AnalysisArticle />} /> 
+            <Route path="/process" element={<ProcessTest />} />
+            <Route path="/article" element={<AnalysisArticle />} />
           </Routes>
         </MainContent>
         <Footer />
