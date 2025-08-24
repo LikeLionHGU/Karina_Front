@@ -14,6 +14,7 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import VideoAnalysisPage from "./pages/VideoAnalysisPage";
 import AnalysisArticle from "./pages/AnalysisArticle";
+import ArticleEnd from "./pages/ArticleEnd";
 
 import "./App.css";
 
@@ -46,6 +47,7 @@ function App() {
             <Route path="/mypage/profile" element={<UpdateProfile />} />
             <Route path="/post" element={<VideoAnalysisPage />} />
             <Route path="/article/:articleId" element={<AnalysisArticle />} /> 
+            <Route path="/article/end" element={<ArticleEnd />} />
           </Routes>
         </MainContent>
         <Footer />

@@ -52,7 +52,10 @@
 }
 
 .PhotoUpolad{
+    display:flex;
     margin-top:155px;
+    justify-content: center;
+    align-items: center;
 }
 
 .catchDate{

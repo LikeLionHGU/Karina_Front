@@ -268,7 +268,7 @@ function Signup() {
   const [phoneFirst, setPhoneFirst] = useState('');
   const [phoneMiddle, setPhoneMiddle] = useState('');
   const [phoneEnd, setPhoneEnd] = useState('');
-  const [postcode, setPostcode] = useState("");
+  const [postcode, setPostcode] = useState(""); // 백엔드 측에 보내줄 우편주소
   const [address1, setAddress1] = useState("");        // 도로명/지번 + (참고항목)
   const [detailAddress, setDetailAddress] = useState("");  // 사용자 입력
   const [mainAddress, setMainAddress] = useState(""); // 백엔드 측에 보내줄 주소
@@ -435,6 +435,7 @@ function Signup() {
       password: userPassword,           // 비밀번호는 trim X
       name: userName.trim(),
       phoneNumber: phoneHyphen,
+      postCode: postcode,
       mainAddress: mainAddress,        // 예: "포항시"
       detailAddress: detailAddress.trim(),
     };

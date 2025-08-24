@@ -2,10 +2,12 @@ import styled from "styled-components";
 import styles from "../styles/AnalysisArticle.module.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faImage } from "@fortawesome/free-regular-svg-icons";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import { useParams } from 'react-router-dom'; //링크에 param으로 붙어있는 articleID 받아오기
 import { useNavigate } from "react-router-dom"; 
 import axios from "axios";
+import ErrorModal from "../components/ErrorModal";
+import ConfirmModal from "../components/ConfirmModal";
 const InputContainer = styled.div`
     display:flex;
     flex-direction:column;
@@ -28,8 +30,9 @@ const InputBox = styled.div`
 `;
 
 const InputInner = styled.div`
-  display:flex;
-  flex-direction:column;
+    display:flex;
+    flex-direction:column;
+    gap: 20px;
 `;
 
 /*파일 컨테이너*/
@@ -39,7 +42,7 @@ const FileContent = styled.div`
     align-items: center;
     border-radius: 5px;
     border: 1.5px solid var(--Secondary-3, #A5BEE0);
-    height: 40px;  
+    height: 65px;  
     gap: 10px;              /* 버튼 사이 간격 */
     padding: 0 16px;
     box-sizing: border-box;
@@ -53,8 +56,8 @@ const FileContent = styled.div`
         font-weight: 700;
         line-height: 30px; /* 150% */
     }
-`
 
+`
 const HiddenFile = styled.input.attrs({ type: 'file' })` 
   display:none; 
 `
@@ -62,7 +65,7 @@ const HiddenFile = styled.input.attrs({ type: 'file' })`
 const UploadBtn = styled.button`
     margin-left:16px;
     width: 150px;
-    height: 40px;
+    height: 65px;
     flex-shrink: 0;
     border-radius: 15px;
     border: 2px solid var(--Primary-2, #0966FF);
@@ -75,6 +78,14 @@ const UploadBtn = styled.button`
     font-style: normal;
     font-weight: 600;
     line-height: normal;
+
+     &:hover{
+        background: var(--Primary-2, #0966FF);
+        transform: translateY(-2px);
+        transition: background-color 0.3s;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        color: #FFF;
+    }
 `
 /*파일 업로드 되고 나서 뜨는 부분 컨테이너*/
 const FileChip = styled.div`
@@ -91,26 +102,34 @@ const FileIcon = styled(FontAwesomeIcon)`
 const ButtonContainer = styled.div`
     display:flex;
     align-items: center;
+    width: min(50vw, 1180px);
 `
 
+const DateAndTimeContainer = styled.div`
+    display:flex;
+    align-items: center;
+    width: min(50vw, 1180px);
+    margin-bottom: 47px;
+`
 /*날짜 관련*/
 const DateTitle = styled.div`
-    flex:1;
+    white-space: nowrap;
     text-align: left;
     color: var(--Black-4, #454545);
     font-size: clamp(15px, 1.5vw, 20px);
     font-style: normal;
     font-weight: 600;
     line-height: normal;
+    margin-right: 47px;
     
 `
 const DateContent = styled.input`
-    width: fit-content;                /* 남은 공간 전부 차지 */
+    width: min(50vw, 450px);                /* 남은 공간 전부 차지 */
     display: flex;  
     align-items: center;
     border-radius: 5px;
     border: 1.5px solid var(--Secondary-3, #A5BEE0);
-    height: 40px;  
+    height: 65px; 
     gap: 10px;              /* 버튼 사이 간격 */
     padding: 0 16px;
     box-sizing: border-box;
@@ -125,6 +144,31 @@ const DateContent = styled.input`
         line-height: 30px; /* 150% */
     }
 `
+/*마지막 완료 버튼*/
+const CompleteSubmit = styled.div`
+    margin: 120px auto 180px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    width: 200px;
+    height: 65px;
+    flex-shrink: 0;
+    border-radius: 15px;
+    background: var(--Primary-2, #0966FF);
+    cursor: pointer;
+
+    &:hover{
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+    /*텍스트 css */
+    color: #FFF;
+    font-size: clamp(15px, 1.6vw, 20px);
+    font-style: normal;
+    font-weight: 600;
+    line-height: 45px; /* 150% */
+
+`
 type Params = { articleId?: string };
 function AnalysisArticle () {
     const navigate = useNavigate();
@@ -135,6 +179,13 @@ function AnalysisArticle () {
     const [pickUpDate, setPickUpDate] = useState<string>(''); //포획 날짜 데이터 저장
     const [pickUpTime, setPickUpTime] =  useState<string>('');
     const { articleId } = useParams<Params>(); //articleId
+    const [isErrorOpen, setErrorOpen] = useState(false); //error모달창 open 여부
+    const [isConfirmOpen, setConfirmOpen] = useState(false); //confirm모달창 open여부
+    const [modalMsg, setModalMsg] = useState("");
+    //success모달창 관련
+    const [isSuccess, setIsSuccess] = useState(false);
+    const [modalTitle, setModalTitle] = useState("");
+    const [modalBody, setModalBody] = useState("");
     /*파일 선택 관련 이벤트 관리*/
     const handleOpenFile: React.MouseEventHandler<HTMLButtonElement> = (e) => {
         e.preventDefault();
@@ -148,14 +199,31 @@ function AnalysisArticle () {
         console.log('업로드 파일:', selectedFile);
     };
 
-    const onSubmitArticle: React.MouseEventHandler<HTMLButtonElement> = async (event) => {
-        event.preventDefault();
+    const handleClose = () => setErrorOpen(false);
+    const handleConfirm = () =>{
+        setConfirmOpen(false);
+        setIsSuccess(false); 
+        navigate('/article/end');
+    } 
+
+    const openSuccess = (title: string, body: string) => {
+        setModalTitle(title);
+        setModalBody(body);
+        setIsSuccess(true);    // 확인 버튼 하나만
+        setConfirmOpen(true);
+    };
+    //모달 상태 관리
+    const openModal = (msg: string) => { setModalMsg(msg); setErrorOpen(true); };
+    
+    /*백엔드한테 보내는 데이터*/
+    const onSubmitArticle = async (e: React.MouseEvent<HTMLDivElement>) => {
+        e.preventDefault();
         console.log("포획 날짜", caughtDate);
         console.log("포획 시간", caughtTime);
         console.log("글 아이디", articleId);
         /*파일 업로드 여부 확인*/
         if (!selectedFile) {
-          alert("사진 파일을 업로드해주세요.");
+          openModal("사진 파일을 업로드 해주세요");
           return;
         }
     
@@ -195,14 +263,13 @@ function AnalysisArticle () {
            );
     
           if (response.data !== "401error") {
-            alert("등록 완료!");
-            navigate(`/login`);
+            openSuccess("신청 완료", "정상적으로 접수되었습니다.");
           } else {
-            alert("회원가입 실패. 다시 시도해주세요.");
+            openModal("등록을 실패했습니다. 다시 시도해 주세요");
           } 
           } catch (error) {
               // 네트워크 오류 등 예외 발생 시
-              alert("요청 중 오류가 발생했습니다.");
+              openModal("요청 중 오류가 발생했습니다");
           } finally {
          
         }
@@ -255,22 +322,22 @@ function AnalysisArticle () {
                         <InputBox>
                             <InputInner>
                                 <InputTitle>혼획물 포획 일시</InputTitle>
-                                <ButtonContainer>
+                                <DateAndTimeContainer>
                                     <DateTitle>포획 날짜</DateTitle>
                                     <DateContent
                                         type = "date"
                                         value={caughtDate}
                                         onChange={(e) =>setCaughtDate(e.target.value)}
                                     />   
-                                </ButtonContainer>
-                                <ButtonContainer>
+                                </DateAndTimeContainer>
+                                <DateAndTimeContainer>
                                     <DateTitle>포획 날짜</DateTitle>
                                     <DateContent
                                         type = "time"
                                         value={caughtTime}
                                         onChange={(e) =>setCaughtTime(e.target.value)}
                                     />   
-                                </ButtonContainer>       
+                                </DateAndTimeContainer>       
                             </InputInner> 
                         </InputBox>
                 </InputContainer>
@@ -281,28 +348,41 @@ function AnalysisArticle () {
                         <InputBox>
                             <InputInner>
                                 <InputTitle>수거 마감 일시</InputTitle>
-                                <ButtonContainer>
+                                <DateAndTimeContainer>
                                     <DateTitle>마감 날짜</DateTitle>
                                     <DateContent
                                         type = "date"
                                         value={pickUpDate}
                                         onChange={(e) =>setPickUpDate(e.target.value)}
                                     />   
-                                </ButtonContainer>
-                                <ButtonContainer>
+                                </DateAndTimeContainer>
+                                <DateAndTimeContainer>
                                     <DateTitle>마감 시간</DateTitle>
                                     <DateContent
                                         type = "time"
                                         value={pickUpTime}
                                         onChange={(e) =>setPickUpTime(e.target.value)}
                                     />   
-                                </ButtonContainer>       
+                                </DateAndTimeContainer>       
                             </InputInner> 
                         </InputBox>
                 </InputContainer>
             </div>
             
-        <button onClick = {onSubmitArticle}>등록 완료</button>
+        <CompleteSubmit onClick = {onSubmitArticle}>등록 완료</CompleteSubmit>
+        <ErrorModal
+            isOpen={isErrorOpen}
+            onClose={handleClose}
+            message={modalMsg}
+        />
+        <ConfirmModal
+            isOpen={isConfirmOpen}
+            onClose={() => setConfirmOpen(false)}
+            onConfirm={handleConfirm}
+            title={modalTitle}
+            body={modalBody}
+            isSuccess={isSuccess}
+        />
         </>
     )
 
