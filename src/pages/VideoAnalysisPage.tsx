@@ -10,7 +10,7 @@ type Step = 'idle' | 'processing' | 'done' | 'error';
 export default function VideoAnalysisPage() {
   const [step, setStep] = useState<Step>('idle');
   const [resultList, setResultList] = useState<any>(null);
-  const [articleId, setArticleId] = useState<number | null>(null);
+  const [articleId, setArticleId] = useState<string | null>(null);
   const [error, setError] = useState('');
   const abortRef = useRef<AbortController | null>(null);
   function parseJwt(t?: string|null) {
@@ -44,7 +44,8 @@ export default function VideoAnalysisPage() {
       );
 
       setResultList(res.data.analysisResult); // { "전갱이": 29, ... }
-      setArticleId(res.data.articleId);       // 123
+      const id = String(res.data.articleId);  // 무조건 문자열로
+      setArticleId(id);
       setStep('done');
     } catch (e: any) {
         if (axios.isAxiosError(e)) {
@@ -98,6 +99,7 @@ export default function VideoAnalysisPage() {
 
       {step === 'done' && resultList && (
         <Result
+          articleData = {articleId}
           data={resultList}
           onReset={reanalyze}          //  여기서 함수 “참조”만 넘기고,
         />
