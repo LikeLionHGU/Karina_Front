@@ -4,11 +4,12 @@ import LoadingSpinner from "../components/LoadingSpinner";
 import axios from "axios";
 import UploadBox from "../components/UploadBox";
 import Processing from "../components/Processing";
+import Restart from "../components/Restart";
 import Result from "../components/Result";
 import { hasToken, isTokenExpired } from "../utils/token";
 import { logout } from "../utils/logout";
 
-type Step = "idle" | "processing" | "done" | "error";
+type Step = "idle" | "processing" | "done" | "error" | "restart";
 
 export default function VideoAnalysisPage() {
   const [step, setStep] = useState<Step>("idle");
@@ -61,7 +62,12 @@ export default function VideoAnalysisPage() {
 
   // 재분석(수정 요청) — FormData로 articleId 전송
   const reanalyze = async () => {
-    if (!articleId) return;
+    console.log(articleId);
+    setStep("restart");
+    if (!articleId) {
+      alert("articleId가 없습니다.");
+      return;
+    }
     const ctrl = new AbortController();
     abortRef.current = ctrl;
 
@@ -105,6 +111,7 @@ export default function VideoAnalysisPage() {
       {isLoading && <LoadingSpinner />}
       {step === "idle" && <UploadBox handleSelect={postVideo} />}
       {step === "processing" && <Processing />}
+      {step === "restart" && <Restart />}
 
       {step === "done" && resultList && (
         <Result
