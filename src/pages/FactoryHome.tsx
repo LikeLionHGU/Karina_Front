@@ -294,21 +294,30 @@ function FactoryHome() {
     searchKeyword.trim() === ""
       ? allFishData
       : allFishData.filter((fish) => {
-          let fishInfoText = "";
-          if (typeof fish.fishInfo === "object" && fish.fishInfo !== null) {
-            fishInfoText = Object.entries(fish.fishInfo)
-              .map(([name, count]) => `${name}: ${count}`)
-              .join(", ");
-          } else if (Array.isArray(fish.fishInfo)) {
-            fishInfoText = fish.fishInfo.join(" ");
-          } else {
-            fishInfoText = String(fish.fishInfo ?? "");
-          }
+          // fishInfo는 객체이므로 value와 key 모두 검색
+          const fishInfoStr = fish.fishInfo
+            ? Object.entries(fish.fishInfo)
+                .map(([name, count]) => `${name} ${count}`)
+                .join(" ")
+            : "";
           return (
-            fishInfoText.includes(searchKeyword) ||
+            fishInfoStr.includes(searchKeyword) ||
             (fish.fisherName && fish.fisherName.includes(searchKeyword))
           );
         });
+  // status 문자열을 단계 숫자로 변환
+  const getStatusStep = (status: string) => {
+    switch (status) {
+      case "대기 중":
+        return 0;
+      case "매칭 대기":
+        return 1;
+      case "매칭 완료":
+        return 2;
+      default:
+        return 0;
+    }
+  };
 
   const totalPages = Math.ceil(filteredFishData.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
@@ -389,66 +398,75 @@ function FactoryHome() {
         <SearchIcon onClick={() => setSearchKeyword(searchKeyword)} />
       </SearchContainer>
       <FishGrid>
-        {currentFishData.map((fish, index) => (
-          <FishCard key={index} onClick={() => handleCardClick(fish)}>
-            <FishImageSection thumbnail={fish.thumbnail}>
-              {!fish.thumbnail && "🐟"}
-            </FishImageSection>
-            <FishInfoSection>
-              <LocationInfo>
-                <LocationIcon>📍</LocationIcon>
-                {fish.mainAddress} {fish.detailAddress}
-              </LocationInfo>
+        {currentFishData.map((fish, index) => {
+          const statusStep = getStatusStep(fish.status);
+          return (
+            <FishCard key={index} onClick={() => handleCardClick(fish)}>
+              <FishImageSection thumbnail={fish.thumbnail}>
+                {!fish.thumbnail && "🐟"}
+              </FishImageSection>
+              <FishInfoSection>
+                <LocationInfo>
+                  <LocationIcon>📍</LocationIcon>
+                  {fish.mainAddress}{" "}
+                </LocationInfo>
 
-              <FishInfo>
-                <FishName>
-                  {typeof fish.fishInfo === "object" && fish.fishInfo !== null
-                    ? Object.entries(fish.fishInfo)
-                        .map(([name, count]) => `${name}: ${count}`)
-                        .join(", ")
-                    : Array.isArray(fish.fishInfo)
-                    ? fish.fishInfo.join(", ")
-                    : String(fish.fishInfo ?? "")}
-                </FishName>
-                <FishDetails>
-                  {fish.fisherName} • {fish.getDate}
-                </FishDetails>
-              </FishInfo>
+                <FishInfo>
+                  <FishName>
+                    {/* 혼획물 종류와 수량 표시, 10글자 초과 시 ... */}
+                    {(() => {
+                      const fishInfoStr = fish.fishInfo
+                        ? Object.entries(fish.fishInfo)
+                            .map(([name, count]) => `${name} ${count}마리`)
+                            .join(", ")
+                        : "";
+                      return fishInfoStr.length > 10
+                        ? fishInfoStr.slice(0, 10) + "..."
+                        : fishInfoStr;
+                    })()}
+                  </FishName>
+                  <FishDetails>
+                    {fish.fisherName} • {fish.postDate}
+                  </FishDetails>
+                </FishInfo>
 
-              <StatusContainer>
-                <StatusBar>
-                  <StatusDot
-                    isActive={fish.status >= 0}
-                    isCompleted={fish.status > 0}
-                  />
-                  <StatusDot
-                    isActive={fish.status >= 1}
-                    isCompleted={fish.status > 1}
-                  />
-                  <StatusDot
-                    isActive={fish.status >= 2}
-                    isCompleted={fish.status >= 2}
-                  />
-                  <StatusLine />
-                  <StatusProgressLine
-                    progress={
-                      fish.status === 0 ? 0 : fish.status === 1 ? 50 : 100
-                    }
-                  />
-                </StatusBar>
-                <StatusLabels>
-                  <StatusLabel isActive={fish.status >= 0}>대기 중</StatusLabel>
-                  <StatusLabel isActive={fish.status >= 1}>
-                    매칭 대기
-                  </StatusLabel>
-                  <StatusLabel isActive={fish.status >= 2}>
-                    매칭 완료
-                  </StatusLabel>
-                </StatusLabels>
-              </StatusContainer>
-            </FishInfoSection>
-          </FishCard>
-        ))}
+                <StatusContainer>
+                  <StatusBar>
+                    <StatusDot
+                      isActive={statusStep >= 0}
+                      isCompleted={statusStep > 0}
+                    />
+                    <StatusDot
+                      isActive={statusStep >= 1}
+                      isCompleted={statusStep > 1}
+                    />
+                    <StatusDot
+                      isActive={statusStep >= 2}
+                      isCompleted={statusStep >= 2}
+                    />
+                    <StatusLine />
+                    <StatusProgressLine
+                      progress={
+                        statusStep === 0 ? 0 : statusStep === 1 ? 50 : 100
+                      }
+                    />
+                  </StatusBar>
+                  <StatusLabels>
+                    <StatusLabel isActive={statusStep >= 0}>
+                      대기 중
+                    </StatusLabel>
+                    <StatusLabel isActive={statusStep >= 1}>
+                      매칭 대기
+                    </StatusLabel>
+                    <StatusLabel isActive={statusStep >= 2}>
+                      매칭 완료
+                    </StatusLabel>
+                  </StatusLabels>
+                </StatusContainer>
+              </FishInfoSection>
+            </FishCard>
+          );
+        })}
       </FishGrid>
       <Pagination>{renderPaginationButtons()}</Pagination>
     </Container>

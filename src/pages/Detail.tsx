@@ -103,6 +103,13 @@ const InfoSection = styled.div`
   padding: 20px;
 `;
 
+const InfoTitle = styled.div`
+  font-size: 32px;
+  font-weight: bold;
+  color: black;
+  margin-bottom: 32px;
+`;
+
 const InfoGrid = styled.div`
   display: grid;
   grid-template-columns: 80px 1fr;
@@ -350,44 +357,46 @@ function Detail() {
 
         {/* 오른쪽: 정보 섹션 */}
         <InfoContainer>
-          <div>
-            <LocationContainer>
-              <LocationIcon>📍</LocationIcon>
-              <LocationText>
-                {fishData.mainAddress ?? ""} {fishData.detailAddress ?? ""}
-              </LocationText>
-            </LocationContainer>
+          <LocationContainer>
+            <LocationIcon>📍</LocationIcon>
+            <LocationText>
+              {fishData.mainAddress ?? ""} {fishData.detailAddress ?? ""}
+            </LocationText>
+          </LocationContainer>
 
-            <FishTitle>{fishData.fishName}</FishTitle>
+          <FishTitle>{fishData.fishName}</FishTitle>
 
-            <InfoSection>
-              <InfoGrid>
-                <InfoLabel>이름</InfoLabel>
-                <InfoValue>
-                  {fishData.fishInfo
-                    ? Object.entries(fishData.fishInfo)
-                        .map(([name, count]) => `${name}: ${count}`)
-                        .join(", ")
-                    : "-"}
-                </InfoValue>
-                <InfoLabel>채집자</InfoLabel>
-                <InfoValue>{fishData.fisherName ?? "-"}</InfoValue>
-                <InfoLabel>전화번호</InfoLabel>
-                <InfoValue>{fishData.phoneNumber ?? "-"}</InfoValue>
-                <InfoLabel>채집일시</InfoLabel>
-                <InfoValue>
-                  {fishData.getDate ?? ""} {fishData.getTime ?? ""}
-                </InfoValue>
-                <InfoLabel>매칭 마감</InfoLabel>
-                <InfoValue>
-                  {fishData.limitDate ?? ""} {fishData.limitTime ?? ""}
-                </InfoValue>
-                <InfoLabel>상태</InfoLabel>
-                <InfoValue>{fishData.status ?? "-"}</InfoValue>
-              </InfoGrid>
-            </InfoSection>
-          </div>
-
+          <InfoSection>
+            <InfoTitle>
+              {fishData.fishInfo
+                ? Object.entries(fishData.fishInfo)
+                    .map(([name, count]) => `${name}`)
+                    .join(", ")
+                : "-"}{" "}
+            </InfoTitle>
+            <InfoGrid>
+              <InfoLabel>어종</InfoLabel>
+              <InfoValue>
+                {fishData.fishInfo
+                  ? Object.entries(fishData.fishInfo)
+                      .map(([name, count]) => `${name}: ${count}`)
+                      .join(", ")
+                  : "-"}
+              </InfoValue>
+              <InfoLabel>이름</InfoLabel>
+              <InfoValue>{fishData.fisherName ?? "-"}</InfoValue>
+              <InfoLabel>연락처</InfoLabel>
+              <InfoValue>{fishData.phoneNumber ?? "-"}</InfoValue>
+              <InfoLabel>어획 일시</InfoLabel>
+              <InfoValue>
+                {fishData.getDate ?? ""} {fishData.getTime ?? ""}
+              </InfoValue>
+              <InfoLabel>마감 일시</InfoLabel>
+              <InfoValue>
+                {fishData.limitDate ?? ""} {fishData.limitTime ?? ""}
+              </InfoValue>
+            </InfoGrid>
+          </InfoSection>
           <ActionButton onClick={handleMatchingClick}>
             매칭 신청하기
           </ActionButton>
