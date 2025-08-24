@@ -7,6 +7,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faImage } from "@fortawesome/free-regular-svg-icons";
 import { faFile } from "@fortawesome/free-regular-svg-icons";
 import axios from "axios";
+import { logout } from "../utils/logout";
 // 컴포넌트 상단 (TS라면)
 
 export {};
@@ -179,10 +180,10 @@ const InfoInput = styled.input`
   flex-shrink: 0;
   border-radius: 5px;
   border: 1.5px solid var(--Secondary-3, #a5bee0);
-  padding: 0 14px;
 
   &::placeholder {
     color: var(--Secondary-5, #899ebb);
+    padding-left: 10px;
     font-size: clamp(13px, 1.2vw, 17px);
     font-style: normal;
     font-weight: 700;
@@ -463,7 +464,7 @@ function Signup() {
         alert("회원가입 성공");
         navigate("/login");
       } else {
-        alert("회원가입 실패. 다시 시도해주세요.");
+        alert("회원가입 실패. 다시 시도해주세요."); 
       }
     } catch (error) {
       alert("요청 중 오류가 발생했습니다.");
