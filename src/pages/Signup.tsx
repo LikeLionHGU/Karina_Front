@@ -7,8 +7,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faImage } from "@fortawesome/free-regular-svg-icons";
 import { faFile } from "@fortawesome/free-regular-svg-icons";
 import axios from "axios";
-import { hasToken, isTokenExpired } from "../utils/token";
-import { logout } from "../utils/logout";
 // 컴포넌트 상단 (TS라면)
 
 export {};
@@ -426,10 +424,6 @@ function Signup() {
   ) => {
     event.preventDefault();
     setIsLoading(true);
-    if (!hasToken()) {
-      logout();
-      return;
-    }
     const phoneHyphen = `${phoneFirst}-${phoneMiddle}-${phoneEnd}`;
     if (!selectedFile) {
       alert("인증 파일을 업로드해주세요.");
@@ -472,10 +466,6 @@ function Signup() {
         alert("회원가입 실패. 다시 시도해주세요.");
       }
     } catch (error) {
-      if (isTokenExpired(error)) {
-        logout();
-        return;
-      }
       alert("요청 중 오류가 발생했습니다.");
     } finally {
       setUserId("");
