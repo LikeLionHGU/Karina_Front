@@ -64,7 +64,7 @@ const NavSection = styled.div`
   gap: 60px;
 `;
 const PostButton = styled.button`
-  color: #454545;
+  color: #7f7f7f;
   background: none;
   border: none;
   cursor: pointer;
@@ -72,6 +72,9 @@ const PostButton = styled.button`
   font-style: normal;
   font-weight: 600;
   line-height: normal;
+  &:hover {
+    color: #151a20;
+  }
 `;
 const ProfileSection = styled.div`
   display: flex;
@@ -120,6 +123,7 @@ const UserName = styled.span`
 `;
 const Dropdown = styled.div`
   position: absolute;
+  width: 110%;
   right: 0;
   top: 120%;
   background: #fff;
@@ -150,6 +154,7 @@ const DropdownButton = styled.button<{ primary?: boolean }>`
 function Header({ isLanding = false }: HeaderProps) {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
+  const hoverTimeout = useRef<NodeJS.Timeout | null>(null);
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
   const [isLogoutSuccess, setIsLogoutSuccess] = useState(false);
   const ref = useRef<HTMLDivElement | null>(null);
@@ -242,7 +247,22 @@ function Header({ isLanding = false }: HeaderProps) {
             {localStorage.getItem("userName") ? (
               <>
                 <ProfileIcon />
-                <UserName onClick={() => setOpen((prev) => !prev)}>
+                <UserName
+                  onClick={() => setOpen((prev) => !prev)}
+                  onMouseEnter={() => {
+                    setOpen(true);
+                    if (hoverTimeout.current)
+                      clearTimeout(hoverTimeout.current);
+                  }}
+                  onMouseLeave={() => {
+                    if (hoverTimeout.current)
+                      clearTimeout(hoverTimeout.current);
+                    hoverTimeout.current = setTimeout(
+                      () => setOpen(false),
+                      2000
+                    );
+                  }}
+                >
                   {localStorage.getItem("userName")}
                   <ChevronDownIcon />
                 </UserName>

@@ -33,41 +33,60 @@ const ModalTitle = styled.h2`
 `;
 
 const ModalSection = styled.div`
-  margin-bottom: 32px;
+  display: flex;
+  flex-direction: column;
 `;
 
 const ModalLabel = styled.label`
   font-size: 16px;
   font-weight: 600;
   color: #222;
-  margin-bottom: 12px;
-  display: block;
 `;
 
 const ModalInputRow = styled.div`
   display: flex;
   gap: 24px;
-  margin-bottom: 24px;
-`;
-
-const ModalInput = styled.select`
-  width: 320px;
-  padding: 12px 16px;
-  border: 1px solid #dbe4ee;
-  border-radius: 8px;
-  font-size: 15px;
-  color: #888;
-  background: white;
+  margin-bottom: 12px;
+  align-items: center;
 `;
 
 const FileInput = styled.input`
-  width: 320px;
+  display: none;
+`;
+
+const FileInputLabel = styled.label`
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+`;
+
+const FileTextBox = styled.div`
+  flex: 1;
   padding: 12px 16px;
-  border: 1px solid #dbe4ee;
+  border: 1px solid #b5c6de;
   border-radius: 8px;
   font-size: 15px;
-  color: #888;
-  background: white;
+  color: #8ca0b3;
+  background: #fff;
+  box-sizing: border-box;
+  outline: none;
+`;
+
+const FileUploadButton = styled.button`
+  padding: 10px 24px;
+  border-radius: 8px;
+  border: 1.5px solid #0966ff;
+  background: #fff;
+  color: #0966ff;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+  &:hover {
+    background: #eaf3ff;
+    color: #0752cc;
+  }
 `;
 
 const ModalButtonRow = styled.div`
@@ -180,15 +199,32 @@ const EditModal: React.FC<EditModalProps> = ({
     <ModalOverlay $isOpen={isOpen}>
       <ModalContainer>
         <ModalSection>
-          <ModalTitle>혼획물 어획 일시</ModalTitle>
+          <ModalTitle>사진 업로드</ModalTitle>
           <ModalInputRow>
-            <ModalLabel htmlFor="getImage">사진 업로드</ModalLabel>
-            <FileInput
-              type="file"
-              id="getImage"
-              accept="image/*"
-              onChange={handleFileChange}
-            />
+            <FileInputLabel htmlFor="getImage">
+              <FileTextBox>
+                {preview
+                  ? "사진이 업로드되었습니다."
+                  : "글 등록에 필요한 사진을 업로드하세요."}
+              </FileTextBox>
+              <FileUploadButton
+                type="button"
+                onClick={() => {
+                  const input = document.getElementById(
+                    "getImage"
+                  ) as HTMLInputElement;
+                  if (input) input.click();
+                }}
+              >
+                파일 업로드
+              </FileUploadButton>
+              <FileInput
+                type="file"
+                id="getImage"
+                accept="image/*"
+                onChange={handleFileChange}
+              />
+            </FileInputLabel>
             {preview && (
               <img
                 src={preview}
@@ -201,6 +237,11 @@ const EditModal: React.FC<EditModalProps> = ({
                 }}
               />
             )}
+          </ModalInputRow>
+        </ModalSection>
+        <ModalSection>
+          <ModalTitle>혼획물 어획 일시</ModalTitle>
+          <ModalInputRow>
             <ModalLabel htmlFor="getDate">어획 날짜</ModalLabel>
             <input
               type="date"

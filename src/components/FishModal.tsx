@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import LocationImg from "../assets/icons/LocationIcon.svg";
 
 interface FishModalProps {
   isOpen: boolean;
@@ -92,8 +93,8 @@ const LocationContainer = styled.div`
 `;
 
 const LocationIcon = styled.span`
-  color: #0966ff;
-  font-size: 16px;
+  display: flex;
+  align-items: center;
 `;
 
 const LocationText = styled.span`
@@ -153,7 +154,13 @@ function FishModal({ isOpen, onClose, fishData }: FishModalProps) {
 
         <ModalInfoSection>
           <LocationContainer>
-            <LocationIcon>📍</LocationIcon>
+            <LocationIcon>
+              <img
+                src={LocationImg}
+                alt="위치"
+                style={{ width: 18, height: 18 }}
+              />
+            </LocationIcon>
             <LocationText>{fishData.mainAddress}</LocationText>
           </LocationContainer>
 

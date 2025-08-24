@@ -3,6 +3,7 @@ import { hasToken, isTokenExpired } from "../utils/token";
 import LoadingSpinner from "../components/LoadingSpinner";
 import { logout } from "../utils/logout";
 import styled from "styled-components";
+import LocationImg from "../assets/icons/LocationIcon.svg";
 import { useNavigate, useParams } from "react-router-dom";
 import ConfirmModal from "../components/ConfirmModal";
 import axios from "axios";
@@ -48,12 +49,11 @@ const LocationContainer = styled.div`
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-bottom: 30px;
 `;
 
 const LocationIcon = styled.span`
-  color: #0966ff;
-  font-size: 16px;
+  display: flex;
+  align-items: center;
 `;
 
 const LocationText = styled.span`
@@ -358,7 +358,13 @@ function Detail() {
         {/* 오른쪽: 정보 섹션 */}
         <InfoContainer>
           <LocationContainer>
-            <LocationIcon>📍</LocationIcon>
+            <LocationIcon>
+              <img
+                src={LocationImg}
+                alt="위치"
+                style={{ width: 18, height: 18 }}
+              />
+            </LocationIcon>
             <LocationText>
               {fishData.mainAddress ?? ""} {fishData.detailAddress ?? ""}
             </LocationText>
