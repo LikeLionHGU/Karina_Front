@@ -1,15 +1,14 @@
 // components/Result.tsx
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
-
+import LoadingSpinner from "../components/LoadingSpinner";
 
 //받아오는 데이터 ->Map list
 type AnalysisMap = Record<string, number>;
-
 type ResultProps = {
   articleData: string | null;                // ← number → string으로
   data:  AnalysisMap | null | undefined;
-  onReset: () => void;
+  onReset: () => void | Promise<void>;
 };
 const Grid = styled.div`
   display: grid;
@@ -47,7 +46,8 @@ const Buttons = styled.div`
   margin: 28px 0 8px;
 `;
 
-const GhostButton = styled.button`
+// Result.tsx
+const GhostButton = styled.button.attrs({ type: "button" })`
   height: 40px;
   padding: 0 20px;
   border-radius: 10px;
@@ -57,6 +57,7 @@ const GhostButton = styled.button`
   font-weight: 600;
   cursor: pointer;
 `;
+
 
 const PrimaryButton = styled.button`
   height: 40px;
@@ -72,16 +73,21 @@ const PrimaryButton = styled.button`
 // 숫자 → "약 52마리" 같은 표시로
 const formatCount = (n: number) => `약 ${n}마리`;
 
-export default function Result({ articleData, data, onReset}: ResultProps) {
+export default function Result({ articleData, data, onReset, isLoading }: ResultProps & { isLoading?: boolean }) {
   const navigate = useNavigate();
   // 1) 방어 코드: 데이터 없거나 형태가 아니면 빈 배열
   const entries = Object.entries(data ?? {}) // => [ ["fish", num] ...]
 
   // 2) 정렬(내림차순) 후 최대 3개만 노출
   const top3 = entries.sort((a, b) => b[1] - a[1]).slice(0, 3);
-
+  const handleResetClick = () => {
+    // 디버깅 로그
+    console.log("[Result] reset clicked");
+    onReset(); // 부모의 reanalyze 호출
+  };
   return (
     <section>
+      {isLoading && <LoadingSpinner />}
       <Grid>
         {top3.map(([name, count]) => (
           <Card key={name}>
@@ -89,8 +95,6 @@ export default function Result({ articleData, data, onReset}: ResultProps) {
             <Count>{formatCount(count)}</Count>
           </Card>
         ))}
-
-        {/* 아무 데이터도 없을 때*/}
         {top3.length === 0 && (
           <Card>
             <FishName>결과 없음</FishName>
@@ -98,13 +102,14 @@ export default function Result({ articleData, data, onReset}: ResultProps) {
           </Card>
         )}
       </Grid>
-
       <Buttons>
-        <GhostButton onClick={onReset}>다시 분석하기</GhostButton>
-        <PrimaryButton 
-            onClick={() => navigate(`/article/${articleData}`) }
-            disabled={articleData === null}
-        >다음</PrimaryButton>
+        <GhostButton onClick={handleResetClick}>다시 분석하기</GhostButton>
+        <PrimaryButton
+          onClick={() => navigate(`/article/${articleData}`)}
+          disabled={articleData === null}
+        >
+          다음
+        </PrimaryButton>
       </Buttons>
     </section>
   );

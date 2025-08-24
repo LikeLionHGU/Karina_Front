@@ -7,7 +7,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faImage } from "@fortawesome/free-regular-svg-icons";
 import { faFile } from "@fortawesome/free-regular-svg-icons";
 import axios from "axios";
-import { logout } from "../utils/logout";
 // 컴포넌트 상단 (TS라면)
 
 export {};
@@ -267,21 +266,21 @@ const ConsentInfoSection = styled.div`
 
 const ConsentTitleRow = styled.div`
   display: flex;
-  justify-content: space-between;
+  gap: 31px;
   align-items: center;
   width: 100%;
 `;
 
-const ConsentTag = styled.div`
-  padding: 8px 12px;
-  border-radius: 10px;
-  background: rgba(9, 102, 255, 0.1);
-  color: var(--Primary-2, #0966ff);
-  font-size: clamp(12px, 1.2vw, 16px);
-  font-weight: 700;
+const ConsentTag = styled.h1`
+  color: var(--Black-4, #454545);
+  text-align: center;
+  font-size: clamp(20px, 1.2vw, 30px);
+  font-style: normal;
+  font-weight: 600;
+  line-height: 45px; /* 150% */
 `;
 
-const ConsentDesc = styled.div`
+const ConsentDesc = styled.h1`
   color: var(--Black-4, #454545);
   font-size: clamp(12px, 1.2vw, 16px);
   font-weight: 400;
@@ -302,18 +301,30 @@ const Line = styled.div`
   gap: 4px;
 `;
 
+
+const SectionLine = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--Black-5, #151A20);
+  font-size: clamp(23px, 1.2vw, 27px);
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+`;
+
+
+
 const SubLines = styled.div`
   display: flex;
   flex-direction: column;
   padding-left: 16px;
-  border-left: 2px solid var(--Primary-2, #0966ff);
 `;
 
 const ConsentRadioSection = styled.section`
   width: 59.375vw;
   margin: 16px auto 0;
   display: flex;
-  flex-direction: column;
   gap: 14px;
 `;
 
@@ -528,6 +539,7 @@ function Signup() {
       setIsLoading(false);
       return;
     }
+    console.log(postcode);
     const userPayload = {
       role: isActive,
       loginId: userId.trim(),
@@ -771,19 +783,19 @@ function Signup() {
         {/* 개인정보 동의 섹션 추가 */}
         <ConsentInfoSection>
           <ConsentTitleRow>
-            <ConsentTag>개인정보수집동의</ConsentTag>
+            <ConsentTag>개인정보 수집 동의</ConsentTag>
             <ConsentDesc>개인정보 수집 및 이용에 동의해주세요.</ConsentDesc>
           </ConsentTitleRow>
           <ConsentBody>
-            <Line>1. 수집 목적: 본인 확인</Line>
-            <Line>2. 수집 항목: 이름, 전화번호, 주소, 어민 허가증 정보</Line>
-            <Line>
+            <SectionLine>1. 수집 목적: 본인 확인</SectionLine>
+            <SectionLine>2. 수집 항목: 이름, 전화번호, 주소, 어민 허가증 정보</SectionLine>
+            <SectionLine>
               3. 보유 및 이용 기간
-              <SubLines>
+            </SectionLine>
+            <SubLines>
                 <Line>a. 매칭을 신청한 어민 분들에게 담당자의 이름, 전화번호, 회사의 위치 정보가 제공됩니다.</Line>
                 <Line>b. 매칭이 완료된 경우 매칭이 된 어민을 제외하고는 타 연구소/공장 또는 어민 분들이 귀하의 개인 정보를 보실 수 없습니다.</Line>
-              </SubLines>
-            </Line>
+            </SubLines>
           </ConsentBody>
         </ConsentInfoSection>
         <ConsentRadioSection>
