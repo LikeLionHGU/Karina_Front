@@ -170,7 +170,8 @@ const CompleteSubmit = styled.div`
   line-height: 45px; /* 150% */
 `;
 type Params = { articleId?: string };
-function AnalysisArticle() {
+
+const AnalysisArticle = () => {
   const navigate = useNavigate();
   const [selectedFile, setSelectedFile] = useState<File | null>(null); //사진 파일 저장
   const fileRef = useRef<HTMLInputElement>(null);
@@ -274,125 +275,125 @@ function AnalysisArticle() {
       }
       openModal("요청 중 오류가 발생했습니다");
     }
-
-    return (
-      <>
-        {isLoading && <LoadingSpinner />}
-        <section className={styles.title}>
-          <div className={styles.inner}>
-            <div className={styles.text}>
-              <p>사진을 업로드하고,</p>
-              <p>수거 희망 날짜와 시간을 입력하세요!</p>
-            </div>
-            <div className={styles.underLine} />
-          </div>
-        </section>
-
-        <div className={styles.PhotoUpolad}>
-          <InputContainer>
-            <InputBox>
-              <InputInner>
-                <InputTitle>사진 업로드</InputTitle>
-                <ButtonContainer>
-                  <FileContent>
-                    {selectedFile ? (
-                      // 파일이 선택됐을 때: 파일칩 렌더
-                      <FileChip>
-                        <FileIcon icon={faImage} />
-                        <div className={styles.fileChipText}>
-                          <div className={styles.fileName}>
-                            {selectedFile.name}
-                          </div>
-                          <div className={styles.fileStatus}>업로드 완료</div>
-                        </div>
-                      </FileChip>
-                    ) : (
-                      // 파일이 없을 때: 안내문 렌더
-                      <span>글 등록에 필요한 사진을 업로드하세요.</span>
-                    )}
-                  </FileContent>
-                  <HiddenFile
-                    ref={fileRef}
-                    type="file"
-                    onChange={handleFileChange}
-                  />
-                  <UploadBtn type="button" onClick={handleOpenFile}>
-                    파일 업로드
-                  </UploadBtn>
-                </ButtonContainer>
-              </InputInner>
-            </InputBox>
-          </InputContainer>
-        </div>
-
-        <div className={styles.catchDate}>
-          <InputContainer>
-            <InputBox>
-              <InputInner>
-                <InputTitle>혼획물 포획 일시</InputTitle>
-                <DateAndTimeContainer>
-                  <DateTitle>포획 날짜</DateTitle>
-                  <DateContent
-                    type="date"
-                    value={caughtDate}
-                    onChange={(e) => setCaughtDate(e.target.value)}
-                  />
-                </DateAndTimeContainer>
-                <DateAndTimeContainer>
-                  <DateTitle>포획 날짜</DateTitle>
-                  <DateContent
-                    type="time"
-                    value={caughtTime}
-                    onChange={(e) => setCaughtTime(e.target.value)}
-                  />
-                </DateAndTimeContainer>
-              </InputInner>
-            </InputBox>
-          </InputContainer>
-        </div>
-
-        <div className={styles.catchDate}>
-          <InputContainer>
-            <InputBox>
-              <InputInner>
-                <InputTitle>수거 마감 일시</InputTitle>
-                <DateAndTimeContainer>
-                  <DateTitle>마감 날짜</DateTitle>
-                  <DateContent
-                    type="date"
-                    value={pickUpDate}
-                    onChange={(e) => setPickUpDate(e.target.value)}
-                  />
-                </DateAndTimeContainer>
-                <DateAndTimeContainer>
-                  <DateTitle>마감 시간</DateTitle>
-                  <DateContent
-                    type="time"
-                    value={pickUpTime}
-                    onChange={(e) => setPickUpTime(e.target.value)}
-                  />
-                </DateAndTimeContainer>
-              </InputInner>
-            </InputBox>
-          </InputContainer>
-        </div>
-
-        <CompleteSubmit onClick={onSubmitArticle}>등록 완료</CompleteSubmit>
-        <ErrorModal
-          isOpen={isErrorOpen}
-          onClose={handleClose}
-          message={modalMsg}
-        />
-        <ConfirmModal
-          isOpen={isConfirmOpen}
-          onClose={() => setConfirmOpen(false)}
-          onConfirm={handleConfirm}
-          title={modalTitle}
-          body={modalBody}
-          isSuccess={isSuccess}
-        />
-      </>
-    );
   };
-}
+  return (
+    <>
+      {isLoading && <LoadingSpinner />}
+      <section className={styles.title}>
+        <div className={styles.inner}>
+          <div className={styles.text}>
+            <p>사진을 업로드하고,</p>
+            <p>수거 희망 날짜와 시간을 입력하세요!</p>
+          </div>
+          <div className={styles.underLine} />
+        </div>
+      </section>
+
+      <div className={styles.PhotoUpolad}>
+        <InputContainer>
+          <InputBox>
+            <InputInner>
+              <InputTitle>사진 업로드</InputTitle>
+              <ButtonContainer>
+                <FileContent>
+                  {selectedFile ? (
+                    // 파일이 선택됐을 때: 파일칩 렌더
+                    <FileChip>
+                      <FileIcon icon={faImage} />
+                      <div className={styles.fileChipText}>
+                        <div className={styles.fileName}>
+                          {selectedFile.name}
+                        </div>
+                        <div className={styles.fileStatus}>업로드 완료</div>
+                      </div>
+                    </FileChip>
+                  ) : (
+                    // 파일이 없을 때: 안내문 렌더
+                    <span>글 등록에 필요한 사진을 업로드하세요.</span>
+                  )}
+                </FileContent>
+                <HiddenFile
+                  ref={fileRef}
+                  type="file"
+                  onChange={handleFileChange}
+                />
+                <UploadBtn type="button" onClick={handleOpenFile}>
+                  파일 업로드
+                </UploadBtn>
+              </ButtonContainer>
+            </InputInner>
+          </InputBox>
+        </InputContainer>
+      </div>
+
+      <div className={styles.catchDate}>
+        <InputContainer>
+          <InputBox>
+            <InputInner>
+              <InputTitle>혼획물 포획 일시</InputTitle>
+              <DateAndTimeContainer>
+                <DateTitle>포획 날짜</DateTitle>
+                <DateContent
+                  type="date"
+                  value={caughtDate}
+                  onChange={(e) => setCaughtDate(e.target.value)}
+                />
+              </DateAndTimeContainer>
+              <DateAndTimeContainer>
+                <DateTitle>포획 날짜</DateTitle>
+                <DateContent
+                  type="time"
+                  value={caughtTime}
+                  onChange={(e) => setCaughtTime(e.target.value)}
+                />
+              </DateAndTimeContainer>
+            </InputInner>
+          </InputBox>
+        </InputContainer>
+      </div>
+
+      <div className={styles.catchDate}>
+        <InputContainer>
+          <InputBox>
+            <InputInner>
+              <InputTitle>수거 마감 일시</InputTitle>
+              <DateAndTimeContainer>
+                <DateTitle>마감 날짜</DateTitle>
+                <DateContent
+                  type="date"
+                  value={pickUpDate}
+                  onChange={(e) => setPickUpDate(e.target.value)}
+                />
+              </DateAndTimeContainer>
+              <DateAndTimeContainer>
+                <DateTitle>마감 시간</DateTitle>
+                <DateContent
+                  type="time"
+                  value={pickUpTime}
+                  onChange={(e) => setPickUpTime(e.target.value)}
+                />
+              </DateAndTimeContainer>
+            </InputInner>
+          </InputBox>
+        </InputContainer>
+      </div>
+
+      <CompleteSubmit onClick={onSubmitArticle}>등록 완료</CompleteSubmit>
+      <ErrorModal
+        isOpen={isErrorOpen}
+        onClose={handleClose}
+        message={modalMsg}
+      />
+      <ConfirmModal
+        isOpen={isConfirmOpen}
+        onClose={() => setConfirmOpen(false)}
+        onConfirm={handleConfirm}
+        title={modalTitle}
+        body={modalBody}
+        isSuccess={isSuccess}
+      />
+    </>
+  );
+};
+
 export default AnalysisArticle;
