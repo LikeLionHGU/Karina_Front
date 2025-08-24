@@ -21,6 +21,7 @@ export default function Restart() {
             <div className = {styles.iconAndText}>
                 <Icon src={restart} alt="돌아가기"/>
                 <h1>혼획물 <Highlight>재분석 요청</Highlight> 중</h1>
+                <div className = {styles.loader10} />
             </div>
            
         </section>

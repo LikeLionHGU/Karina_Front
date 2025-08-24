@@ -135,14 +135,7 @@ function Landing() {
             <Highlight>수익과 환경의 가치로 전환해보세요 !</Highlight>
           </h1>
           <p>어민과 수요자를 스마트하게 매칭해주는 혼획물 유통 플랫폼</p>
-          <div className={styles.buttonContainer}>
-            <button className={styles.fisher} onClick={onFisherClick}>
-              <span>어민</span>
-            </button>
-            <button className={styles.factory} onClick={onFactoryClick}>
-              공장/연구소
-            </button>
-          </div>
+          
         </section>
       </div>
       {/* 두번째 문단*/}
