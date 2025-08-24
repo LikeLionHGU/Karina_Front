@@ -127,7 +127,7 @@ function ConfirmModal({
         <ModalBody>{body}</ModalBody>
         <ButtonContainer>
           {isSuccess ? (
-            <SuccessButton onClick={onConfirm ?? onClose}>확인</SuccessButton>
+            <SuccessButton onClick={onClose}>확인</SuccessButton>
           ) : (
             <>
               <CancelButton onClick={onClose}>취소하기</CancelButton>
