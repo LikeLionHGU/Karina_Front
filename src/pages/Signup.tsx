@@ -591,7 +591,6 @@ function Signup() {
                   : "유효하지 않은 아이디 입니다."}
               </h1>
             )}
-          </div>
           <IsSameBtn onClick={onCheckId}>중복확인</IsSameBtn>
         </InfoInputLine>
         <InfoInputLine>
