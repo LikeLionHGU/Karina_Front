@@ -1,5 +1,8 @@
+import { hasToken, isTokenExpired } from "../utils/token";
+import { logout } from "../utils/logout";
 import { useState, useEffect } from "react";
 import styled from "styled-components";
+import LoadingSpinner from "../components/LoadingSpinner";
 import LeftSidebar from "../components/LeftSidebar";
 import axios from "axios";
 import DefaultImage from "../assets/profile/default.jpg";
@@ -106,20 +109,6 @@ const PhoneGroup = styled.div`
   justify-self: start;
 `;
 
-const Select = styled.select`
-  padding: 12px 16px;
-  border: 1px solid #e0e0e0;
-  font-size: 14px;
-  color: #333;
-  background: white;
-
-  &:focus {
-    outline: none;
-    border-color: #4a90e2;
-    box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
-  }
-`;
-
 /* FormRow and AddressButton removed: replaced by AddressWrapper/PostcodeRow/PostcodeButton */
 
 const AddressWrapper = styled.div`
@@ -174,7 +163,7 @@ const Input = styled.input`
 
   &:focus {
     outline: none;
-    border-color: #4a90e2;
+    border-color: #0966ff;
     box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
   }
 
@@ -203,64 +192,134 @@ const SaveButton = styled.button`
 `;
 
 type FormDataType = {
-  id: string;
+  loginId: string;
   name: string;
-  currentPassword: string;
-  newPassword: string;
-  phone1: string;
-  phone2: string;
-  phone3: string;
-  postcode: string;
+  password: string;
+  phoneNumber: string;
   mainAddress: string;
   detailAddress: string;
+  postcode: string; // UI에서만 사용, 백엔드로 전송하지 않음
 };
 
 function UpdateProfile() {
   const [formData, setFormData] = useState<FormDataType>({
-    id: "",
+    loginId: "",
     name: "",
-    currentPassword: "",
-    newPassword: "",
-    phone1: "010",
-    phone2: "",
-    phone3: "",
-    postcode: "",
+    password: "",
+    phoneNumber: "", // 방어적 초기값 추가
     mainAddress: "",
     detailAddress: "",
+    postcode: "", // UI에서만 사용, 백엔드로 전송하지 않음
   });
 
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
+  const [phone1, setPhone1] = useState("");
+  const [phone2, setPhone2] = useState("");
+  const [phone3, setPhone3] = useState("");
   const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+  const [showTooltip, setShowTooltip] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const fetchUserData = async () => {
+    setIsLoading(true);
     try {
       // localStorage에서 JWT 토큰 가져오기
-      const token = localStorage.getItem("jwt");
-      const response = await axios.get(
-        `${import.meta.env.VITE_API_URL}/mypage/profile`,
-        token ? { headers: { Authorization: `Bearer ${token}` } } : undefined
-      );
-      setFormData(response.data);
+      const token = hasToken() ? localStorage.getItem("jwt") : null;
+      const role = localStorage.getItem("role");
+
+      if (role === "ROLE_FACTORY") {
+        const response = await axios.get(
+          `${import.meta.env.VITE_API_URL}/factory/mypage/profile`,
+          token ? { headers: { Authorization: `Bearer ${token}` } } : undefined
+        );
+        const data = response.data;
+        setFormData({
+          loginId: data.loginId ?? "",
+          name: data.name ?? "",
+          password: data.password ?? "",
+          phoneNumber: data.phoneNumber ?? "",
+          mainAddress: data.mainAddress ?? "",
+          detailAddress: data.detailAddress ?? "",
+          postcode: "", // UI에서만 사용, 백엔드로 전송하지 않음
+        });
+      } else {
+        const response = await axios.get(
+          `${import.meta.env.VITE_API_URL}/fisher/mypage/profile`,
+          token ? { headers: { Authorization: `Bearer ${token}` } } : undefined
+        );
+        const data = response.data;
+        setFormData({
+          loginId: data.loginId ?? "",
+          name: data.name ?? "",
+          password: data.password ?? "",
+          phoneNumber: data.phoneNumber ?? "",
+          mainAddress: data.mainAddress ?? "",
+          detailAddress: data.detailAddress ?? "",
+          postcode: "", // UI에서만 사용, 백엔드로 전송하지 않음
+        });
+      }
     } catch (error) {
-      console.error("Error fetching user data:", error);
+      if (isTokenExpired(error)) {
+        logout();
+      } else {
+        console.error("Error fetching user data:", error);
+      }
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  useEffect(() => {
-    fetchUserData();
-  }, []);
-
-  const handleInputChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >
-  ) => {
+  const handleInputChange = (e: { target: { name: any; value: any } }) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    if (name === "phone1") {
+      setPhone1(value);
+      setFormData((prev) => ({
+        ...prev,
+        phoneNumber: `${value}-${prev.phoneNumber.split("-")[1] || ""}-${
+          prev.phoneNumber.split("-")[2] || ""
+        }`,
+      }));
+    } else if (name === "phone2") {
+      setPhone2(value);
+      setFormData((prev) => ({
+        ...prev,
+        phoneNumber: `${prev.phoneNumber.split("-")[0] || ""}-${value}-${
+          prev.phoneNumber.split("-")[2] || ""
+        }`,
+      }));
+    } else if (name === "phone3") {
+      setPhone3(value);
+      setFormData((prev) => ({
+        ...prev,
+        phoneNumber: `${prev.phoneNumber.split("-")[0] || ""}-${
+          prev.phoneNumber.split("-")[1] || ""
+        }-${value}`,
+      }));
+    } else if (name === "newPassword") {
+      setNewPassword(value);
+      // 실시간 validation
+      if (confirmPassword && value !== confirmPassword) {
+        setPasswordError("비밀번호가 일치하지 않습니다");
+      } else {
+        setPasswordError("");
+      }
+    } else if (name === "confirmPassword") {
+      setConfirmPassword(value);
+      if (newPassword && value !== newPassword) {
+        setPasswordError("비밀번호가 일치하지 않습니다");
+      } else {
+        setPasswordError("");
+      }
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value ?? "",
+      }));
+    }
   };
 
   const loadDaumPostcodeScript = () =>
@@ -283,13 +342,13 @@ function UpdateProfile() {
       const postcode = new (window as any).daum.Postcode({
         oncomplete: function (data: any) {
           // data.zonecode or data.postcode, and data.address or data.roadAddress
-          const postcodeValue = data.zonecode || data.postcode || "";
+          const postcode = data.zonecode || data.postcode || "";
           const mainAddr =
             data.address || data.roadAddress || data.jibunAddress || "";
           setFormData((prev) => ({
             ...prev,
-            postcode: postcodeValue,
             mainAddress: mainAddr,
+            postcode: postcode,
           }));
         },
       });
@@ -303,25 +362,85 @@ function UpdateProfile() {
     }
   };
 
-  const handleSave = () => {
-    console.log("저장된 정보:", formData);
-    // 여기에 API 호출 로직을 추가할 수 있습니다
-    setIsSuccessModalOpen(true);
-    // 필요시 fetchUserData()로 최신 정보 다시 불러오기
-    fetchUserData();
+  const handleSave = async () => {
+    // 모든 필수 입력값 체크
+    if (
+      !formData.phoneNumber.trim() ||
+      !formData.mainAddress.trim() ||
+      !formData.detailAddress.trim() ||
+      !formData.postcode.trim() ||
+      !newPassword.trim() ||
+      !confirmPassword.trim()
+    ) {
+      setIsErrorModalOpen(true);
+      setErrorMessage("모든 항목을 입력해주세요");
+      return;
+    }
+    // 비밀번호 validation 체크
+    if (newPassword !== confirmPassword) {
+      setPasswordError("비밀번호가 일치하지 않습니다");
+      setIsErrorModalOpen(true);
+      setErrorMessage("비밀번호가 일치하지 않습니다");
+      return;
+    }
+    // 백엔드에 맞는 데이터 구조로 변환
+    const payload = {
+      phoneNumber: formData.phoneNumber,
+      mainAddress: formData.mainAddress,
+      detailAddress: formData.detailAddress,
+      password: newPassword,
+      // postcode는 백엔드로 보내지 않음
+    };
+    try {
+      const token = localStorage.getItem("jwt");
+      const role = localStorage.getItem("role");
+      const url =
+        role === "ROLE_FACTORY"
+          ? `${import.meta.env.VITE_API_URL}/factory/mypage/profile`
+          : `${import.meta.env.VITE_API_URL}/fisher/mypage/profile`;
+      await axios.put(
+        url,
+        payload,
+        token ? { headers: { Authorization: `Bearer ${token}` } } : undefined
+      );
+      setIsSuccessModalOpen(true);
+      fetchUserData();
+    } catch (err) {
+      setIsErrorModalOpen(true);
+      setErrorMessage("프로필 저장에 실패했습니다.");
+    }
   };
 
   // 모달 닫기 핸들러
   const handleSuccessModalClose = () => {
     setIsSuccessModalOpen(false);
-    // window.location.reload();
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    window.location.reload();
   };
 
   const handleErrorModalClose = () => setIsErrorModalOpen(false);
 
+  // 최초 마운트 시 한 번만 fetchUserData 호출
+  useEffect(() => {
+    fetchUserData();
+  }, []);
+
+  // formData가 바뀔 때마다 로그만 찍음
+  useEffect(() => {
+    console.log("formData changed:", formData);
+  }, [formData]);
+
+  useEffect(() => {
+    if (formData.phoneNumber) {
+      const parts = formData.phoneNumber.split("-");
+      setPhone1(parts[0] || "");
+      setPhone2(parts[1] || "");
+      setPhone3(parts[2] || "");
+    }
+  }, [formData.phoneNumber]);
+
   return (
     <MypageContainer>
+      {isLoading && <LoadingSpinner />}
       <Title>마이페이지</Title>
       <Subtitle>
         마이페이지에서 등록, 조회, 거래 내역을 한눈에 확인하세요.
@@ -333,18 +452,18 @@ function UpdateProfile() {
           <FormContainer>
             <ProfileSection>
               <ProfileImageContainer>
-                <ProfileImage></ProfileImage>
+                <ProfileImage />
               </ProfileImageContainer>
               <ProfileName>{formData.name}</ProfileName>
             </ProfileSection>
 
             <FormGroup>
-              <Label htmlFor="id">아이디</Label>
+              <Label htmlFor="loginId">아이디</Label>
               <Input
                 type="text"
-                id="id"
-                name="id"
-                value={formData.id}
+                id="loginId"
+                name="loginId"
+                value={formData.loginId ?? ""}
                 onChange={handleInputChange}
                 readOnly
                 style={{ backgroundColor: "#f8f9fa" }}
@@ -353,53 +472,79 @@ function UpdateProfile() {
             </FormGroup>
 
             <FormGroup>
-              <Label htmlFor="currentPassword">새 비밀번호</Label>
-              <Input
-                type="password"
-                id="currentPassword"
-                name="currentPassword"
-                value={formData.currentPassword}
-                onChange={handleInputChange}
-              />
-            </FormGroup>
-
-            <FormGroup>
-              <Label htmlFor="newPassword">비밀번호 확인</Label>
+              <Label htmlFor="newPassword">새 비밀번호</Label>
               <Input
                 type="password"
                 id="newPassword"
                 name="newPassword"
-                value={formData.newPassword}
+                value={newPassword}
                 onChange={handleInputChange}
+                placeholder="새 비밀번호를 입력하세요"
               />
+            </FormGroup>
+            <FormGroup style={{ position: "relative" }}>
+              <Label htmlFor="confirmPassword">비밀번호 확인</Label>
+              <div style={{ position: "relative", width: "100%" }}>
+                <Input
+                  type="password"
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  value={confirmPassword}
+                  onChange={handleInputChange}
+                  placeholder="비밀번호를 다시 입력하세요"
+                  onFocus={() => setShowTooltip(true)}
+                  onBlur={() => setShowTooltip(false)}
+                  style={passwordError ? { borderColor: "red" } : {}}
+                  aria-describedby={
+                    passwordError ? "password-error-tooltip" : undefined
+                  }
+                />
+                {passwordError && showTooltip && (
+                  <span
+                    id="password-error-tooltip"
+                    style={{
+                      position: "absolute",
+                      left: "100%",
+                      top: "50%",
+                      transform: "translateY(-50%)",
+                      background: "#f44336",
+                      color: "#fff",
+                      padding: "6px 12px",
+                      borderRadius: "6px",
+                      whiteSpace: "nowrap",
+                      fontSize: "13px",
+                      zIndex: 10,
+                      marginLeft: "8px",
+                      boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
+                    }}
+                  >
+                    {passwordError}
+                  </span>
+                )}
+              </div>
             </FormGroup>
 
             <FormGroup>
-              <Label htmlFor="phone">연락처</Label>
+              <Label htmlFor="phoneNumber">연락처</Label>
               <PhoneGroup>
-                <Select
+                <Input
+                  type="text"
                   name="phone1"
-                  value={formData.phone1}
+                  value={phone1}
                   onChange={handleInputChange}
-                >
-                  <option value="010">010</option>
-                  <option value="011">011</option>
-                  <option value="016">016</option>
-                  <option value="017">017</option>
-                  <option value="018">018</option>
-                  <option value="019">019</option>
-                </Select>
+                  maxLength={3}
+                />
                 <Input
                   type="text"
                   name="phone2"
-                  value={formData.phone2}
+                  value={phone2}
                   onChange={handleInputChange}
                   maxLength={4}
                 />
                 <Input
                   type="text"
                   name="phone3"
-                  value={formData.phone3}
+                  value={phone3}
                   onChange={handleInputChange}
                   maxLength={4}
                 />
@@ -414,10 +559,14 @@ function UpdateProfile() {
                     type="text"
                     id="postcode"
                     name="postcode"
-                    value={formData.postcode}
-                    onChange={handleInputChange}
                     placeholder="우편번호"
-                    style={{ flex: 1 }}
+                    value={formData.postcode ?? ""}
+                    readOnly
+                    disabled
+                    style={{
+                      flex: 1,
+                      backgroundColor: "#f8f9fa",
+                    }}
                   />
                   <PostcodeButton type="button" onClick={handlePostcodeSearch}>
                     우편번호 검색
@@ -428,8 +577,10 @@ function UpdateProfile() {
                   type="text"
                   id="mainAddress"
                   name="mainAddress"
-                  value={formData.mainAddress}
-                  onChange={handleInputChange}
+                  value={formData.mainAddress ?? ""}
+                  readOnly
+                  disabled
+                  style={{ backgroundColor: "#f8f9fa" }}
                   placeholder="기본 주소"
                 />
 
@@ -437,7 +588,7 @@ function UpdateProfile() {
                   type="text"
                   id="detailAddress"
                   name="detailAddress"
-                  value={formData.detailAddress}
+                  value={formData.detailAddress ?? ""}
                   onChange={handleInputChange}
                   placeholder="상세 주소를 입력해주세요"
                 />
@@ -461,5 +612,4 @@ function UpdateProfile() {
     </MypageContainer>
   );
 }
-
 export default UpdateProfile;

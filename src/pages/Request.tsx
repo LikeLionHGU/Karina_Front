@@ -1,5 +1,8 @@
+import { hasToken, isTokenExpired } from "../utils/token";
+import { logout } from "../utils/logout";
 import { useState, useEffect } from "react";
 import styled from "styled-components";
+import LoadingSpinner from "../components/LoadingSpinner";
 import LeftSidebar from "../components/LeftSidebar";
 import AcceptModal from "../components/AcceptModal";
 import axios from "axios";
@@ -114,18 +117,24 @@ const ActionButton = styled.button`
 `;
 
 type RequestRow = {
+  factoryId: any;
+  articleId: any;
   factoryName: string;
   phoneNumber: string;
   requestDate: string;
-  fishInfo: string;
+  fishInfo: Array<{ species: string; quantity: number }>;
   // Add other fields if needed
 };
 
 function Request() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [requestData, setRequestData] = useState<RequestRow[]>([]);
+  const [selectedRow, setSelectedRow] = useState<RequestRow | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleAcceptClick = () => {
+  const handleAcceptClick = (row: RequestRow) => {
+    console.log("매칭 수락 선택 row:", row);
+    setSelectedRow(row);
     setIsModalOpen(true);
   };
 
@@ -133,24 +142,63 @@ function Request() {
     setIsModalOpen(false);
   };
 
-  const handleConfirm = () => {
-    // 매칭 수락 로직 처리
-    console.log("매칭이 수락되었습니다!");
-    setIsModalOpen(false);
-    // 여기에 API 호출이나 상태 업데이트 로직을 추가할 수 있습니다
+  const handleConfirm = async () => {
+    if (!selectedRow || !selectedRow.articleId) {
+      alert("articleId가 없습니다.");
+      return;
+    }
+    try {
+      const token = localStorage.getItem("jwt");
+      await axios.put(
+        `${import.meta.env.VITE_API_URL}/fisher/mypage`,
+        { articleId: selectedRow.articleId, factoryId: selectedRow.factoryId },
+        token
+          ? {
+              headers: { Authorization: `Bearer ${token}` },
+              data: {
+                articleId: selectedRow.articleId,
+                factoryId: selectedRow.factoryId,
+              },
+            }
+          : undefined
+      );
+      // 성공 시 모달 닫고 데이터 새로고침
+      setIsModalOpen(false);
+      fetchRequestData();
+    } catch (error) {
+      console.error("매칭 수락 요청 실패:", error);
+      alert("매칭 수락에 실패했습니다.");
+    }
   };
 
   const fetchRequestData = async () => {
+    setIsLoading(true);
     try {
       // localStorage에서 JWT 토큰 가져오기
-      const token = localStorage.getItem("jwt");
+      const token = hasToken() ? localStorage.getItem("jwt") : null;
       const response = await axios.get(
-        `${import.meta.env.VITE_API_URL}/mypage/request`,
+        `${import.meta.env.VITE_API_URL}/fisher/mypage`,
         token ? { headers: { Authorization: `Bearer ${token}` } } : undefined
       );
-      setRequestData(response.data);
+      setRequestData(
+        response.data.map((item: any) => ({
+          factoryId: item.factoryId,
+          articleId: item.articleId,
+          factoryName: item.factoryName,
+          phoneNumber: item.phoneNumber,
+          requestDate: item.requestDate,
+          fishInfo: item.fishInfo,
+        }))
+      );
+      console.log("Fetched request data:", response.data);
     } catch (error) {
-      console.error("Error fetching request data:", error);
+      if (isTokenExpired(error)) {
+        logout();
+      } else {
+        console.error("Error fetching request data:", error);
+      }
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -160,6 +208,7 @@ function Request() {
 
   return (
     <MypageContainer>
+      {isLoading && <LoadingSpinner />}
       <Title>마이페이지</Title>
       <Subtitle>
         마이페이지에서 등록, 조회, 거래 내역을 한눈에 확인하세요.
@@ -169,14 +218,21 @@ function Request() {
         <LeftSidebar activeMenu="request" />
         <MainContent>
           <SectionHeader>
-            <SectionTitle>매칭 신청 내역</SectionTitle>
+            <SectionTitle>
+              매칭 신청 내역
+              <span
+                style={{ color: "gray", fontSize: "14px", marginLeft: "8px" }}
+              >
+                (최신순)
+              </span>
+            </SectionTitle>
           </SectionHeader>
           <TableContainer>
             <Table>
               <TableHeader>
                 <tr>
-                  <TableHeaderCell>기관명</TableHeaderCell>
-                  <TableHeaderCell>전화번호</TableHeaderCell>
+                  <TableHeaderCell>담당자</TableHeaderCell>
+                  <TableHeaderCell>연락처</TableHeaderCell>
                   <TableHeaderCell>매칭 신청 일시</TableHeaderCell>
                   <TableHeaderCell>매칭 신청 내용</TableHeaderCell>
                   <TableHeaderCell></TableHeaderCell>
@@ -202,9 +258,16 @@ function Request() {
                       <TableCell>{row.factoryName}</TableCell>
                       <TableCell>{row.phoneNumber}</TableCell>
                       <TableCell>{row.requestDate}</TableCell>
-                      <TableCell>{row.fishInfo}</TableCell>
                       <TableCell>
-                        <ActionButton onClick={handleAcceptClick}>
+                        {typeof row.fishInfo === "object" &&
+                        row.fishInfo !== null
+                          ? Object.entries(row.fishInfo)
+                              .map(([key, value]) => `${key}: ${value}`)
+                              .join(", ")
+                          : row.fishInfo}
+                      </TableCell>
+                      <TableCell>
+                        <ActionButton onClick={() => handleAcceptClick(row)}>
                           매칭 수락하기
                         </ActionButton>
                       </TableCell>
@@ -216,14 +279,21 @@ function Request() {
           </TableContainer>
         </MainContent>
       </ContentSection>
-
       <AcceptModal
         isOpen={isModalOpen}
         onClose={handleModalClose}
         onConfirm={handleConfirm}
-        instituteName="옥수수 연구소"
-        contactInfo="박서연 010-5036-0717"
-        fishDetails="청어리 14667마리"
+        factoryName={selectedRow?.factoryName ?? ""}
+        phoneNumber={selectedRow?.phoneNumber ?? ""}
+        fishInfo={
+          selectedRow?.fishInfo
+            ? typeof selectedRow.fishInfo === "object"
+              ? Object.entries(selectedRow.fishInfo).map(
+                  ([species, quantity]) => `${species}: ${quantity}`
+                )
+              : selectedRow.fishInfo
+            : []
+        }
       />
     </MypageContainer>
   );

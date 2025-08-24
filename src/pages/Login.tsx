@@ -195,8 +195,10 @@ function Login() {
         ? rawToken.slice(7)
         : rawToken;
       const role = res.data.role;
+      const userName = res.data.userName;
       if (token) localStorage.setItem("jwt", token);
       localStorage.setItem("role", role) ?? "";
+      localStorage.setItem("userName", userName) ?? "";
 
       // 성공 처리
       alert("로그인 성공");
@@ -204,8 +206,8 @@ function Login() {
       console.log("Role:", role);
       {
         role === "ROLE_FACTORY"
-          ? navigate("/FactoryHome")
-          : navigate("/FisherHome");
+          ? navigate("/home/factory")
+          : navigate("/home/fisher");
       }
     } catch (err: any) {
       if (axios.isAxiosError(err)) {

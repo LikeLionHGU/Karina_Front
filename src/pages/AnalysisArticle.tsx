@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import styles from "../styles/AnalysisArticle.module.css";
+import LoadingSpinner from "../components/LoadingSpinner";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faImage } from "@fortawesome/free-regular-svg-icons";
 import { useState, useRef } from "react";
@@ -8,6 +9,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import ErrorModal from "../components/ErrorModal";
 import ConfirmModal from "../components/ConfirmModal";
+
 const InputContainer = styled.div`
     display:flex;
     flex-direction:column;
@@ -87,15 +89,15 @@ const UploadBtn = styled.button`
         color: #FFF;
     }
 `
+
 /*파일 업로드 되고 나서 뜨는 부분 컨테이너*/
 const FileChip = styled.div`
-  display:flex;
+  display: flex;
   align-items: center;
-  gap:11px;
-
-`
+  gap: 11px;
+`;
 const FileIcon = styled(FontAwesomeIcon)`
-  color: #bfc7d4;          /* lightgray 비슷 */
+  color: #bfc7d4; /* lightgray 비슷 */
   font-size: 50px;
   vertical-align: middle;  /* 텍스트와 수직 정렬시 유용 */
 `
@@ -193,11 +195,13 @@ function AnalysisArticle () {
         fileRef.current?.click(); //input태그와 버튼 태그 연결
     };
 
-    /*핸들 이벤트(유저가 입력하고 값 저장)*/
-    const handleFileChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
-        setSelectedFile(e.currentTarget.files?.[0] ?? null);
-        console.log('업로드 파일:', selectedFile);
-    };
+  /*핸들 이벤트(유저가 입력하고 값 저장)*/
+  const handleFileChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
+    setIsLoading(true);
+    setSelectedFile(e.currentTarget.files?.[0] ?? null);
+    console.log("업로드 파일:", selectedFile);
+    setIsLoading(false);
+  };
 
     const handleClose = () => setErrorOpen(false);
     const handleConfirm = () =>{
@@ -386,6 +390,19 @@ function AnalysisArticle () {
         </>
     )
 
+      <div className={styles.catchDate}>
+        <InputContainer>
+          <InputInner>
+            <InputTitle>혼획물 포획 일시</InputTitle>
+            <InputLine>
+              <DateInputTitle />
+              <DateInput placeholder="날짜를 선택해 주세요." />
+            </InputLine>
+          </InputInner>
+        </InputContainer>
+      </div>
+    </>
+  );
 }
 
 export default AnalysisArticle;

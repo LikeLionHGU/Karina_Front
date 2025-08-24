@@ -6,7 +6,6 @@ interface FishModalProps {
   fishData: {
     articleId?: string;
     mainAddress: string;
-    detailAddress: string;
     fishInfo: Array<string>;
     fisherName: string;
     postDate: string;
@@ -72,8 +71,10 @@ const FishImage = styled.div<{ thumbnail?: string }>`
     content: "";
     width: 100%;
     height: 300px;
-    background: url(${(props) => props.thumbnail || "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 250'%3E%3Crect width='400' height='250' fill='%23e3f2fd'/%3E%3Ctext x='200' y='125' font-family='Arial' font-size='60' text-anchor='middle' fill='%234a90e2'%3E🐟%3C/text%3E%3C/svg%3E"})
-      center/cover;
+    background-image: url(${(props) => props.thumbnail || "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 250'%3E%3Crect width='400' height='250' fill='%23e3f2fd'/%3E%3Ctext x='200' y='125' font-family='Arial' font-size='60' text-anchor='middle' fill='%230966ff'%3E🐟%3C/text%3E%3C/svg%3E"});
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
     border-radius: 12px 12px 0px 0px;
     display: block;
   }
@@ -91,7 +92,7 @@ const LocationContainer = styled.div`
 `;
 
 const LocationIcon = styled.span`
-  color: #4a90e2;
+  color: #0966ff;
   font-size: 16px;
 `;
 
@@ -117,7 +118,7 @@ const InfoGrid = styled.div`
 `;
 
 const InfoLabel = styled.div`
-  color: #4a90e2;
+  color: #0966ff;
   font-size: 14px;
   font-weight: 600;
 `;

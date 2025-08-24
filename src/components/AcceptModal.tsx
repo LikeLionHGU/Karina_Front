@@ -4,9 +4,9 @@ interface AcceptModalProps {
   isOpen: boolean;
   onClose: () => void;
   onConfirm: () => void;
-  instituteName: string;
-  contactInfo: string;
-  fishDetails: string;
+  factoryName: string;
+  phoneNumber: string;
+  fishInfo: Array<string>;
 }
 
 const ModalOverlay = styled.div<{ isOpen: boolean }>`
@@ -122,7 +122,7 @@ const CancelButton = styled.button`
 
 const ConfirmButton = styled.button`
   padding: 12px 24px;
-  background: #4a90e2;
+  background: #0966ff;
   color: white;
   border: none;
   border-radius: 25px;
@@ -132,7 +132,7 @@ const ConfirmButton = styled.button`
   transition: all 0.3s ease;
 
   &:hover {
-    background: #357abd;
+    background: #0752cc;
   }
 `;
 
@@ -140,9 +140,9 @@ function AcceptModal({
   isOpen,
   onClose,
   onConfirm,
-  instituteName,
-  contactInfo,
-  fishDetails,
+  factoryName,
+  fishInfo,
+  phoneNumber,
 }: AcceptModalProps) {
   const handleOverlayClick = (e: React.MouseEvent) => {
     if (e.target === e.currentTarget) {
@@ -160,16 +160,16 @@ function AcceptModal({
 
         <InfoSection>
           <InfoItem>
-            <InfoLabel>기관명</InfoLabel>
-            <InfoValue>{instituteName}</InfoValue>
+            <InfoLabel>담당자명</InfoLabel>
+            <InfoValue>{factoryName}</InfoValue>
           </InfoItem>
           <InfoItem>
-            <InfoLabel>담당자 정보</InfoLabel>
-            <InfoValue>{contactInfo}</InfoValue>
+            <InfoLabel>담당자 전화번호</InfoLabel>
+            <InfoValue>{phoneNumber}</InfoValue>
           </InfoItem>
           <InfoItem>
             <InfoLabel>매칭 내용</InfoLabel>
-            <InfoValue>{fishDetails}</InfoValue>
+            <InfoValue>{fishInfo.join(", ")}</InfoValue>
           </InfoItem>
         </InfoSection>
 

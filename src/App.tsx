@@ -40,7 +40,7 @@ function App() {
             <Route path="/home/factory" element={<FactoryHome />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
-            <Route path="/detail/:fishId" element={<Detail />} />
+            <Route path="/detail/:articleId" element={<Detail />} />
             <Route path="/mypage/request" element={<Request />} />
             <Route path="/mypage/matching" element={<Matching />} />
             <Route path="/mypage/posts" element={<EditPost />} />

@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import React from "react";
+import { useState, useEffect } from "react";
 
 const ModalOverlay = styled.div<{ $isOpen?: boolean }>`
   position: fixed;
@@ -77,18 +77,18 @@ const ModalButtonRow = styled.div`
   margin-top: 32px;
 `;
 
-const ModalButton = styled.button<{ primary?: boolean }>`
+const ModalButton = styled.button<{ $primary?: boolean }>`
   padding: 12px 48px;
   border-radius: 8px;
   border: 2px solid #0966ff;
-  background: ${(props) => (props.primary ? "#0966ff" : "white")};
-  color: ${(props) => (props.primary ? "white" : "#0966ff")};
+  background: ${(props) => (props.$primary ? "#0966ff" : "white")};
+  color: ${(props) => (props.$primary ? "white" : "#0966ff")};
   font-size: 17px;
   font-weight: 600;
   cursor: pointer;
   transition: background 0.2s;
   &:hover {
-    background: ${(props) => (props.primary ? "#0752cc" : "#f0f4fa")};
+    background: ${(props) => (props.$primary ? "#0752cc" : "#f0f4fa")};
   }
 `;
 
@@ -100,18 +100,64 @@ export interface EditModalProps {
     getTime: string;
     limitDate: string;
     limitTime: string;
+    image?: File | null;
   }) => void;
+  articleId?: any;
+  initialData?: {
+    getDate?: string;
+    getTime?: string;
+    limitDate?: string;
+    limitTime?: string;
+    image?: string;
+    fishInfo?: Array<string>;
+  };
 }
 
-const EditModal: React.FC<EditModalProps> = ({ isOpen, onClose, onSubmit }) => {
-  const [form, setForm] = React.useState({
+const EditModal: React.FC<EditModalProps> = ({
+  isOpen,
+  onClose,
+  onSubmit,
+  articleId,
+  initialData,
+}) => {
+  const [form, setForm] = useState<{
+    getDate: string;
+    getTime: string;
+    limitDate: string;
+    limitTime: string;
+    image: File | null;
+  }>({
     getDate: "",
     getTime: "",
     limitDate: "",
     limitTime: "",
-    image: null as File | null,
+    image: null,
   });
-  const [preview, setPreview] = React.useState<string | null>(null);
+  const [preview, setPreview] = useState<string | null>(null);
+
+  // initialData가 변경될 때마다 form 초기화
+  useEffect(() => {
+    if (isOpen && initialData && Object.keys(initialData).length > 0) {
+      setForm({
+        getDate: initialData.getDate || "",
+        getTime: initialData.getTime || "",
+        limitDate: initialData.limitDate || "",
+        limitTime: initialData.limitTime || "",
+        image: null,
+      });
+      if (initialData.image) {
+        setPreview(initialData.image);
+      } else {
+        setPreview(null);
+      }
+    }
+  }, [initialData, isOpen]);
+
+  // 디버깅: initialData, form, input value 상태 출력
+  useEffect(() => {
+    console.log("EditModal initialData:", initialData);
+    console.log("EditModal form:", form);
+  }, [initialData, form]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] || null;
@@ -128,12 +174,13 @@ const EditModal: React.FC<EditModalProps> = ({ isOpen, onClose, onSubmit }) => {
   };
 
   if (!isOpen) return null;
+  // articleId는 필요시 API 요청에 활용 가능
 
   return (
     <ModalOverlay $isOpen={isOpen}>
       <ModalContainer>
         <ModalSection>
-          <ModalTitle>혼획물 포획 일시</ModalTitle>
+          <ModalTitle>혼획물 어획 일시</ModalTitle>
           <ModalInputRow>
             <ModalLabel htmlFor="getImage">사진 업로드</ModalLabel>
             <FileInput
@@ -155,67 +202,91 @@ const EditModal: React.FC<EditModalProps> = ({ isOpen, onClose, onSubmit }) => {
               />
             )}
             <ModalLabel htmlFor="getDate">어획 날짜</ModalLabel>
-            <ModalInput
+            <input
+              type="date"
               id="getDate"
               value={form.getDate}
               onChange={(e) =>
                 setForm((f) => ({ ...f, getDate: e.target.value }))
               }
-            >
-              <option value="">날짜를 선택해주세요.</option>
-              <option value="2025-08-22">2025-08-22</option>
-              <option value="2025-08-23">2025-08-23</option>
-            </ModalInput>
+              style={{
+                width: 180,
+                padding: "12px 16px",
+                border: "1px solid #dbe4ee",
+                borderRadius: 8,
+                fontSize: 15,
+                color: "#888",
+                background: "white",
+              }}
+            />
           </ModalInputRow>
           <ModalInputRow>
             <ModalLabel htmlFor="getTime">어획 시간</ModalLabel>
-            <ModalInput
+            <input
+              type="time"
               id="getTime"
               value={form.getTime}
               onChange={(e) =>
                 setForm((f) => ({ ...f, getTime: e.target.value }))
               }
-            >
-              <option value="">시간을 선택해주세요.</option>
-              <option value="09:00">09:00</option>
-              <option value="14:00">14:00</option>
-            </ModalInput>
+              style={{
+                width: 120,
+                padding: "12px 16px",
+                border: "1px solid #dbe4ee",
+                borderRadius: 8,
+                fontSize: 15,
+                color: "#888",
+                background: "white",
+              }}
+            />
           </ModalInputRow>
         </ModalSection>
         <ModalSection>
           <ModalTitle>수거 마감 일시</ModalTitle>
           <ModalInputRow>
             <ModalLabel htmlFor="limitDate">마감 날짜</ModalLabel>
-            <ModalInput
+            <input
+              type="date"
               id="limitDate"
               value={form.limitDate}
               onChange={(e) =>
                 setForm((f) => ({ ...f, limitDate: e.target.value }))
               }
-            >
-              <option value="">날짜를 선택해주세요.</option>
-              <option value="2025-08-22">2025-08-22</option>
-              <option value="2025-08-23">2025-08-23</option>
-            </ModalInput>
+              style={{
+                width: 180,
+                padding: "12px 16px",
+                border: "1px solid #dbe4ee",
+                borderRadius: 8,
+                fontSize: 15,
+                color: "#888",
+                background: "white",
+              }}
+            />
           </ModalInputRow>
           <ModalInputRow>
             <ModalLabel htmlFor="limitTime">마감 시간</ModalLabel>
-            <ModalInput
+            <input
+              type="time"
               id="limitTime"
               value={form.limitTime}
               onChange={(e) =>
                 setForm((f) => ({ ...f, limitTime: e.target.value }))
               }
-            >
-              <option value="">시간을 선택해주세요.</option>
-              <option value="09:00">09:00</option>
-              <option value="14:00">14:00</option>
-            </ModalInput>
+              style={{
+                width: 120,
+                padding: "12px 16px",
+                border: "1px solid #dbe4ee",
+                borderRadius: 8,
+                fontSize: 15,
+                color: "#888",
+                background: "white",
+              }}
+            />
           </ModalInputRow>
         </ModalSection>
         <ModalButtonRow>
           <ModalButton onClick={onClose}>취소하기</ModalButton>
-          <ModalButton primary onClick={() => onSubmit(form)}>
+          <ModalButton $primary onClick={() => onSubmit(form)}>
             수정하기
           </ModalButton>
         </ModalButtonRow>

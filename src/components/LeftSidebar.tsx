@@ -34,7 +34,7 @@ function LeftSidebar({ activeMenu }: LeftSidebarProps) {
     }
   };
 
-  if (role === "fisher") {
+  if (role === "ROLE_FISHER") {
     return (
       <SidebarContainer>
         <MenuCard
@@ -70,7 +70,7 @@ function LeftSidebar({ activeMenu }: LeftSidebarProps) {
         />
       </SidebarContainer>
     );
-  } else if (role === "factory") {
+  } else if (role === "ROLE_FACTORY") {
     return (
       <SidebarContainer>
         <MenuCard
