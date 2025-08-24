@@ -181,7 +181,6 @@ function Header({ isLanding = false }: HeaderProps) {
     } else {
       navigate("/");
     }
-
   };
 
   const handleMyPageClick = () => {
@@ -218,6 +217,14 @@ function Header({ isLanding = false }: HeaderProps) {
     }
   };
 
+  const role = localStorage.getItem("role");
+  const currentPath = window.location.pathname;
+  const hidePostButtonForFisher =
+    role === "ROLE_FISHER" &&
+    ["/article/analysis", "/article/end", "/videoanalysis"].some((p) =>
+      currentPath.startsWith(p)
+    );
+
   return (
     <HeaderContainer>
       <HeaderContent>
@@ -225,18 +232,19 @@ function Header({ isLanding = false }: HeaderProps) {
           <img src="/logo.svg" alt="Logo" />
         </Logo>
         <NavSection>
-          <PostButton onClick={() => navigate("/post")}>
-            혼획물 등록하기
-          </PostButton>
+          {/* '혼획물 등록하기' 버튼: ROLE_FISHER이고 특정 페이지가 아니면 노출 */}
+          {role === "ROLE_FISHER" && !isLanding && !hidePostButtonForFisher && (
+            <PostButton onClick={() => navigate("/post")}>
+              혼획물 등록하기
+            </PostButton>
+          )}
           <ProfileSection ref={ref}>
-            {localStorage.getItem("jwt") ? (
-              <>
-                <ProfileIcon onClick={() => setOpen((s) => !s)}></ProfileIcon>
-                <UserName onClick={() => setOpen((s) => !s)}>
-                  {localStorage.getItem("userName")}
-                  <ChevronDownIcon />
-                </UserName>
-              </>
+            <ProfileIcon />
+            {localStorage.getItem("userName") ? (
+              <UserName onClick={() => setOpen((prev) => !prev)}>
+                {localStorage.getItem("userName")}
+                <ChevronDownIcon />
+              </UserName>
             ) : (
               <LoginButton onClick={() => navigate("/login")}>
                 로그인 / 회원가입

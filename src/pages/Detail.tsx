@@ -362,7 +362,7 @@ function Detail() {
 
             <InfoSection>
               <InfoGrid>
-                <InfoLabel>어종/수량</InfoLabel>
+                <InfoLabel>이름</InfoLabel>
                 <InfoValue>
                   {fishData.fishInfo
                     ? Object.entries(fishData.fishInfo)
