@@ -188,6 +188,7 @@ function AnalysisArticle () {
     const [isSuccess, setIsSuccess] = useState(false);
     const [modalTitle, setModalTitle] = useState("");
     const [modalBody, setModalBody] = useState("");
+    const [isLoading, setIsLoading] = useState(false); //로딩 스피너
     /*파일 선택 관련 이벤트 관리*/
     const handleOpenFile: React.MouseEventHandler<HTMLButtonElement> = (e) => {
         e.preventDefault();
@@ -281,6 +282,7 @@ function AnalysisArticle () {
 
     return (
         <>
+        {isLoading && <LoadingSpinner />}
             <section className={styles.title}>
                 <div className={styles.inner}>
                     <div className={styles.text}>
@@ -390,19 +392,7 @@ function AnalysisArticle () {
         </>
     )
 
-      <div className={styles.catchDate}>
-        <InputContainer>
-          <InputInner>
-            <InputTitle>혼획물 포획 일시</InputTitle>
-            <InputLine>
-              <DateInputTitle />
-              <DateInput placeholder="날짜를 선택해 주세요." />
-            </InputLine>
-          </InputInner>
-        </InputContainer>
-      </div>
-    </>
-  );
+      
 }
 
 export default AnalysisArticle;
