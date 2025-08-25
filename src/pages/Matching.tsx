@@ -173,7 +173,6 @@ function Matching() {
         logout();
         return;
       }
-      console.error("Error fetching post data:", error);
     } finally {
       setIsLoading(false);
     }
@@ -190,7 +189,6 @@ function Matching() {
   };
 
   const handleCancelModalSubmit = async () => {
-    console.log("매칭 취소 요청 articleId:", editArticleId); // 값 확인
     try {
       if (!hasToken()) {
         logout();
@@ -215,7 +213,6 @@ function Matching() {
         logout();
         return;
       }
-      console.error("매칭 취소 요청 실패:", error);
     }
     setIsCancelModalOpen(false);
     setEditArticleId(null);

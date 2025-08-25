@@ -27,13 +27,17 @@ export default function VideoAnalysisPage() {
   const [confirmModalOpen, setConfirmModalOpen] = useState(false);
   const [confirmTitle, setConfirmTitle] = useState("");
   const [confirmMessage, setConfirmMessage] = useState("");
+  //로그인 확인용
+  const [afterClose, setAfterClose] = useState<null | (() => void)>(null); 
 
 
-  const openError = (msg: string) => {
+  const openError = (msg: string, onClose?: () => void) => {
     setErrorMessage(msg);
     setError(msg);
+    setAfterClose(() => onClose ?? null);
     setErrorModalOpen(true);
     setStep("error");
+    
   };
 
   const openSuccess = (title: string, msg: string) => {
@@ -48,6 +52,12 @@ export default function VideoAnalysisPage() {
 
   const closeError = () => {
     setErrorModalOpen(false);
+    //비로그인시 모달 창 닫을때
+    if (afterClose) {
+      const fn = afterClose;
+      setAfterClose(null);
+      fn();
+    }
   };
 
   const postVideo = async (file: File) => {
@@ -55,7 +65,9 @@ export default function VideoAnalysisPage() {
     form.append("video", file, file.name);
 
     if (!hasToken()) {
+      openError("로그인 후 이용해 주세요", () => {
       logout();
+    });
       return;
     }
 
@@ -105,7 +117,9 @@ export default function VideoAnalysisPage() {
 
     try {
       if (!hasToken()) {
-        logout();
+            openError("로그인 후 이용해 주세요", () => {
+          logout();
+        });
         return;
       }
       const requestData = { articleId };

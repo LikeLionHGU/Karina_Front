@@ -264,9 +264,7 @@ function UpdateProfile() {
     } catch (error) {
       if (isTokenExpired(error)) {
         logout();
-      } else {
-        // console.error("Error fetching user data:", error);
-      }
+      } 
     } finally {
       setIsLoading(false);
     }
@@ -352,7 +350,6 @@ function UpdateProfile() {
       });
       postcode.open();
     } catch (err) {
-      // console.error("우편번호 스크립트 로드 실패", err);
       setIsErrorModalOpen(true);
       setErrorMessage(
         "우편번호 검색을 사용할 수 없습니다. 네트워크를 확인해주세요."
@@ -434,10 +431,6 @@ function UpdateProfile() {
     fetchUserData();
   }, []);
 
-  // formData가 바뀔 때마다 로그만 찍음
-  useEffect(() => {
-    // console.log("formData changed:", formData);
-  }, [formData]);
 
   useEffect(() => {
     if (formData.phoneNumber) {
