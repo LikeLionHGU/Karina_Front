@@ -31,7 +31,7 @@
 
 | 박서연 | 김원진 |
 | :----: | :----: |
-| [<img src="https://github.com/user-attachments/assets/24ac9407-972d-4ebd-a7d5-a4c0787f9dce" height=120 width=120><br/>@SeoyeonPark](https://github.com/yean1234) | [<img src="https://github.com/user-attachments/assets/284797d5-5923-44cb-832d-9e8e39e15cb2" height=120 width=120><br/>@WonjinKim](https://github.com/lingard09) |
+| [<img width="480" height="480" alt="Image" src="https://github.com/user-attachments/assets/6906d4c8-bf33-4782-9273-3138f8818de8" /><br/>@SeoyeonPark](https://github.com/yean1234) | [<img src="https://github.com/user-attachments/assets/284797d5-5923-44cb-832d-9e8e39e15cb2" height=120 width=120><br/>@WonjinKim](https://github.com/lingard09) |
 
 ---
 
@@ -90,7 +90,7 @@
 ### 브랜치 규칙  
 
 - 개인 브랜치에서만 작업  
-- 브랜치 네이밍 : `#이슈번호/파트/이름` (예: `#1/MainPage-Seoyeon`)  
+- 브랜치 네이밍 : `#이슈번호/파트/이름` (예: `seoyeon_feat/#35)  
 
 ### 커밋 메시지 규칙  
 
