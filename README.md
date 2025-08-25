@@ -106,4 +106,81 @@
 ---
 
 ## 📂 프로젝트 구조  
+## 📂 프로젝트 구조
+
+src
+ ┣ assets
+ ┃ ┣ fonts
+ ┃ ┃ ┗ PretendardTTF
+ ┃ ┣ icons
+ ┃ ┃ ┣ 어민
+ ┃ ┃ ┃ ┣ Ellipse 28.svg
+ ┃ ┃ ┃ ┣ Ellipse 31.svg
+ ┃ ┃ ┃ ┣ Analyze.svg
+ ┃ ┃ ┃ ┣ Camera.svg
+ ┃ ┃ ┃ ┣ CheckLine.png
+ ┃ ┃ ┃ ┣ Edit_active.svg
+ ┃ ┃ ┃ ┣ Edit_inactive.svg
+ ┃ ┃ ┃ ┣ fish.png
+ ┃ ┃ ┃ ┣ Graph_active.svg
+ ┃ ┃ ┃ ┣ Graph_inactive.svg
+ ┃ ┃ ┃ ┣ line.svg
+ ┃ ┃ ┃ ┣ LocationIcon.svg
+ ┃ ┃ ┃ ┣ Puzzle_active.svg
+ ┃ ┃ ┃ ┣ Puzzle_inactive.svg
+ ┃ ┃ ┃ ┣ restart.png
+ ┃ ┃ ┃ ┗ SearchIcon.svg
+ ┃ ┣ profile
+ ┃ ┃ ┣ default.jpg
+ ┃ ┃ ┗ profile_default.svg
+ ┃ ┗ logo.svg
+ ┣ components
+ ┃ ┣ AcceptModal.tsx
+ ┃ ┣ CancelModal.tsx
+ ┃ ┣ ConfirmModal.tsx
+ ┃ ┣ EditModal.tsx
+ ┃ ┣ ErrorModal.tsx
+ ┃ ┣ FishModal.tsx
+ ┃ ┣ Footer.tsx
+ ┃ ┣ Header.tsx
+ ┃ ┣ LeftSidebar.tsx
+ ┃ ┣ LoadingSpinner.tsx
+ ┃ ┣ LogoutModal.tsx
+ ┃ ┣ MenuCard.tsx
+ ┃ ┣ Processing.tsx
+ ┃ ┣ Restart.tsx
+ ┃ ┣ Result.tsx
+ ┃ ┣ SuccessModal.tsx
+ ┃ ┗ UploadBox.tsx
+ ┣ pages
+ ┃ ┣ AnalysisArticle.tsx
+ ┃ ┣ ArticleEnd.tsx
+ ┃ ┣ Detail.tsx
+ ┃ ┣ EditPost.tsx
+ ┃ ┣ FactoryHome.tsx
+ ┃ ┣ FisherHome.tsx
+ ┃ ┣ Landing.tsx
+ ┃ ┣ Login.tsx
+ ┃ ┣ Matching.tsx
+ ┃ ┣ Request.tsx
+ ┃ ┣ Signup.tsx
+ ┃ ┣ UpdateProfile.tsx
+ ┃ ┗ VideoAnalysisPage.tsx
+ ┣ styles
+ ┃ ┣ AnalysisArticle.module.css
+ ┃ ┣ articleEnd.module.css
+ ┃ ┣ landing.module.css
+ ┃ ┣ Login.module.css
+ ┃ ┣ process.module.css
+ ┃ ┣ Result.module.css
+ ┃ ┣ SignUp.module.css
+ ┃ ┗ UploadBox.module.css
+ ┣ utils
+ ┃ ┣ logout.ts
+ ┃ ┗ token.ts
+ ┣ App.css
+ ┣ App.tsx
+ ┣ index.css
+ ┣ main.tsx
+ ┗ vite-env.d.ts
 
