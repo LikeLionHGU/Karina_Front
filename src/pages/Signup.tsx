@@ -206,18 +206,19 @@ const InfoTitle = styled.h1`
   line-height: 1.2;
   width: 100px;
   white-space: nowrap; /* 줄바꿈 금지 */
-  word-break: keep-all; /* 한국어 단어 쪼개기 방지 */
 `;
 
 const InfoInput = styled.input`
-  -webkit-appearance: none; /* 웹킷 브라우저에서 기본 스타일 제거 */
-  -moz-appearance: none; /* 모질라 브라우저에서 기본 스타일 제거 */
+  -webkit-appearance: none; /* 기본 스타일 제거 */
+  -moz-appearance: none; /*  기본 스타일 제거 */
   appearance: none; /* 기본 브라우저에서 기본 스타일 제거 */
   width: 38.23vw;
   height: 65px;
   flex-shrink: 0;
   border-radius: 5px;
   border: 1.5px solid var(--Secondary-3, #a5bee0);
+  padding-left: 10px;
+  font-size: 16px;
 
   &::placeholder {
     color: var(--Secondary-5, #899ebb);
@@ -238,6 +239,8 @@ const PhoneNumberInput = styled.input`
   flex-shrink: 0;
   border-radius: 5px;
   border: 1.5px solid var(--Secondary-3, #a5bee0);
+  font-size: 16px;
+  padding-left: 10px;
 
   &::placeholder {
     color: var(--Secondary-5, #899ebb);
@@ -503,6 +506,7 @@ function Signup() {
         const fullAddress = `${addr}${extraAddr}`;   // 전체 주소
         setMainAddress(fullAddress);
         detailRef.current?.focus(); // 3번째 인풋으로 포커스
+        setErrorField(detailAddress); // 우편번호 관련 에러 해제&디테일 입력 전이므로
       },
     }).open(); // ← 기본 팝업(모달 느낌)로 열림
   };
@@ -526,8 +530,10 @@ function Signup() {
       setValidText(typeof data === "string" ? data : JSON.stringify(data));
       if (response.data !== "Valid") {
         setIdValid(false);
+        setValidText('유효하지 않은 아이디입니다.');
       } else {
         setIdValid(true);
+        setValidText('유효한 아이디입니다.');
       }
     } catch (error) {
       // 네트워크 오류 등 예외 발생 시
@@ -539,22 +545,18 @@ function Signup() {
   ) => {
     event.preventDefault();
     setErrorField(null);
-     if (!selectedFile) {
-      openError("인증 파일을 업로드해주세요.");
-      setIsLoading(false);
-      return;
-    }
 
 
     // 필수 입력값 검사 (필드 강조 + 포커스 유지)
-    if (!userId.trim()) { setErrorField("userId"); firstRef.current?.focus(); return; }
-    if (!userPassword.trim()) { setErrorField("userPassword"); document.getElementById("passwordInput")?.focus(); return; }
-    if (!userName.trim()) { setErrorField("userName"); document.getElementById("nameInput")?.focus(); return; }
-    if (!phoneFirst || !phoneMiddle || !phoneEnd) { setErrorField("phone"); firstRef.current?.focus(); return; }
+    if (!selectedFile) {openError("인증 파일을 업로드해주세요."); setErrorField("file"); setIsLoading(false); fileRef.current?.focus(); return; }
+    if (!userId.trim()) { openError("아이디를 입력해 주세요."); setErrorField("userId"); firstRef.current?.focus(); return; }
+    if (!userPassword.trim()) { openError("비밀번호를 입력해 주세요."); setErrorField("userPassword"); document.getElementById("passwordInput")?.focus(); return; }
+    if (!userName.trim()) { openError("이름을 입력해 주세요.");  setErrorField("userName"); document.getElementById("nameInput")?.focus(); return; }
+    if (!phoneFirst || !phoneMiddle || !phoneEnd) { openError("전화번호를 입력해 주세요."); setErrorField("phone"); firstRef.current?.focus(); return; }
     if (!postcode.trim()) { setErrorField("postcode"); document.getElementById("postcodeInput")?.focus(); return; }
     if (!address1.trim()) { setErrorField("address1"); document.getElementById("address1Input")?.focus(); return; }
     if (!detailAddress.trim()) { setErrorField("detailAddress"); detailRef.current?.focus(); return; }
-    if (!selectedFile) { setErrorField("file"); fileRef.current?.focus(); return; }
+ 
 
     setIsLoading(true);
     const phoneHyphen = `${phoneFirst}-${phoneMiddle}-${phoneEnd}`;
@@ -675,9 +677,9 @@ function Signup() {
       </section>
 
       <section className={styles.infoInputContainer}>
+      <div className={styles.idValid}>
         <InfoInputLine>
           <InfoTitle>아이디</InfoTitle>
-          <div className={styles.idValid}>
             <InfoInput
               placeholder="아이디 입력 6~12자 이내 입력"
               type="text"
@@ -686,46 +688,57 @@ function Signup() {
               ref={firstRef}
               id="userIdInput"
             />
-            {idValid !== null && (
+            <IsSameBtn onClick={onCheckId}>중복확인</IsSameBtn>
+          
+        </InfoInputLine>
+        {idValid !== null && (
               <h1 className={styles.isValid}>
                 {validText}
               </h1>
             )}
             {errorField === "userId" && (
               <div className={styles.inputError}>필수 정보를 입력해 주세요</div>
-            )}
-          </div>
-          <IsSameBtn onClick={onCheckId}>중복확인</IsSameBtn>
-        </InfoInputLine>
+          )}
+
+
+
+      </div>
+      <div className={styles.idValid}>
         <InfoInputLine>
           <InfoTitle>비밀번호</InfoTitle>
           <InfoInput
-            placeholder="비밀번호는 영문/숫자/특수문자 2가지 이상 조합 8~20자 이내 입력"
+            placeholder="비밀번호 입력 8~20자 이내 입력"
             type="password"
             value={userPassword}
             onChange={handlePasswordChange}
             id="passwordInput"
           />
-          {errorField === "userPassword" && (
+        </InfoInputLine>
+        {errorField === "userPassword" && (
             <div className={styles.inputError}>필수 정보를 입력해 주세요</div>
           )}
-        </InfoInputLine>
+
+      </div>
+        
+      <div className={styles.idValid}>
         <InfoInputLine>
           <InfoTitle>이름</InfoTitle>
           <InfoInput
-            placeholder="이름을 입력해 주세요"
+            placeholder="이름 입력"
             type="text"
             value={userName}
             onChange={handleNameChange}
             id="nameInput"
           />
-          {errorField === "userName" && (
+        </InfoInputLine>
+        {errorField === "userName" && (
             <div className={styles.inputError}>필수 정보를 입력해 주세요</div>
           )}
-        </InfoInputLine>
+      </div>
+      <div className={styles.idValid}>
         <InfoInputLine>
           <InfoTitle>전화번호</InfoTitle>
-          <PhoneContainer>
+            <PhoneContainer>
             <PhoneNumberInput
               ref={firstRef}
               placeholder="010"
@@ -756,10 +769,14 @@ function Signup() {
               onChange={handleEndNum}
             />
           </PhoneContainer>
-          {errorField === "phone" && (
-            <div className={styles.inputError}>필수 정보를 입력해 주세요</div>
-          )}
         </InfoInputLine>
+        {errorField === "phone" && (
+            <div className={styles.inputError}>필수 정보를 입력해 주세요</div>
+        )}
+          
+
+      </div>
+        
         <InfoInputLine>
           <InfoTitle>주소</InfoTitle>
           <div className={styles.addressInputBox}>
@@ -776,7 +793,7 @@ function Signup() {
               </SearchAddress>
             </div>
             {errorField === "postcode" && (
-              <div className={styles.inputError}>필수 정보를 입력해 주세요</div>
+              <div className={styles.postError}>우편 번호를 선택해 주세요</div>
             )}
             <InfoInput
               placeholder="주소"
@@ -785,9 +802,6 @@ function Signup() {
               readOnly
               id="address1Input"
             />
-            {errorField === "address1" && (
-              <div className={styles.inputError}>필수 정보를 입력해 주세요</div>
-            )}
             <InfoInput
               ref={detailRef as any}
               placeholder="상세 주소를 입력해 주세요"

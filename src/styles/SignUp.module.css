@@ -114,7 +114,12 @@ body {
     flex-direction:column;
 }
 
+
+
 .isValid{
+    display: flex;
+   padding-left:clamp(120px, 1vw, 160px);
+    width:100%;
     color: var(--Secondary-5, #0968ed);
     padding-top:10px;
     font-size: 15px;
@@ -123,6 +128,31 @@ body {
     line-height: normal;
 }
 
+.inputError{
+    display: flex;
+   padding-left:clamp(120px, 1vw, 160px);
+    width:100%;
+    color: var(--Black-4, #454545);
+    font-size: clamp(10px, 2.5vw, 15px);
+    font-style: normal;
+    font-weight: 700;
+    line-height: 30px; /* 150% */
+    white-space: nowrap;
+    
+}
+
+.postError{
+    display: flex;
+   padding-left:10px;
+    width:100%;
+    color: var(--Black-4, #454545);
+    font-size: clamp(10px, 2.5vw, 15px);
+    font-style: normal;
+    font-weight: 700;
+    line-height: 30px; /* 150% */
+    white-space: nowrap;
+
+}
 .addressInputBox{
     display:flex;
     flex-direction: column;
