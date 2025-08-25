@@ -1,8 +1,4 @@
 
-
-# 기술 구현
-
-
 # 혼획물을 기회로 바꾸는 지속가능한 연결, 잡어드림 🥇
 
 <img width="2744" height="1422" alt="Image" src="https://github.com/user-attachments/assets/3f9c7f04-4e42-4c1b-96d6-1ea1bc326878" />
@@ -38,7 +34,8 @@
 
 |                                                                                        **박서연**                                                                                        |                                                                                         **김원진**                                                                                         |
 | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
-| [<img src="https://github.com/user-attachments/assets/24ac9407-972d-4ebd-a7d5-a4c0787f9dce" height=160 width=160> <br/> @YearaChoi](https://github.com/YearaChoi) | [<img src="https://github.com/user-attachments/assets/bc729a7c-8f65-41c0-86bb-9287e123477f" height=160 width=160> <br/> @yeji](https://github.com/skwldwld) |
+| [<img src="https://github.com/user-attachments/assets/24ac9407-972d-4ebd-a7d5-a4c0787f9dce" height=160 width=160> <br/> @SeoyeonPark](https://github.com/yean1234) | [<img width="1076" height="922" alt="image" src="https://github.com/user-attachments/assets/284797d5-5923-44cb-832d-9e8e39e15cb2" />
+ <br/> @WonjinKim](https://github.com/lingard09) |
 
 
 </div>
@@ -57,39 +54,48 @@
 
 ## 2. 서비스 핵심 기능 및 페이지 소개
 
-### 맞춤형 강좌 선택
+### AI 영상 분석
 
-![image.jpg1](https://github.com/user-attachments/assets/2c9c8638-53d5-4d6f-94c9-9a1d5ebc0bb2) |![image.jpg2](https://github.com/user-attachments/assets/40bced4c-d371-4ea7-952f-422d269ccd9d)
+!<img width="1224" height="1074" alt="image" src="https://github.com/user-attachments/assets/84d88a64-70f7-4756-98f3-93ca46147345" />
+ |![image.jpg2](https://github.com/user-attachments/assets/40bced4c-d371-4ea7-952f-422d269ccd9d)
 --- | --- | 
 
-- 지역, 운동종목, 장애유형, 날짜, 가격, 개인/그룹 항목별 필터링이 제공됩니다.
+- 혼획물 영상을 올리면 AI가 자동으로 분석해 줍니다! 
 
 <br>
 
-### 신뢰도 있는 강사
+### 생산·가공 데이터 연계
 
-![image.jpg1](https://github.com/user-attachments/assets/cc00a208-f37c-4f30-933b-110ea24a6d1c)
+!(<img width="2776" height="1416" alt="image" src="https://github.com/user-attachments/assets/b4677142-039d-4400-8bfc-25c61586c726" />
 
-- 강사 프로플 확인을 통해 강좌 개설 내역을 확인할 수 있습니다.
-- 강사의 보유 자격증 및 강좌 평점이 표시됩니다.
+)
+
+- 어민 → 공장/연구소로 실시간 AI분석 생산 데이터를 제공해 줍니다.
+- 공장/연구소는 이를 기반으로 가공 계획 수립할 수 있으며 연구 분석이 가능합니다. 
 
   <br>
 
-### 사용자 동기부여
+### 품질 관리 및 이력 추적
 
-![image.jpg1](https://github.com/user-attachments/assets/a3a57018-4f59-4927-8733-abd0c9df946c)
+!(<img width="2836" height="1408" alt="image" src="https://github.com/user-attachments/assets/13c9a442-388b-46dc-b7d5-0e7d13607112" />
+)
 
-- 등급제를 통한 혜택 지급으로 사용자가 운동을 지속할 수 있도록 동기부여 합니다.
+- 대기 중 → 매칭 대기 → 매칭 완료까지 데이터를 기록합니다.
+- 투명한 이력 관리로 소비자 신뢰 확보 및 수출 경쟁력 강화를 이끌어 낼 수 있습니다.
 
 <br>
 
-### 강좌 수강 
+### 맞춤형 대시보드(어민/공장 및 연구소 별)
 
-![image.jpg1](https://github.com/user-attachments/assets/8b107d18-1160-4633-8800-091aed5ee74d)|![image.jpg2](https://github.com/user-attachments/assets/17fbb1f5-b164-4982-b9eb-4667dbc295c2) 
+(<img width="2758" height="1370" alt="image" src="https://github.com/user-attachments/assets/be0b992d-c48e-422b-8b61-18029bae2b51" />
+)|![image.jpg2](https://github.com/user-attachments/assets/17fbb1f5-b164-4982-b9eb-4667dbc295c2) 
 --- | --- | 
 
-- 해당 강좌의 시간을 선택하여 수강신청 할 수 있습니다.
-- 사용자가 찜한 강좌, 수강한 강좌, 수강 완료한 강좌는 유저 페이지에서 확인할 수 있습니다.
+- 어민: 다른 어민들의 이름, 게시글 등록 일자, 진행 현황 확인 가능
+
+- 공장 및 연구소: 어민 정보, 어획량, 어획 및 마감일시 확인 가능
+
+- 이렇게 사용자 그룹별로 최적화된 UI를 제공하고 있습니다.
 
 <br>
 
