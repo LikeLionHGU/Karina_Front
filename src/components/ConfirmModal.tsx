@@ -13,7 +13,6 @@ interface ConfirmModalProps {
   singleText?: string;
 }
 
-
 const ModalOverlay = styled.div<{ isOpen: boolean }>`
   position: fixed;
   top: 0;
@@ -125,7 +124,6 @@ function ConfirmModal({
       onClose();
     }
   };
-  /*onConrrm => analysisArticle에서 사용*/
 
   return (
     <ModalOverlay isOpen={isOpen} onClick={handleOverlayClick}>
