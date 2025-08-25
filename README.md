@@ -47,7 +47,7 @@
 ## 🚀 서비스 핵심 기능 및 페이지  
 
 ### 1. AI 영상 분석  
-| ![영상분석](https://github.com/user-attachments/assets/84d88a64-70f7-4756-98f3-93ca46147345) | ![영상분석2](https://github.com/user-attachments/assets/40bced4c-d371-4ea7-952f-422d269ccd9d) |  
+| ![영상분석](https://github.com/user-attachments/assets/84d88a64-70f7-4756-98f3-93ca46147345) | ![영상분석2](<img width="1920" height="1319" alt="Image" src="https://github.com/user-attachments/assets/03b6fd69-fcf6-444f-a244-8ea04c84cfab" />) |  
 | --- | --- |  
 - 혼획물 영상을 업로드하면 AI가 **어종 판별 및 개체 수 분석**을 자동으로 수행합니다.  
 
@@ -70,7 +70,7 @@
 ---
 
 ### 4. 맞춤형 대시보드  
-| ![대시보드1](https://github.com/user-attachments/assets/be0b992d-c48e-422b-8b61-18029bae2b51) | ![대시보드2](https://github.com/user-attachments/assets/17fbb1f5-b164-4982-b9eb-4667dbc295c2) |  
+| ![대시보드1](https://github.com/user-attachments/assets/be0b992d-c48e-422b-8b61-18029bae2b51) | ![대시보드2](<img width="1920" height="1594" alt="Image" src="https://github.com/user-attachments/assets/3611d413-5c34-4b02-8bb5-52f37a66e09c" />) |  
 | --- | --- |  
 - **어민** : 다른 어민들의 정보, 게시글 등록일, 진행 현황 확인  
 - **공장/연구소** : 어민 정보, 어획량, 마감일시 등 종합 데이터 확인  
