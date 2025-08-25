@@ -1,4 +1,3 @@
-// pages/VideoAnalysisPage.tsx
 import styles from '../styles/UploadBox.module.css';
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -54,10 +53,9 @@ function DownloadIcon() {
 
 export default function UploadBox({ handleSelect }: UploadBoxProps) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [isActive, setActive] = useState(false);   // 드래그 하이라이트
-  const dragCounter = useRef(0);    // 자식으로 들어갈 때 깜빡임 방지
+  const [isActive, setActive] = useState(false);
+  const dragCounter = useRef(0);
 
-  //  드래그/드롭 핸들러
   const handleDragEnter: React.DragEventHandler<HTMLLabelElement> = (e) => {
     e.preventDefault(); e.stopPropagation();
     dragCounter.current += 1;
@@ -65,7 +63,7 @@ export default function UploadBox({ handleSelect }: UploadBoxProps) {
   };
 
   const handleDragOver: React.DragEventHandler<HTMLLabelElement> = (e) => {
-    e.preventDefault(); e.stopPropagation();             // ✅ 꼭 막아야 drop 가능
+    e.preventDefault(); e.stopPropagation();
     if (!isActive) setActive(true);
   };
 
@@ -76,7 +74,7 @@ export default function UploadBox({ handleSelect }: UploadBoxProps) {
   };
 
   const handleDrop: React.DragEventHandler<HTMLLabelElement> = (e) => {
-    e.preventDefault(); e.stopPropagation();             // ✅ 기본 동작 막기
+    e.preventDefault(); e.stopPropagation();
     setActive(false);
     dragCounter.current = 0;
 
@@ -89,7 +87,7 @@ export default function UploadBox({ handleSelect }: UploadBoxProps) {
       return;
     }
 
-    setSelectedFile(file); //  파일칩 UI로 전환
+    setSelectedFile(file);
 
     e.dataTransfer.clearData();
   };
@@ -132,7 +130,6 @@ export default function UploadBox({ handleSelect }: UploadBoxProps) {
             </div>
           </>
         ) : (
-          // 드롭해도 같은 스타일의 파일칩으로 보임
           <FileChip>
             <FileIcon icon={faFilm} />
             <div className={styles.fileChipText}>

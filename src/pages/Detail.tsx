@@ -302,7 +302,6 @@ function Detail() {
       setModalTitle("신청에 실패했습니다.");
       setModalBody("다시 시도해 주세요.");
     }
-    // 모달은 열린 상태로 유지하여 성공/실패 메시지 표시
   };
 
   return (
@@ -325,7 +324,6 @@ function Detail() {
       <BackButton onClick={() => navigate(-1)}>← 뒤로 가기</BackButton>
 
       <ContentCard>
-        {/* 왼쪽: 영상 섹션 */}
         <FishVideoContainer>
           {fishData.video ? (
             <FishVideo controls>
@@ -370,7 +368,6 @@ function Detail() {
           </StatusSection>
         </FishVideoContainer>
 
-        {/* 오른쪽: 정보 섹션 */}
         <InfoContainer>
           <LocationContainer>
             <LocationIcon>

@@ -138,7 +138,6 @@ function FishModal({ isOpen, onClose, fishData }: FishModalProps) {
     }
   };
 
-  // 어종+수량 문자열 생성
   const fishInfoList = fishData.fishInfo
     ? Object.entries(fishData.fishInfo).map(
         ([name, count]) => `${name} ${count}마리`

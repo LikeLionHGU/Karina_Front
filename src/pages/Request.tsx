@@ -27,7 +27,6 @@ const Subtitle = styled.p`
   margin-bottom: 60px;
   color: #999;
 
-  /* Subhead */
   font-size: 14px;
   font-style: normal;
   font-weight: 600;
@@ -123,7 +122,6 @@ type RequestRow = {
   phoneNumber: string;
   requestDate: string;
   fishInfo: Array<{ species: string; quantity: number }>;
-  // Add other fields if needed
 };
 
 function Request() {
@@ -161,7 +159,6 @@ function Request() {
             }
           : undefined
       );
-      // 성공 시 모달 닫고 데이터 새로고침
       setIsModalOpen(false);
       fetchRequestData();
     } catch (error) {
@@ -172,7 +169,6 @@ function Request() {
   const fetchRequestData = async () => {
     setIsLoading(true);
     try {
-      // localStorage에서 JWT 토큰 가져오기
       const token = hasToken() ? localStorage.getItem("jwt") : null;
       const response = await axios.get(
         `${import.meta.env.VITE_API_URL}/fisher/mypage`,

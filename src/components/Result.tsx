@@ -1,10 +1,8 @@
-// components/Result.tsx
 import styled from "styled-components";
 import styles from '../styles/Result.module.css'
 import { useNavigate } from "react-router-dom";
 import LoadingSpinner from "../components/LoadingSpinner";
 
-//받아오는 데이터 ->Map list
 type AnalysisMap = Record<string, number>;
 type ResultProps = {
   articleData: string | null;                // ← number → string으로
@@ -47,7 +45,6 @@ const Buttons = styled.div`
   margin: 50px 0 100px;
 `;
 
-// Result.tsx
 const GhostButton = styled.button.attrs({ type: "button" })`
   height: 40px;
   padding: 0 20px;
@@ -71,18 +68,15 @@ const PrimaryButton = styled.button`
   cursor: pointer;
 `;
 
-// 숫자 → "약 52마리" 같은 표시로
 const formatCount = (n: number) => `약 ${n}마리`;
 
 export default function Result({ articleData, data, onReset, isLoading }: ResultProps & { isLoading?: boolean }) {
   const navigate = useNavigate();
-  // 1) 방어 코드: 데이터 없거나 형태가 아니면 빈 배열
-  const entries = Object.entries(data ?? {}) // => [ ["fish", num] ...]
+  const entries = Object.entries(data ?? {})
 
-  // 2) 정렬(내림차순) 후 최대 3개만 노출
   const top3 = entries.sort((a, b) => b[1] - a[1]).slice(0, 3);
   const handleResetClick = () => {
-    onReset(); // 부모의 reanalyze 호출
+    onReset();
   };
   return (
     <>
