@@ -1,33 +1,31 @@
 import styles from "../styles/landing.module.css";
-import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import cameraImage from "../assets/icons/Camera.svg";
 import docsImage from "../assets/icons/Analyze.svg";
 import matchImage from "../assets/icons/Puzzle_active.svg";
 import LineIcon from "../assets/icons/line.svg";
 
+// 상단 import/스타일은 그대로 유지
+
+type StepItem = {
+  icon: string;
+  alt: string;
+  title: string;
+  detail: string;
+};
+
+const steps: StepItem[] = [
+  { icon: cameraImage, alt: "camera", title: "영상 등록", detail: "사진/영상을 등록하세요" },
+  { icon: docsImage,   alt: "docs",   title: "AI 자동 분석", detail: "AI가 종류를 분류합니다" },
+  { icon: matchImage,  alt: "match",  title: "수요자 매칭", detail: "필요한 수요자와 연결됩니다" },
+];
+
 const Highlight = styled.span`
   color: var(--Primary-2, #0966ff);
 `;
 
-/*아이콘 모음*/
-const Camera = styled.img`
-  width: 100px;
-  height: 100px;
-  flex-shrink: 0;
-`;
-
-const Docs = styled.img`
-  width: 100px;
-  height: 100px;
-  flex-shrink: 0;
-`;
-
-const Match = styled.img`
-  width: 100px;
-  height: 100px;
-  flex-shrink: 0;
-`;
+/*아이콘 재사용*/
+const Icon = styled.img`width: 100px; height: 100px; flex-shrink: 0;`;
 /*아이콘 컨테이너 모음*/
 const IconWithDescription = styled.div`
   display: flex;
@@ -84,11 +82,9 @@ const LineAndText = styled.div`
 const GrayLine = styled.img`
   margin-left: 23px;
   padding-top: 5px;
-  img {
-    width: 225px;
-    height: 20px;
-    flex-shrink: 0;
-  }
+  width: 225px;
+  height: 20px;
+  flex-shrink: 0;
 `;
 
 /*svg파일이 없어서 CSS코드로 대체*/
@@ -113,15 +109,6 @@ const BlueLineBody = styled.div`
 `;
 
 function Landing() {
-  const navigate = useNavigate();
-
-  const onFisherClick = () => {
-    navigate(`/login`);
-  };
-
-  const onFactoryClick = () => {
-    navigate(`/login`);
-  };
 
   return (
     <>
@@ -150,44 +137,35 @@ function Landing() {
         </p>
       </section>
 
-      {/*파란 네모 배너*/}
-      <div className={styles.BlueContainer}>
-        <div className={styles.MainTitle}>
-          <h1>이용 프로세스는</h1>
-          <h1>이렇게 진행됩니다</h1>
+      {/* 파란 네모 배너 */}
+<div className={styles.BlueContainer}>
+  <div className={styles.MainTitle}>
+    <h1>이용 프로세스는</h1>
+    <h1>이렇게 진행됩니다</h1>
+  </div>
+
+  <div className={styles.ProcessContainer}>
+      {steps.map((s, i) => (
+        <div key={s.title} style={{ display: "flex", alignItems: "center" }}>
+          <IconWithDescription>
+            {/* 아이콘 3개는 동일 스타일 → 하나로 통일 */}
+            <img src={s.icon} alt={s.alt} width={100} height={100} style={{ flexShrink: 0 }} />
+            <IconDescriptionTitle>{s.title}</IconDescriptionTitle>
+            <IconDescriptionDetail>{s.detail}</IconDescriptionDetail>
+          </IconWithDescription>
+
+          {/* 마지막 카드 뒤에는 화살표 X */}
+          {i < steps.length - 1 && (
+            <Arrow aria-hidden>
+              <ArrowBody />
+              <ArrowHead />
+            </Arrow>
+          )}
         </div>
-        <div className={styles.ProcessContainer}>
-          <IconWithDescription>
-            <Camera src={cameraImage} alt="camera" />
-            <IconDescriptionTitle>영상 등록</IconDescriptionTitle>
-            <IconDescriptionDetail>
-              사진/영상을 등록하세요
-            </IconDescriptionDetail>
-          </IconWithDescription>
-          <Arrow>
-            <ArrowBody />
-            <ArrowHead />
-          </Arrow>
-          <IconWithDescription>
-            <Docs src={docsImage} alt="docs" />
-            <IconDescriptionTitle>AI 자동 분석</IconDescriptionTitle>
-            <IconDescriptionDetail>
-              AI가 종류를 분류합니다
-            </IconDescriptionDetail>
-          </IconWithDescription>
-          <Arrow>
-            <ArrowBody />
-            <ArrowHead />
-          </Arrow>
-          <IconWithDescription>
-            <Match src={matchImage} alt="match" />
-            <IconDescriptionTitle>수요자 매칭</IconDescriptionTitle>
-            <IconDescriptionDetail>
-              필요한 수요자와 연결됩니다
-            </IconDescriptionDetail>
-          </IconWithDescription>
-        </div>
-      </div>
+      ))}
+    </div>
+  </div>
+
 
       {/*파란 배너 아래 문단*/}
       <section className={styles.ThridIntroduction}>

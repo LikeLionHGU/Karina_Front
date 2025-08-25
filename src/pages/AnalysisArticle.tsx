@@ -27,7 +27,7 @@ const InputTitle = styled.h1`
 
 const InputBox = styled.div`
   display: flex;
-  justify-content: center; // 그대로
+  justify-content: center; /* 그대로 */
   align-items: center;
   gap: 16px;
 `;
@@ -40,7 +40,7 @@ const InputInner = styled.div`
 
 /*파일 컨테이너*/
 const FileContent = styled.div`
-  width: fit-content; /* 남은 공간 전부 차지 */
+  width: fit-content; /* 컨텐츠 만큼 차지 */
   display: flex;
   align-items: center;
   border-radius: 5px;
@@ -134,16 +134,6 @@ const DateContent = styled.input`
   gap: 10px; /* 버튼 사이 간격 */
   padding: 0 16px;
   box-sizing: border-box;
-
-  span {
-    white-space: nowrap;
-    padding-right: 127px;
-    color: var(--Secondary-5, #899ebb);
-    font-size: clamp(10px, 1.6vw, 15px);
-    font-style: normal;
-    font-weight: 700;
-    line-height: 30px; /* 150% */
-  }
 `;
 /*마지막 완료 버튼*/
 const CompleteSubmit = styled.div`

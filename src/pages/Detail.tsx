@@ -7,7 +7,22 @@ import LocationImg from "../assets/icons/LocationIcon.svg";
 import { useNavigate, useParams } from "react-router-dom";
 import ConfirmModal from "../components/ConfirmModal";
 import axios from "axios";
-
+type FishInfo = Record<string, number | string>;
+interface FishData {
+  video?: string;
+  thumbnail?: string;
+  fishName?: string;
+  fishInfo?: FishInfo;
+  mainAddress?: string;
+  detailAddress?: string;
+  fisherName?: string;
+  phoneNumber?: string;
+  getDate?: string;
+  getTime?: string;
+  limitDate?: string;
+  limitTime?: string;
+  status?: "매칭 대기" | "매칭 중" | "매칭 완료" | string;
+}
 const DetailContainer = styled.div`
   max-width: 1200px;
   margin: 0 auto;
@@ -214,6 +229,23 @@ const ActionButton = styled.button`
   &:hover {
     background: #0752cc;
   }
+
+  &:disabled {
+   opacity: 0.6;
+   cursor: not-allowed;
+   background: #7aa8ff;
+ }
+`;
+
+const FallbackImage = styled.img`
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+`;
+
+const LocationIconImg = styled.img`
+  width: 18px;
+  height: 18px;
 `;
 
 function Detail() {
@@ -224,7 +256,7 @@ function Detail() {
   const [modalBody, setModalBody] = useState(
     "어민 분의 확인 후 매칭이 성사될 예정입니다."
   );
-  const [fishData, setFishData] = useState<any>({});
+  const [fishData, setFishData] = useState<FishData>({});
   const [isLoading, setIsLoading] = useState(false);
   const { articleId } = useParams();
 
@@ -234,6 +266,17 @@ function Detail() {
     { label: "매칭 완료", key: "매칭 완료" },
   ];
 
+  /* 어종, 이름, 연락처, 어획 일시, 마감 일시 */
+  const infoRows = [
+  { label: "어종", value:
+    fishData.fishInfo
+      ? Object.entries(fishData.fishInfo).map(([name, count]) => `${name}: ${count}`).join(", ")
+      : "-" },
+  { label: "이름", value: fishData.fisherName ?? "-" },
+  { label: "연락처", value: fishData.phoneNumber ?? "-" },
+  { label: "어획 일시", value: `${fishData.getDate ?? ""} ${fishData.getTime ?? ""}`.trim() || "-" },
+  { label: "마감 일시", value: `${fishData.limitDate ?? ""} ${fishData.limitTime ?? ""}`.trim() || "-" },
+];
   const getFishData = async () => {
     setIsLoading(true);
     try {
@@ -313,13 +356,12 @@ function Detail() {
               <source src={fishData.video} type="video/mp4" />
             </FishVideo>
           ) : (
-            <img
+            <FallbackImage
               src={
                 fishData.thumbnail ||
                 "https://via.placeholder.com/800x600.png?text=Video+not+supported"
               }
               alt={fishData.fishName || ""}
-              style={{ width: "100%", height: "auto", objectFit: "cover" }}
             />
           )}
 
@@ -355,11 +397,7 @@ function Detail() {
         <InfoContainer>
           <LocationContainer>
             <LocationIcon>
-              <img
-                src={LocationImg}
-                alt="위치"
-                style={{ width: 18, height: 18 }}
-              />
+              <LocationIconImg src={LocationImg} alt="위치" />
             </LocationIcon>
             <LocationText>
               {fishData.mainAddress ?? ""} {fishData.detailAddress ?? ""}
@@ -377,27 +415,13 @@ function Detail() {
                 : "-"}{" "}
             </InfoTitle>
             <InfoGrid>
-              <InfoLabel>어종</InfoLabel>
-              <InfoValue>
-                {fishData.fishInfo
-                  ? Object.entries(fishData.fishInfo)
-                      .map(([name, count]) => `${name}: ${count}`)
-                      .join(", ")
-                  : "-"}
-              </InfoValue>
-              <InfoLabel>이름</InfoLabel>
-              <InfoValue>{fishData.fisherName ?? "-"}</InfoValue>
-              <InfoLabel>연락처</InfoLabel>
-              <InfoValue>{fishData.phoneNumber ?? "-"}</InfoValue>
-              <InfoLabel>어획 일시</InfoLabel>
-              <InfoValue>
-                {fishData.getDate ?? ""} {fishData.getTime ?? ""}
-              </InfoValue>
-              <InfoLabel>마감 일시</InfoLabel>
-              <InfoValue>
-                {fishData.limitDate ?? ""} {fishData.limitTime ?? ""}
-              </InfoValue>
-            </InfoGrid>
+              {infoRows.map(({ label, value }) => (
+                <>
+                  <InfoLabel key={`${label}-label`}>{label}</InfoLabel>
+                  <InfoValue key={`${label}-value`}>{value}</InfoValue>
+                </>
+              ))}
+          </InfoGrid>
           </InfoSection>
           <ActionButton onClick={handleMatchingClick}>
             매칭 신청하기
