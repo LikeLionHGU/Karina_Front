@@ -10,7 +10,6 @@ interface MenuCardProps {
   className?: string; // Optional className prop for additional styling
 }
 
-// styled-components v5 이상에서 shouldForwardProp 사용
 const Card = styled.div.withConfig({
   shouldForwardProp: (prop) => prop !== "isPrimary",
 })<{ isPrimary?: boolean }>`

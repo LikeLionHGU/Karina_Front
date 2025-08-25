@@ -8,6 +8,7 @@ import Restart from "../components/Restart";
 import Result from "../components/Result";
 import { hasToken, isTokenExpired } from "../utils/token";
 import { logout } from "../utils/logout";
+import LogoutModal from "../components/LogoutModal";
 import ErrorModal from "../components/ErrorModal";
 import ConfirmModal from "../components/ConfirmModal";
 
@@ -19,6 +20,8 @@ export default function VideoAnalysisPage() {
   const [resultList, setResultList] = useState<any>(null);
   const [articleId, setArticleId] = useState<string | null>(null);
   const [error, setError] = useState("");
+  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
+  const [isLogoutSuccess, setIsLogoutSuccess] = useState(false);
   const abortRef = useRef<AbortController | null>(null);
 
   // 모달 상태
@@ -65,9 +68,7 @@ export default function VideoAnalysisPage() {
     form.append("video", file, file.name);
 
     if (!hasToken()) {
-      openError("로그인 후 이용해 주세요", () => {
-      logout();
-    });
+      setIsLogoutModalOpen(true);
       return;
     }
 
@@ -94,7 +95,7 @@ export default function VideoAnalysisPage() {
       
     } catch (e: any) {
       if (isTokenExpired(e)) {
-        logout();
+        setIsLogoutModalOpen(true);
         return;
       }
       // 에러 모달
@@ -117,9 +118,7 @@ export default function VideoAnalysisPage() {
 
     try {
       if (!hasToken()) {
-            openError("로그인 후 이용해 주세요", () => {
-          logout();
-        });
+        setIsLogoutModalOpen(true);
         return;
       }
       const requestData = { articleId };
@@ -143,7 +142,7 @@ export default function VideoAnalysisPage() {
     } catch (e: any) {
       if (axios.isCancel(e)) return;
       if (isTokenExpired(e)) {
-        logout();
+        setIsLogoutModalOpen(true);
         return;
       }
       // 에러 모달
@@ -174,16 +173,26 @@ export default function VideoAnalysisPage() {
       />
 
       {isLoading && <LoadingSpinner />}
+      <LogoutModal
+        isOpen={isLogoutModalOpen}
+        onClose={() => {
+          setIsLogoutModalOpen(false);
+          setIsLogoutSuccess(false);
+        }}
+        onConfirm={() => {
+          setIsLogoutSuccess(true);
+          logout();
+        }}
+        title="로그아웃 하시겠습니까?"
+        body="토큰이 만료되어 로그아웃됩니다."
+        isSuccess={isLogoutSuccess}
+      />
       {step === "idle" && <UploadBox handleSelect={postVideo} />}
       {step === "processing" && <Processing />}
       {step === "restart" && <Restart />}
 
       {step === "done" && resultList && (
-        <Result
-          articleData={articleId}
-          data={resultList}
-          onReset={reanalyze}
-        />
+        <Result articleData={articleId} data={resultList} onReset={reanalyze} />
       )}
 
       {step === "error" && (

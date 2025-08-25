@@ -377,7 +377,7 @@ const ConsentRadioSection = styled.section`
 function Signup() {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
-  const [isActive, setIsActive] = useState(""); // 'factory' 또는 'fisher
+  const [isActive, setIsActive] = useState("");
   const [errorField, setErrorField] = useState<string | null>(null);
 
   const [userId, setUserId] = useState("");
@@ -387,21 +387,19 @@ function Signup() {
   const [phoneFirst, setPhoneFirst] = useState("");
   const [phoneMiddle, setPhoneMiddle] = useState("");
   const [phoneEnd, setPhoneEnd] = useState("");
-  const [postcode, setPostcode] = useState(""); // 백엔드 측에 보내줄 우편주소
-  const [address1, setAddress1] = useState(""); // 도로명/지번 + (참고항목)
-  const [detailAddress, setDetailAddress] = useState(""); // 사용자 입력
-  const [mainAddress, setMainAddress] = useState(""); // 백엔드 측에 보내줄 주소
+  const [postcode, setPostcode] = useState("");
+  const [address1, setAddress1] = useState("");
+  const [detailAddress, setDetailAddress] = useState("");
+  const [mainAddress, setMainAddress] = useState("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [validText, setValidText] = useState<string>(""); // 화면에 보여줄 텍스트
-  const [consent, setConsent] = useState<"yes" | "no" | "">(""); // 동의 상태 추가
-  //모달 관련
+  const [validText, setValidText] = useState<string>("");
+  const [consent, setConsent] = useState<"yes" | "no" | "">("");
   const [errorOpen, setErrorOpen] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [confirmTitle, setConfirmTitle] = useState("");
   const [confirmBody, setConfirmBody] = useState("");
 
-  //모달 함수
   const openError = (msg: string) => { setErrorMsg(msg); setErrorOpen(true); };
   const closeError = () => setErrorOpen(false);
 
@@ -426,11 +424,10 @@ function Signup() {
 
   const detailRef = useRef<HTMLInputElement>(null);
 
-  // refs (자동 포커스 이동용)
   const firstRef = useRef<HTMLInputElement>(null);
   const middleRef = useRef<HTMLInputElement>(null);
   const endRef = useRef<HTMLInputElement>(null);
-  /*onChange로 받는 아이디 저장*/
+
   const handleIdChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setUserId(event.target.value);
   };
@@ -442,19 +439,17 @@ function Signup() {
   const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setUserName(event.target.value);
   };
-  /*폰 넘버를 처음/중간/끝 으로 나누어 받음*/
-  // 숫자만 유지하는 유틸
+
   const onlyDigits = (s: string) => s.replace(/\D/g, "");
 
-  // handlers
   const handleFirstNum = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const v = onlyDigits(e.target.value).slice(0, 3); // 3자리
+    const v = onlyDigits(e.target.value).slice(0, 3); 
     setPhoneFirst(v);
-    if (v.length === 3) middleRef.current?.focus(); // 자동 이동
+    if (v.length === 3) middleRef.current?.focus();
   };
 
   const handleMiddleNum = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const v = onlyDigits(e.target.value).slice(0, 4); // 3~4자리
+    const v = onlyDigits(e.target.value).slice(0, 4);
     setPhoneMiddle(v);
     if (v.length === 4) endRef.current?.focus();
   };
@@ -463,7 +458,7 @@ function Signup() {
     const v = onlyDigits(e.target.value).slice(0, 4); // 4자리
     setPhoneEnd(v);
   };
-  /*파일 업로드 전 텍스트*/
+
   const helperText =
     isActive === "fisher"
       ? "어업허가증 카드를 캡처하여 사진을 업로드 해주세요."
@@ -471,10 +466,10 @@ function Signup() {
       ? "사업자 등록증 또는 공장등록 증명서를 업로드 해주세요."
       : "파일 또는 사진을 업로드 해주세요.";
 
-  //이 코드 나주에 이해해서 쓰기
-  const fileRef = useRef<HTMLInputElement>(null);
-  /*파일 선택 관련 이벤트 관리*/
-  const handleOpenFile: React.MouseEventHandler<HTMLButtonElement> = (e) => {
+
+      const fileRef = useRef<HTMLInputElement>(null);
+
+      const handleOpenFile: React.MouseEventHandler<HTMLButtonElement> = (e) => {
     e.preventDefault();
     fileRef.current && (fileRef.current.value = ""); // 같은 파일 재선택 허용
     fileRef.current?.click(); //input태그와 버튼 태그 연결

@@ -4,6 +4,7 @@ import styled from "styled-components";
 import LoadingSpinner from "../components/LoadingSpinner";
 import LeftSidebar from "../components/LeftSidebar";
 import EditModal from "../components/EditModal";
+import LogoutModal from "../components/LogoutModal";
 import axios from "axios";
 import { useEffect, useState } from "react";
 
@@ -28,7 +29,6 @@ const Subtitle = styled.p`
   color: #999;
   font-size: 14px;
 
-  /* Subhead */
   font-size: 14px;
   font-style: normal;
   font-weight: 600;
@@ -125,11 +125,12 @@ function EditPost() {
   const [myPosts, setMyPosts] = useState<myPostRow[]>([]);
   const [completedPosts, setCompletedPosts] = useState<CompletedPostRow[]>([]);
 
-  // Modal state and handlers
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editArticleId, setEditArticleId] = useState<any>(null);
 
   const [isLoading, setIsLoading] = useState(false);
+  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
+  const [isLogoutSuccess, setIsLogoutSuccess] = useState(false);
 
   type myPostRow = {
     articleId: any;
@@ -152,7 +153,6 @@ function EditPost() {
   };
 
   useEffect(() => {
-    // 컴포넌트가 마운트될 때 데이터 패칭
     fetchPostData();
   }, []);
 
@@ -180,18 +180,18 @@ function EditPost() {
       );
     } catch (error) {
       if (isTokenExpired(error)) {
-        logout();
-      } 
+        setIsLogoutModalOpen(true);
+      } else {
+        console.error("Error fetching post data:", error);
+      }
     } finally {
       setIsLoading(false);
     }
   };
 
-  // 선택한 글의 데이터 가져오기
   const handleEdit = (articleId: any) => {
     setEditArticleId(articleId);
     setIsEditModalOpen(true);
-    // articleId와 initialData 전달 확인용 로그
 
   };
 
@@ -200,12 +200,10 @@ function EditPost() {
     setEditArticleId(null);
   };
 
-  // EditModal에서 수정 버튼 클릭 시 호출
   const handleEditModalSubmit = async (form: any) => {
     if (!editArticleId) return;
     try {
       const token = localStorage.getItem("jwt");
-      // 백엔드 요구 구조로 변환
       const info = {
         articleId: editArticleId,
         getDate: form.getDate,
@@ -226,7 +224,7 @@ function EditPost() {
         formData,
         token ? { headers: { Authorization: `Bearer ${token}` } } : undefined
       );
-      fetchPostData(); // 수정 후 데이터 갱신
+      fetchPostData();
     } catch (error) {
       if (isTokenExpired(error)) {
         logout();
@@ -239,6 +237,20 @@ function EditPost() {
   return (
     <MypageContainer>
       {isLoading && <LoadingSpinner />}
+      <LogoutModal
+        isOpen={isLogoutModalOpen}
+        onClose={() => {
+          setIsLogoutModalOpen(false);
+          setIsLogoutSuccess(false);
+        }}
+        onConfirm={() => {
+          setIsLogoutSuccess(true);
+          logout();
+        }}
+        title="로그아웃 하시겠습니까?"
+        body="토큰이 만료되어 로그아웃됩니다."
+        isSuccess={isLogoutSuccess}
+      />
       <Title>마이페이지</Title>
       <Subtitle>
         마이페이지에서 등록, 조회, 거래 내역을 한눈에 확인하세요.
@@ -247,7 +259,6 @@ function EditPost() {
       <ContentSection>
         <LeftSidebar activeMenu="posts" />
         <MainContent>
-          {/* 내가 쓴 글 섹션 */}
           <Section>
             <SectionHeader>
               <SectionTitle>내가 쓴 글</SectionTitle>
@@ -318,7 +329,6 @@ function EditPost() {
             </TableContainer>
           </Section>
 
-          {/* 매칭 완료된 글 섹션 */}
           <Section>
             <SectionHeader>
               <SectionTitle>매칭 완료된 글</SectionTitle>
@@ -379,8 +389,6 @@ function EditPost() {
           </Section>
         </MainContent>
       </ContentSection>
-      {/* EditModal은 테이블 아래에 위치 */}
-      {/* EditModal에 articleId와 기존 데이터 전달 */}
       <EditModal
         isOpen={isEditModalOpen}
         onClose={handleEditModalClose}

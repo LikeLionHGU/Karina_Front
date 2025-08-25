@@ -5,12 +5,13 @@ import LoadingSpinner from "../components/LoadingSpinner";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import LogoutModal from "../components/LogoutModal";
 import SearchImg from "../assets/icons/SearchIcon.svg";
 import LocationImg from "../assets/icons/LocationIcon.svg";
 
 const Container = styled.div`
   width: 100%;
-  max-width: 1500px;
+  max-width: 90vw;
   margin: 0 auto 100px auto;
   padding: 60px 20px;
 `;
@@ -32,7 +33,6 @@ const Subtitle = styled.p`
   margin-bottom: 40px;
   color: var(--Black-2, #c7c7c7);
 
-  /* Subhead */
   font-size: 14px;
   font-style: normal;
   font-weight: 600;
@@ -105,7 +105,9 @@ const FishImageSection = styled.div<FishImageSectionProps>`
   width: 100%;
   height: 160px;
   background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
-  background-image: url(${(props) => props.thumbnail || "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 250'%3E%3Crect width='400' height='250' fill='%23e3f2fd'/%3E%3Ctext x='200' y='125' font-family='Arial' font-size='60' text-anchor='middle' fill='%230966ff'%3E🐟%3C/text%3E%3C/svg%3E"});
+  background-image: url(${(props) =>
+    props.thumbnail ||
+    "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 250'%3E%3Crect width='400' height='250' fill='%23e3f2fd'/%3E%3Ctext x='200' y='125' font-family='Arial' font-size='60' text-anchor='middle' fill='%230966ff'%3E🐟%3C/text%3E%3C/svg%3E"});
   background-size: contain;
   background-position: center;
   background-repeat: no-repeat;
@@ -205,9 +207,9 @@ const StatusDot = styled.div<{ isActive?: boolean; isCompleted?: boolean }>`
   height: 12px;
   border-radius: 50%;
   background-color: ${(props) => {
-    if (props.isCompleted) return "#0966ff"; // 완료된 단계: 꽉찬 파란색
-    if (props.isActive) return "white"; // 현재 진행 단계: 가운데 비어있음
-    return "#e0e0e0"; // 미완료 단계: 회색
+    if (props.isCompleted) return "#0966ff";
+    if (props.isActive) return "white";
+    return "#e0e0e0";
   }};
   border: 2px solid
     ${(props) => {
@@ -264,7 +266,8 @@ function FactoryHome() {
   const [allFishData, setAllFishData] = useState<any[]>([]);
   const [searchKeyword, setSearchKeyword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const itemsPerPage = 9;
+  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
+  const [isLogoutSuccess, setIsLogoutSuccess] = useState(false);
   const navigate = useNavigate();
 
   const getAllFishData = async () => {
@@ -279,7 +282,7 @@ function FactoryHome() {
       console.log("Fetched fish data:", response.data);
     } catch (error) {
       if (isTokenExpired(error)) {
-        logout();
+        setIsLogoutModalOpen(true);
       }
     } finally {
       setIsLoading(false);
@@ -290,12 +293,10 @@ function FactoryHome() {
     getAllFishData();
   }, []);
 
-  // 검색어로 필터링
   const filteredFishData =
     searchKeyword.trim() === ""
       ? allFishData
       : allFishData.filter((fish) => {
-          // fishInfo는 객체이므로 value와 key 모두 검색
           const fishInfoStr = fish.fishInfo
             ? Object.entries(fish.fishInfo)
                 .map(([name, count]) => `${name} ${count}`)
@@ -307,7 +308,6 @@ function FactoryHome() {
             (fish.mainAddress && fish.mainAddress.includes(searchKeyword))
           );
         });
-  // status 문자열을 단계 숫자로 변환
   const getStatusStep = (status: string) => {
     switch (status) {
       case "대기 중":
@@ -321,64 +321,30 @@ function FactoryHome() {
     }
   };
 
-  const totalPages = Math.ceil(filteredFishData.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const currentFishData = filteredFishData.slice(
-    startIndex,
-    startIndex + itemsPerPage
-  );
-
-  const handlePageChange = (page: number) => {
-    if (page >= 1 && page <= totalPages) {
-      setCurrentPage(page);
-    }
-  };
+  const currentFishData = filteredFishData;
 
   const handleCardClick: (fish: any) => void = (fish: any) => {
     setSelectedFish(fish);
     navigate(`/detail/${fish.articleId}`);
   };
 
-  const renderPaginationButtons = () => {
-    const buttons = [];
-
-    // 첫 번째 페이지들 (1, 2, 3, 4)
-    for (let i = 1; i <= Math.min(4, totalPages); i++) {
-      buttons.push(
-        <PageButton
-          key={i}
-          isActive={i === currentPage}
-          onClick={() => handlePageChange(i)}
-        >
-          {i}
-        </PageButton>
-      );
-    }
-
-    // ... 표시 (5페이지 이상일 때만)
-    if (totalPages > 4) {
-      buttons.push(<PageEllipsis key="ellipsis">...</PageEllipsis>);
-    }
-
-    // 마지막 페이지 (15페이지, 총 페이지가 5 이상일 때만)
-    if (totalPages > 4) {
-      buttons.push(
-        <PageButton
-          key={totalPages}
-          isActive={totalPages === currentPage}
-          onClick={() => handlePageChange(totalPages)}
-        >
-          {totalPages}
-        </PageButton>
-      );
-    }
-
-    return buttons;
-  };
-
   return (
     <Container>
       {isLoading && <LoadingSpinner />}
+      <LogoutModal
+        isOpen={isLogoutModalOpen}
+        onClose={() => {
+          setIsLogoutModalOpen(false);
+          setIsLogoutSuccess(false);
+        }}
+        onConfirm={() => {
+          setIsLogoutSuccess(true);
+          logout();
+        }}
+        title="로그아웃 하시겠습니까?"
+        body="토큰이 만료되어 로그아웃됩니다."
+        isSuccess={isLogoutSuccess}
+      />
       <Title>
         <Highlight>혼획물</Highlight> 검색하기
       </Title>
@@ -423,15 +389,14 @@ function FactoryHome() {
 
                 <FishInfo>
                   <FishName>
-                    {/* 혼획물 종류와 수량 표시, 10글자 초과 시 ... */}
                     {(() => {
                       const fishInfoStr = fish.fishInfo
                         ? Object.entries(fish.fishInfo)
                             .map(([name, count]) => `${name} ${count}마리`)
                             .join(", ")
                         : "";
-                      return fishInfoStr.length > 15
-                        ? fishInfoStr.slice(0, 15) + "..."
+                      return fishInfoStr.length > 10
+                        ? fishInfoStr.slice(0, 10) + "..."
                         : fishInfoStr;
                     })()}
                   </FishName>
@@ -475,7 +440,6 @@ function FactoryHome() {
           );
         })}
       </FishGrid>
-      <Pagination>{renderPaginationButtons()}</Pagination>
     </Container>
   );
 }

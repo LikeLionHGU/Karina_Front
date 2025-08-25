@@ -154,7 +154,6 @@ const EditModal: React.FC<EditModalProps> = ({
   });
   const [preview, setPreview] = useState<string | null>(null);
 
-  // initialData가 변경될 때마다 form 초기화
   useEffect(() => {
     if (isOpen && initialData && Object.keys(initialData).length > 0) {
       setForm({
@@ -189,7 +188,6 @@ const EditModal: React.FC<EditModalProps> = ({
   };
 
   if (!isOpen) return null;
-  // articleId는 필요시 API 요청에 활용 가능
 
   return (
     <ModalOverlay $isOpen={isOpen}>

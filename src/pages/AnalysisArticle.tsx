@@ -11,6 +11,7 @@ import ErrorModal from "../components/ErrorModal";
 import ConfirmModal from "../components/ConfirmModal";
 import { hasToken, isTokenExpired } from "../utils/token";
 import { logout } from "../utils/logout";
+import LogoutModal from "../components/LogoutModal";
 
 const InputContainer = styled.div`
   display: flex;
@@ -38,7 +39,6 @@ const InputInner = styled.div`
   gap: 20px;
 `;
 
-/*파일 컨테이너*/
 const FileContent = styled.div`
   width: fit-content; /* 컨텐츠 만큼 차지 */
   display: flex;
@@ -46,7 +46,7 @@ const FileContent = styled.div`
   border-radius: 5px;
   border: 1.5px solid var(--Secondary-3, #a5bee0);
   height: 65px;
-  gap: 10px; /* 버튼 사이 간격 */
+  gap: 10px;
   padding: 0 16px;
   box-sizing: border-box;
 
@@ -163,27 +163,28 @@ type Params = { articleId?: string };
 
 const AnalysisArticle = () => {
   const navigate = useNavigate();
-  const [selectedFile, setSelectedFile] = useState<File | null>(null); //사진 파일 저장
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
-  const [caughtDate, setCaughtDate] = useState<string>(""); //포획 날짜 데이터 저장
-  const [caughtTime, setCaughtTime] = useState<string>(""); //포획 시간 데이터 저장
-  const [pickUpDate, setPickUpDate] = useState<string>(""); //포획 날짜 데이터 저장
+  const [caughtDate, setCaughtDate] = useState<string>("");
+  const [caughtTime, setCaughtTime] = useState<string>("");
+  const [pickUpDate, setPickUpDate] = useState<string>("");
   const [pickUpTime, setPickUpTime] = useState<string>("");
   const { articleId } = useParams<Params>(); //articleId
 
-  // ✅ 모달 상태
   const [isErrorOpen, setErrorOpen] = useState(false);
   const [modalMsg, setModalMsg] = useState("");
   const [isConfirmOpen, setConfirmOpen] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [modalTitle, setModalTitle] = useState("");
   const [modalBody, setModalBody] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  /*파일 선택 관련 이벤트 관리*/
+  const [isLoading, setIsLoading] = useState(false); //로딩 스피너
+  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
+  const [isLogoutSuccess, setIsLogoutSuccess] = useState(false);
+
   const handleOpenFile: React.MouseEventHandler<HTMLButtonElement> = (e) => {
     e.preventDefault();
-    fileRef.current && (fileRef.current.value = ""); // 같은 파일 재선택 허용
-    fileRef.current?.click(); //input태그와 버튼 태그 연결
+    fileRef.current && (fileRef.current.value = "");
+    fileRef.current?.click();
   };
 
   /*핸들 이벤트(유저가 입력하고 값 저장)*/
@@ -219,7 +220,7 @@ const AnalysisArticle = () => {
   const onSubmitArticle = async (e: React.MouseEvent<HTMLDivElement>) => {
     e.preventDefault();
     if (!hasToken()) {
-      logout();
+      setIsLogoutModalOpen(true);
       return;
     }
     if (!selectedFile) {
@@ -264,7 +265,7 @@ const AnalysisArticle = () => {
       }
     } catch (error) {
       if (isTokenExpired(error)) {
-        logout();
+        setIsLogoutModalOpen(true);
         return;
       }
       openModal("요청 중 오류가 발생했습니다");
@@ -273,6 +274,20 @@ const AnalysisArticle = () => {
   return (
     <>
       {isLoading && <LoadingSpinner />}
+      <LogoutModal
+        isOpen={isLogoutModalOpen}
+        onClose={() => {
+          setIsLogoutModalOpen(false);
+          setIsLogoutSuccess(false);
+        }}
+        onConfirm={() => {
+          setIsLogoutSuccess(true);
+          logout();
+        }}
+        title="로그아웃 하시겠습니까?"
+        body="토큰이 만료되어 로그아웃됩니다."
+        isSuccess={isLogoutSuccess}
+      />
       <section className={styles.title}>
         <div className={styles.inner}>
           <div className={styles.text}>

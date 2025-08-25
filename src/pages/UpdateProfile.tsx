@@ -8,6 +8,7 @@ import axios from "axios";
 import DefaultImage from "../assets/profile/default.jpg";
 import SuccessModal from "../components/SuccessModal";
 import ErrorModal from "../components/ErrorModal";
+import LogoutModal from "../components/LogoutModal";
 
 const MypageContainer = styled.div`
   max-width: 1200px;
@@ -29,7 +30,6 @@ const Subtitle = styled.p`
   margin-bottom: 60px;
   color: #999;
 
-  /* Subhead */
   font-size: 14px;
   font-style: normal;
   font-weight: 600;
@@ -109,8 +109,6 @@ const PhoneGroup = styled.div`
   justify-self: start;
 `;
 
-/* FormRow and AddressButton removed: replaced by AddressWrapper/PostcodeRow/PostcodeButton */
-
 const AddressWrapper = styled.div`
   display: flex;
   flex-direction: column;
@@ -122,8 +120,6 @@ const PostcodeRow = styled.div`
   gap: 12px;
   align-items: center;
 `;
-
-// PostcodeInput removed; use Input directly with flex style in JSX
 
 const PostcodeButton = styled.button`
   width: 30%;
@@ -198,7 +194,7 @@ type FormDataType = {
   phoneNumber: string;
   mainAddress: string;
   detailAddress: string;
-  postcode: string; // UI에서만 사용, 백엔드로 전송하지 않음
+  postcode: string;
 };
 
 function UpdateProfile() {
@@ -206,10 +202,10 @@ function UpdateProfile() {
     loginId: "",
     name: "",
     password: "",
-    phoneNumber: "", // 방어적 초기값 추가
+    phoneNumber: "",
     mainAddress: "",
     detailAddress: "",
-    postcode: "", // UI에서만 사용, 백엔드로 전송하지 않음
+    postcode: "",
   });
 
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
@@ -223,6 +219,8 @@ function UpdateProfile() {
   const [passwordError, setPasswordError] = useState("");
   const [showTooltip, setShowTooltip] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
+  const [isLogoutSuccess, setIsLogoutSuccess] = useState(false);
 
   const fetchUserData = async () => {
     setIsLoading(true);
@@ -230,6 +228,10 @@ function UpdateProfile() {
       const token = hasToken() ? localStorage.getItem("jwt") : null;
       const role = localStorage.getItem("role");
 
+      if (!hasToken()) {
+        setIsLogoutModalOpen(true);
+        return;
+      }
       if (role === "ROLE_FACTORY") {
         const response = await axios.get(
           `${import.meta.env.VITE_API_URL}/factory/mypage/profile`,
@@ -263,8 +265,10 @@ function UpdateProfile() {
       }
     } catch (error) {
       if (isTokenExpired(error)) {
-        logout();
-      } 
+        setIsLogoutModalOpen(true);
+      } else {
+        console.error("Error fetching user data:", error);
+      }
     } finally {
       setIsLoading(false);
     }
@@ -298,7 +302,6 @@ function UpdateProfile() {
       }));
     } else if (name === "newPassword") {
       setNewPassword(value);
-      // 실시간 validation
       if (confirmPassword && value !== confirmPassword) {
         setPasswordError("비밀번호가 일치하지 않습니다");
       } else {
@@ -369,7 +372,6 @@ function UpdateProfile() {
       return;
     }
 
-    // 새 비밀번호 입력이 있을 때만 검증
     if (newPassword || confirmPassword) {
       if (!newPassword.trim() || !confirmPassword.trim()) {
         setIsErrorModalOpen(true);
@@ -384,14 +386,12 @@ function UpdateProfile() {
       }
     }
 
-    // 비밀번호 입력 시만 password 포함
     const payload: any = {
       phoneNumber: formData.phoneNumber,
       mainAddress: formData.mainAddress,
       detailAddress: formData.detailAddress,
     };
 
-    // 새 비밀번호 입력이 없으면 빈 문자열로 password를 포함해서 전송
     if (!newPassword && !confirmPassword) {
       payload.password = "";
     } else if (newPassword && confirmPassword && newPassword === confirmPassword) {
@@ -418,7 +418,6 @@ function UpdateProfile() {
     }
   };
 
-  // 모달 닫기 핸들러
   const handleSuccessModalClose = () => {
     setIsSuccessModalOpen(false);
     window.location.reload();
@@ -426,7 +425,6 @@ function UpdateProfile() {
 
   const handleErrorModalClose = () => setIsErrorModalOpen(false);
 
-  // 최초 마운트 시 한 번만 fetchUserData 호출
   useEffect(() => {
     fetchUserData();
   }, []);
@@ -444,6 +442,20 @@ function UpdateProfile() {
   return (
     <MypageContainer>
       {isLoading && <LoadingSpinner />}
+      <LogoutModal
+        isOpen={isLogoutModalOpen}
+        onClose={() => {
+          setIsLogoutModalOpen(false);
+          setIsLogoutSuccess(false);
+        }}
+        onConfirm={() => {
+          setIsLogoutSuccess(true);
+          logout();
+        }}
+        title="로그아웃 하시겠습니까?"
+        body="토큰이 만료되어 로그아웃됩니다."
+        isSuccess={isLogoutSuccess}
+      />
       <Title>마이페이지</Title>
       <Subtitle>
         마이페이지에서 등록, 조회, 거래 내역을 한눈에 확인하세요.
@@ -600,7 +612,6 @@ function UpdateProfile() {
 
             <SaveButton onClick={handleSave}>저장하기</SaveButton>
           </FormContainer>
-          {/* 성공/에러 모달 렌더링 */}
           <SuccessModal
             isOpen={isSuccessModalOpen}
             onClose={handleSuccessModalClose}
