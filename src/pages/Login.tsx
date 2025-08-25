@@ -6,6 +6,10 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 import ErrorModal from "../components/ErrorModal";
 import ConfirmModal from "../components/ConfirmModal";
+import { useRef } from "react";
+
+
+
 
 interface BannerProps {
   active: boolean;
@@ -38,12 +42,12 @@ const InputTitle = styled.h1`
   line-height: normal;
 `;
 
-const FactoryBanner = styled.div<BannerProps>`
+const RoleBanner = styled.button<BannerProps>`
   flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 160px;
+  width: 150px;
   height: 40px;
   flex-shrink: 0;
   border-radius: 20px;
@@ -54,27 +58,10 @@ const FactoryBanner = styled.div<BannerProps>`
   font-weight: 600;
   line-height: 30px;
   cursor: pointer;
+  border:none;
 `;
 
-const FisherBanner = styled.div<BannerProps>`
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 160px;
-  height: 40px;
-  flex-shrink: 0;
-  border-radius: 20px;
-  background: ${(props) => (props.active ? "#0966FF" : "#E6E6E6")};
-  color: ${(props) => (props.active ? "var(--White-1, #F8FBFE)" : "#000")};
-  font-size: 18px;
-  font-style: normal;
-  font-weight: 600;
-  line-height: 30px;
-  cursor: pointer;
-`;
-
-const LoginComplete = styled.div`
+const LoginComplete = styled.button`
   margin-top: 50px;
   margin-bottom: 20px;
   width: clamp(450px, 10vw, 550px);
@@ -86,6 +73,7 @@ const LoginComplete = styled.div`
   align-items: center;
   justify-content: center;
   background: var(--Primary-2, #0966ff);
+  border: none;
   h1 {
     font-size: 18px;
     color: #fff;
@@ -99,6 +87,12 @@ const LoginComplete = styled.div`
     box-shadow: 0 4px 12px rgba(9, 102, 255, 0.3);
     cursor: pointer;
   }
+  &:disabled{
+   opacity: 0.6;
+   cursor: not-allowed;
+   transform: none;
+   box-shadow: none;
+ }
 `;
 
 const SignUpText = styled(Link)`
@@ -129,6 +123,7 @@ function Login() {
   const [errorMessage, setErrorMessage] = useState("");
   const [confirmModalOpen, setConfirmModalOpen] = useState(false);
   const [confirmMessage, setConfirmMessage] = useState("");
+  const roleRef = useRef<HTMLDivElement | null>(null);
 
   const handleIdChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setUserId(event.target.value);
@@ -153,7 +148,7 @@ function Login() {
       ? "공장/연구소 로그인"
       : "역할을 선택해주세요.";
 
-  const onSubmitClick = async (event: React.MouseEvent<HTMLInputElement>) => {
+  const onSubmitClick = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
     const formData = new FormData();
 
@@ -176,20 +171,28 @@ function Login() {
       const role = res.data.role;
       const userName = res.data.userName;
       if (token) localStorage.setItem("jwt", token);
-      localStorage.setItem("role", role) ?? "";
-      localStorage.setItem("userName", userName) ?? "";
+           localStorage.setItem("role", role);
+           localStorage.setItem("userName", userName);
 
       setConfirmMessage("로그인 성공");
       setConfirmModalOpen(true);
+      setUserId("");
+      setUserPassword("");
     } catch (err: any) {
       if (axios.isAxiosError(err)) {
         if (err.response?.status === 401) {
           if (isActive === "") {
             setErrorMessage("역할을 선택해 주세요");
-          } else {
-            setErrorMessage("아이디/비밀번호를 확인해 주세요.");
-          }
-          setErrorModalOpen(true);
+            setErrorModalOpen(true);
+            roleRef.current?.scrollIntoView({
+              behavior: "smooth",
+              block: "center", // 화면 중앙쯤에 오게
+              inline: "nearest",
+            });
+
+          } else {+            setErrorMessage("아이디/비밀번호를 확인해 주세요.");
+            setErrorModalOpen(true);
+         }
         } else {
           setErrorMessage(`요청 실패 (${err.response?.status ?? "네트워크 오류"})`);
           setErrorModalOpen(true);
@@ -199,8 +202,7 @@ function Login() {
         setErrorModalOpen(true);
       }
     } finally {
-      setUserId("");
-      setUserPassword("");
+      // 실패 시 입력값 보존, 성공 시에만 비우도록 변경
     }
   };
 
@@ -237,19 +239,23 @@ function Login() {
 
       <div className={styles.FactoryLoginHeader}>
         <h1>로그인</h1>
-        <div className={styles.LoginToggle}>
-          <FactoryBanner
+        <div className={styles.LoginToggle} ref={roleRef}>
+          <RoleBanner
+            type="button"
             active={isActive === "factory"}
+            aria-pressed={isActive === "factory"}
             onClick={() => handleToggle("factory")}
           >
             공장/연구소
-          </FactoryBanner>
-          <FisherBanner
-            active={isActive === "fisher"}
-            onClick={() => handleToggle("fisher")}
+          </RoleBanner>
+          <RoleBanner
+              type="button"
+              active={isActive === "fisher"}
+              aria-pressed={isActive === "fisher"}
+              onClick={() => handleToggle("fisher")}
           >
             어민
-          </FisherBanner>
+          </RoleBanner>
         </div>
       </div>
       <section className={styles.IdAndPassword}>
@@ -260,6 +266,7 @@ function Login() {
             type="text"
             value={userId}
             onChange={handleIdChange}
+            autoComplete="username"
           />
         </InputAndTitle>
         <InputAndTitle>
@@ -273,13 +280,18 @@ function Login() {
             type="password"
             value={userPassword}
             onChange={handlePasswordChange}
+            autoComplete="current-password"
           />
         </InputAndTitle>
       </section>
       <ButtonContainer>
-        <LoginComplete onClick={onSubmitClick}>
-          <h1>{ButtonText}</h1>
-        </LoginComplete>
+        <LoginComplete
+           type="button"
+           onClick={onSubmitClick}
+           disabled={!isActive || !userId || !userPassword}
+         >
+        <h1>{ButtonText}</h1>
+       </LoginComplete>
         <SignUpText to="/signup">회원가입</SignUpText>
       </ButtonContainer>
     </>
