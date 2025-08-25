@@ -4,6 +4,7 @@ import styled from "styled-components";
 import LoadingSpinner from "../components/LoadingSpinner";
 import LeftSidebar from "../components/LeftSidebar";
 import EditModal from "../components/EditModal";
+import LogoutModal from "../components/LogoutModal";
 import axios from "axios";
 import { useEffect, useState } from "react";
 
@@ -130,6 +131,8 @@ function EditPost() {
   const [editArticleId, setEditArticleId] = useState<any>(null);
 
   const [isLoading, setIsLoading] = useState(false);
+  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
+  const [isLogoutSuccess, setIsLogoutSuccess] = useState(false);
 
   type myPostRow = {
     articleId: any;
@@ -180,8 +183,10 @@ function EditPost() {
       );
     } catch (error) {
       if (isTokenExpired(error)) {
-        logout();
-      } 
+        setIsLogoutModalOpen(true);
+      } else {
+        console.error("Error fetching post data:", error);
+      }
     } finally {
       setIsLoading(false);
     }
@@ -239,6 +244,20 @@ function EditPost() {
   return (
     <MypageContainer>
       {isLoading && <LoadingSpinner />}
+      <LogoutModal
+        isOpen={isLogoutModalOpen}
+        onClose={() => {
+          setIsLogoutModalOpen(false);
+          setIsLogoutSuccess(false);
+        }}
+        onConfirm={() => {
+          setIsLogoutSuccess(true);
+          logout();
+        }}
+        title="로그아웃 하시겠습니까?"
+        body="토큰이 만료되어 로그아웃됩니다."
+        isSuccess={isLogoutSuccess}
+      />
       <Title>마이페이지</Title>
       <Subtitle>
         마이페이지에서 등록, 조회, 거래 내역을 한눈에 확인하세요.

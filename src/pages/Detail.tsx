@@ -6,6 +6,7 @@ import styled from "styled-components";
 import LocationImg from "../assets/icons/LocationIcon.svg";
 import { useNavigate, useParams } from "react-router-dom";
 import ConfirmModal from "../components/ConfirmModal";
+import LogoutModal from "../components/LogoutModal";
 import axios from "axios";
 
 const DetailContainer = styled.div`
@@ -226,6 +227,8 @@ function Detail() {
   );
   const [fishData, setFishData] = useState<any>({});
   const [isLoading, setIsLoading] = useState(false);
+  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
+  const [isLogoutSuccess, setIsLogoutSuccess] = useState(false);
   const { articleId } = useParams();
 
   const statusSteps = [
@@ -247,7 +250,9 @@ function Detail() {
       setFishData(response.data);
     } catch (error) {
       if (isTokenExpired(error)) {
-        logout();
+        setIsLogoutModalOpen(true);
+      } else {
+        console.error("Error fetching fish detail data:", error);
       }
     } finally {
       setIsLoading(false);
@@ -303,6 +308,20 @@ function Detail() {
   return (
     <DetailContainer>
       {isLoading && <LoadingSpinner />}
+      <LogoutModal
+        isOpen={isLogoutModalOpen}
+        onClose={() => {
+          setIsLogoutModalOpen(false);
+          setIsLogoutSuccess(false);
+        }}
+        onConfirm={() => {
+          setIsLogoutSuccess(true);
+          logout();
+        }}
+        title="로그아웃 하시겠습니까?"
+        body="토큰이 만료되어 로그아웃됩니다."
+        isSuccess={isLogoutSuccess}
+      />
       <BackButton onClick={() => navigate(-1)}>← 뒤로 가기</BackButton>
 
       <ContentCard>
