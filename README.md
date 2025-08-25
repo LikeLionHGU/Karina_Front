@@ -117,20 +117,20 @@ src
  ┃ ┃ ┣ 어민
  ┃ ┃ ┃ ┣ Ellipse 28.svg
  ┃ ┃ ┃ ┣ Ellipse 31.svg
- ┃ ┃ ┃ ┣ Analyze.svg
- ┃ ┃ ┃ ┣ Camera.svg
- ┃ ┃ ┃ ┣ CheckLine.png
- ┃ ┃ ┃ ┣ Edit_active.svg
- ┃ ┃ ┃ ┣ Edit_inactive.svg
- ┃ ┃ ┃ ┣ fish.png
- ┃ ┃ ┃ ┣ Graph_active.svg
- ┃ ┃ ┃ ┣ Graph_inactive.svg
- ┃ ┃ ┃ ┣ line.svg
- ┃ ┃ ┃ ┣ LocationIcon.svg
- ┃ ┃ ┃ ┣ Puzzle_active.svg
- ┃ ┃ ┃ ┣ Puzzle_inactive.svg
- ┃ ┃ ┃ ┣ restart.png
- ┃ ┃ ┃ ┗ SearchIcon.svg
+ ┃ ┃ ┣ Analyze.svg
+ ┃ ┃ ┣ Camera.svg
+ ┃ ┃ ┣ CheckLine.png
+ ┃ ┃ ┣ Edit_active.svg
+ ┃ ┃ ┣ Edit_inactive.svg
+ ┃ ┃ ┣ fish.png
+ ┃ ┃ ┣ Graph_active.svg
+ ┃ ┃ ┣ Graph_inactive.svg
+ ┃ ┃ ┣ line.svg
+ ┃ ┃ ┣ LocationIcon.svg
+ ┃ ┃ ┣ Puzzle_active.svg
+ ┃ ┃ ┣ Puzzle_inactive.svg
+ ┃ ┃ ┣ restart.png
+ ┃ ┃ ┗ SearchIcon.svg
  ┃ ┣ profile
  ┃ ┃ ┣ default.jpg
  ┃ ┃ ┗ profile_default.svg
