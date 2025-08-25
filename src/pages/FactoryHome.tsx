@@ -279,7 +279,6 @@ function FactoryHome() {
         token ? { headers: { Authorization: `Bearer ${token}` } } : undefined
       );
       setAllFishData(response.data);
-      console.log("Fetched fish data:", response.data);
     } catch (error) {
       if (isTokenExpired(error)) {
         setIsLogoutModalOpen(true);
