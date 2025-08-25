@@ -97,7 +97,6 @@ function LeftSidebar({ activeMenu }: LeftSidebarProps) {
       </SidebarContainer>
     );
   } else {
-    // 로그인 전 등 기타 상황 fallback
     return (
       <SidebarContainer>
         <MenuCard

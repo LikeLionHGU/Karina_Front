@@ -28,7 +28,7 @@ const InputTitle = styled.h1`
 
 const InputBox = styled.div`
   display: flex;
-  justify-content: center; // 그대로
+  justify-content: center;
   align-items: center;
   gap: 16px;
 `;
@@ -39,15 +39,14 @@ const InputInner = styled.div`
   gap: 20px;
 `;
 
-/*파일 컨테이너*/
 const FileContent = styled.div`
-  width: fit-content; /* 남은 공간 전부 차지 */
+  width: fit-content;
   display: flex;
   align-items: center;
   border-radius: 5px;
   border: 1.5px solid var(--Secondary-3, #a5bee0);
   height: 65px;
-  gap: 10px; /* 버튼 사이 간격 */
+  gap: 10px;
   padding: 0 16px;
   box-sizing: border-box;
 
@@ -174,15 +173,14 @@ type Params = { articleId?: string };
 
 const AnalysisArticle = () => {
   const navigate = useNavigate();
-  const [selectedFile, setSelectedFile] = useState<File | null>(null); //사진 파일 저장
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
-  const [caughtDate, setCaughtDate] = useState<string>(""); //포획 날짜 데이터 저장
-  const [caughtTime, setCaughtTime] = useState<string>(""); //포획 시간 데이터 저장
-  const [pickUpDate, setPickUpDate] = useState<string>(""); //포획 날짜 데이터 저장
+  const [caughtDate, setCaughtDate] = useState<string>("");
+  const [caughtTime, setCaughtTime] = useState<string>("");
+  const [pickUpDate, setPickUpDate] = useState<string>("");
   const [pickUpTime, setPickUpTime] = useState<string>("");
   const { articleId } = useParams<Params>(); //articleId
 
-  // ✅ 모달 상태
   const [isErrorOpen, setErrorOpen] = useState(false);
   const [modalMsg, setModalMsg] = useState("");
   const [isConfirmOpen, setConfirmOpen] = useState(false);
@@ -192,11 +190,11 @@ const AnalysisArticle = () => {
   const [isLoading, setIsLoading] = useState(false); //로딩 스피너
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
   const [isLogoutSuccess, setIsLogoutSuccess] = useState(false);
-  /*파일 선택 관련 이벤트 관리*/
+
   const handleOpenFile: React.MouseEventHandler<HTMLButtonElement> = (e) => {
     e.preventDefault();
-    fileRef.current && (fileRef.current.value = ""); // 같은 파일 재선택 허용
-    fileRef.current?.click(); //input태그와 버튼 태그 연결
+    fileRef.current && (fileRef.current.value = "");
+    fileRef.current?.click();
   };
 
   /*핸들 이벤트(유저가 입력하고 값 저장)*/

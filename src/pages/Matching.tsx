@@ -124,7 +124,6 @@ function Matching() {
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
   const [isLogoutSuccess, setIsLogoutSuccess] = useState(false);
 
-  // Modal state and handlers
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
   const [editArticleId, setEditArticleId] = useState<any>(null);
 
@@ -149,7 +148,6 @@ function Matching() {
   };
 
   useEffect(() => {
-    // 컴포넌트가 마운트될 때 데이터 패칭
     fetchPostData();
   }, []);
 
@@ -246,7 +244,6 @@ function Matching() {
       <ContentSection>
         <LeftSidebar activeMenu="matching" />
         <MainContent>
-          {/* 내가 쓴 글 섹션 */}
           <Section>
             <SectionHeader>
               <SectionTitle>매칭 신청 현황 목록</SectionTitle>
@@ -316,7 +313,6 @@ function Matching() {
             </TableContainer>
           </Section>
 
-          {/* 매칭 완료된 글 섹션 */}
           <Section>
             <SectionHeader>
               <SectionTitle>매칭 완료된 글</SectionTitle>

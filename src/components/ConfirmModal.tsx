@@ -8,9 +8,9 @@ interface ConfirmModalProps {
   title: string;
   body: string;
   isSuccess?: boolean;         
-  confirmText?: string; // 기본: "신청하기"
-  cancelText?: string;  // 기본: "취소하기"
-  singleText?: string;  // isSuccess=true일 때 버튼 라벨(기본: "확인")
+  confirmText?: string;
+  cancelText?: string;
+  singleText?: string;
 }
 
 
