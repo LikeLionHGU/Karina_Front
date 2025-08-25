@@ -31,7 +31,7 @@
 
 | 박서연 | 김원진 |
 | :----: | :----: |
-| [<img width="480" height="480" alt="Image" src="https://github.com/user-attachments/assets/6906d4c8-bf33-4782-9273-3138f8818de8" /><br/>@SeoyeonPark](https://github.com/yean1234) | [<img src="https://github.com/user-attachments/assets/284797d5-5923-44cb-832d-9e8e39e15cb2" height=120 width=120><br/>@WonjinKim](https://github.com/lingard09) |
+| [<img width="120" height="120" alt="Image" src="https://github.com/user-attachments/assets/6906d4c8-bf33-4782-9273-3138f8818de8" /><br/>@SeoyeonPark](https://github.com/yean1234) | [<img src="https://github.com/user-attachments/assets/284797d5-5923-44cb-832d-9e8e39e15cb2" height=120 width=120><br/>@WonjinKim](https://github.com/lingard09) |
 
 ---
 
