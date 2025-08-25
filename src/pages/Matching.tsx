@@ -286,8 +286,8 @@ function Matching() {
                             ? row.fishInfo.join(", ")
                             : String(row.fishInfo ?? "")}
                         </TableCell>
-                        <TableCell>{row.getTime}</TableCell>
-                        <TableCell>{row.limitDate}</TableCell>
+                        <TableCell>{row.getDate} {row.getTime}</TableCell>
+                        <TableCell>{row.limitDate} {row.limitTime}</TableCell>
                         <TableCell
                           style={{
                             color:
@@ -355,8 +355,8 @@ function Matching() {
                             ? row.fishInfo.join(", ")
                             : String(row.fishInfo ?? "")}
                         </TableCell>
-                        <TableCell>{row.getTime}</TableCell>
-                        <TableCell>{row.limitDate}</TableCell>
+                        <TableCell>{row.getDate} {row.getTime}</TableCell>
+                        <TableCell>{row.limitDate} {row.limitTime}</TableCell>
                         <TableCell
                           style={{
                             color:
