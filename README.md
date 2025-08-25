@@ -1,10 +1,4 @@
-# 서비스명
-잡어드림
 
-# 서비스 소개
-
-# 스택
-HTML+CSS+TSX, REACT+VITE
 
 # 기술 구현
 
@@ -54,6 +48,7 @@ HTML+CSS+TSX, REACT+VITE
 ## 1. 개발 환경
 
 - Front : HTML, React, styled-components, Css, Typescript
+- 스택: HTML+CSS+TSX, REACT+VITE
 - 버전 및 이슈관리 : Github, Github Issues
 - 협업 툴 : Discord, Notion
 - 서비스 배포 환경 : Netlify
