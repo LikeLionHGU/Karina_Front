@@ -133,7 +133,6 @@ function Request() {
   const [isLoading, setIsLoading] = useState(false);
 
   const handleAcceptClick = (row: RequestRow) => {
-    console.log("매칭 수락 선택 row:", row);
     setSelectedRow(row);
     setIsModalOpen(true);
   };
@@ -166,7 +165,6 @@ function Request() {
       setIsModalOpen(false);
       fetchRequestData();
     } catch (error) {
-      console.error("매칭 수락 요청 실패:", error);
       alert("매칭 수락에 실패했습니다.");
     }
   };
@@ -190,13 +188,10 @@ function Request() {
           fishInfo: item.fishInfo,
         }))
       );
-      console.log("Fetched request data:", response.data);
     } catch (error) {
       if (isTokenExpired(error)) {
         logout();
-      } else {
-        console.error("Error fetching request data:", error);
-      }
+      } 
     } finally {
       setIsLoading(false);
     }

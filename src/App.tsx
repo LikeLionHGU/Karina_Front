@@ -15,6 +15,7 @@ import Signup from "./pages/Signup";
 import VideoAnalysisPage from "./pages/VideoAnalysisPage";
 import AnalysisArticle from "./pages/AnalysisArticle";
 import ArticleEnd from "./pages/ArticleEnd";
+import Processing from "./components/Restart";
 
 import "./App.css";
 
@@ -48,6 +49,7 @@ function App() {
             <Route path="/post" element={<VideoAnalysisPage />} />
             <Route path="/article/:articleId" element={<AnalysisArticle />} /> 
             <Route path="/article/end" element={<ArticleEnd />} />
+            <Route path="/process" element={<Processing/>} />
           </Routes>
         </MainContent>
         <Footer />

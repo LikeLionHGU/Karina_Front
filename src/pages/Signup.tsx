@@ -7,7 +7,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faImage } from "@fortawesome/free-regular-svg-icons";
 import { faFile } from "@fortawesome/free-regular-svg-icons";
 import axios from "axios";
-import { logout } from "../utils/logout";
+import ErrorModal from "../components/ErrorModal";
+import ConfirmModal from "../components/ConfirmModal";
 // 컴포넌트 상단 (TS라면)
 
 export {};
@@ -40,7 +41,7 @@ const MemberTitle = styled.div`
   h1 {
     margin: 0; /* 기본 마진 제거 */
     color: var(--Black-4, #454545);
-    font-size: 26px;
+    font-size: clamp(18px, 2.5vw, 23px);
     font-weight: 600;
     line-height: 1; /* 혹은 72px로 고정해도 됨 */
   }
@@ -78,7 +79,7 @@ const HiddenFile = styled.input.attrs({ type: "file" })`
 `;
 
 const UploadBtn = styled.button`
-  width: 181.886px;
+  width: clamp(150px, 5vw, 170px);
   height: 42px;
   flex-shrink: 0;
   border-radius: 15px;
@@ -100,20 +101,19 @@ const MemberRadio = styled.label`
   gap: 8px;
   cursor: pointer;
 `;
-
-const RadioInput = styled.input.attrs({ type: "radio" })`
+const MemberRadioInput = styled.input.attrs({ type: "radio" })`
   /* 네이티브 스타일 제거 */
   -webkit-appearance: none;
   appearance: none;
   margin: 0;
-  width: 24px;
-  height: 24px;
-  border: 2px solid #8ba0bf; /* 외곽선 */
+  width: 25px;
+  height: 25px;
+  border: 1px solid #A5BEE0;
   border-radius: 50%;
   display: grid;
   place-content: center;
   cursor: pointer;
-  background: #fff;
+  background: var(--Secondary-1, #F4F8FE);
 
   /* 안쪽 점 */
   &::after {
@@ -121,6 +121,44 @@ const RadioInput = styled.input.attrs({ type: "radio" })`
     width: 12px;
     height: 12px;
     border-radius: 50%;
+    transform: scale(0);
+    transition: transform 120ms ease-in-out;
+    background: #2f83f3;
+  }
+
+  &:checked {
+    border-color: #2f83f3;
+  }
+  &:checked::after {
+    transform: scale(1);
+  }
+
+  &:focus-visible {
+    outline: 3px solid rgba(47, 131, 243, 0.3);
+    outline-offset: 2px;
+  }
+`;
+
+const RadioInput = styled.input.attrs({ type: "radio" })`
+  /* 네이티브 스타일 제거 */
+  -webkit-appearance: none;
+  appearance: none;
+  margin: 0;
+  width: 20px;
+  height: 20px;
+  border: 1px solid #A5BEE0;
+  border-radius: 5px;
+  display: grid;
+  place-content: center;
+  cursor: pointer;
+  background: var(--Secondary-1, #F4F8FE);
+
+  /* 안쪽 점 */
+  &::after {
+    content: "";
+    width: 12px;
+    height: 12px;
+    border-radius: 5px;
     transform: scale(0);
     transition: transform 120ms ease-in-out;
     background: #2f83f3;
@@ -254,10 +292,91 @@ const SearchAddress = styled.button`
   font-weight: 600;
   line-height: normal;
 `;
+
+/*개인정보 동의 섹션 스타일 컴포넌트*/
+const ConsentInfoSection = styled.div`
+  margin-top: 50px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 0 16px;
+  box-sizing: border-box;
+  border-bottom: 1px solid var(--Secondary-5, #899ebb);
+
+`;
+
+const ConsentTitleRow = styled.div`
+  display: flex;
+  gap: 31px;
+  align-items: center;
+  width: 100%;
+`;
+
+const ConsentTag = styled.h1`
+  color: var(--Black-4, #454545);
+  text-align: center;
+  font-size: clamp(20px, 1.2vw, 30px);
+  font-style: normal;
+  font-weight: 600;
+  line-height: 45px; /* 150% */
+`;
+
+const ConsentDesc = styled.h1`
+  color: var(--Black-4, #454545);
+  font-size: clamp(12px, 1.2vw, 16px);
+  font-weight: 400;
+`;
+
+const ConsentBody = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  color: var(--Black-4, #454545);
+  font-size: clamp(12px, 1.2vw, 16px);
+  font-weight: 400;
+  padding-bottom: 25px;
+`;
+
+const Line = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 4px;
+`;
+
+
+const SectionLine = styled.div`
+  display: flex;
+  align-items: center;
+  color: var(--Black-5, #151A20);
+  font-size: clamp(12px, 1.2vw, 16px);
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+`;
+
+
+
+const SubLines = styled.div`
+  display: flex;
+  flex-direction: column;
+  padding-left: 16px;
+  gap: 8px;
+`;
+
+const ConsentRadioSection = styled.section`
+  width: 59.375vw;
+  margin: 16px auto 0;
+  display: flex;
+  gap: 14px;
+`;
+
 function Signup() {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [isActive, setIsActive] = useState(""); // 'factory' 또는 'fisher
+  const [errorField, setErrorField] = useState<string | null>(null);
+
   const [userId, setUserId] = useState("");
   const [idValid, setIdValid] = useState<boolean | null>(null);
   const [userPassword, setUserPassword] = useState("");
@@ -271,6 +390,27 @@ function Signup() {
   const [mainAddress, setMainAddress] = useState(""); // 백엔드 측에 보내줄 주소
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [validText, setValidText] = useState<string>(""); // 화면에 보여줄 텍스트
+  const [consent, setConsent] = useState<"yes" | "no" | "">(""); // 동의 상태 추가
+  //모달 관련
+  const [errorOpen, setErrorOpen] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [confirmTitle, setConfirmTitle] = useState("");
+  const [confirmBody, setConfirmBody] = useState("");
+
+  //모달 함수
+  const openError = (msg: string) => { setErrorMsg(msg); setErrorOpen(true); };
+  const closeError = () => setErrorOpen(false);
+
+  const openSuccess = (title: string, body: string = "") => {
+    setConfirmTitle(title);
+    setConfirmBody(body);
+    setConfirmOpen(true);
+  };
+  const handleSuccessClose = () => {
+    setConfirmOpen(false);
+    navigate("/login");
+  };
 
   useEffect(() => {
     if (window.daum?.Postcode) return; // 이미 로드됨
@@ -340,26 +480,6 @@ function Signup() {
   /*핸들 이벤트(유저가 입력하고 값 저장)*/
   const handleFileChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
     setSelectedFile(e.currentTarget.files?.[0] ?? null);
-    console.log("업로드 파일:", selectedFile);
-  };
-
-  /* '00시'로 잘라내는 코드*/
-  const extractMainCity = (data: any, addr: string) => {
-    const sgg = (data.sigungu || "").trim(); // 예: "성남시 분당구", "포항시 북구", "제주시"
-    // 2-1) sigungu에서 "○○시"만 추출
-    const cityFromSgg = sgg.match(/([^ ]+시)/)?.[1];
-    if (cityFromSgg) return cityFromSgg;
-
-    // 2-2) 최후 수단: 전체 주소 문자열에서 "○○시" 찾기
-    const cityFromAddr = addr.match(/([^ ]+시)/)?.[1];
-    if (cityFromAddr) return cityFromAddr;
-
-    // (선택) 시가 없는 지역은 군/구로 대체하고 싶다면 아래 사용
-    const alt =
-      sgg.match(/([^ ]+(군|구))/)?.[1] ||
-      addr.match(/([^ ]+(군|구))/)?.[1] ||
-      "";
-    return alt;
   };
 
   /*우편번호 검색 코드*/
@@ -385,8 +505,8 @@ function Signup() {
         }
         setPostcode(data.zonecode); // 1번째 인풋
         setAddress1(addr + extraAddr); // 2번째 인풋
-        const city = extractMainCity(data, addr);
-        setMainAddress(city); // 00시 분리 함수 가져오기
+        const fullAddress = `${addr}${extraAddr}`;   // 전체 주소
+        setMainAddress(fullAddress);
         detailRef.current?.focus(); // 3번째 인풋으로 포커스
       },
     }).open(); // ← 기본 팝업(모달 느낌)로 열림
@@ -412,23 +532,41 @@ function Signup() {
       if (response.data !== "Valid") {
         setIdValid(false);
       } else {
-        console.log(response.data);
         setIdValid(true);
       }
     } catch (error) {
       // 네트워크 오류 등 예외 발생 시
-      alert("요청 중 오류가 발생했습니다.");
+      openError("요청 중 오류가 발생했습니다.");
     }
   };
   const onSubmitFile: React.MouseEventHandler<HTMLButtonElement> = async (
     event
   ) => {
     event.preventDefault();
+    setErrorField(null);
+     if (!selectedFile) {
+      openError("인증 파일을 업로드해주세요.");
+      setIsLoading(false);
+      return;
+    }
+
+
+    // 필수 입력값 검사 (필드 강조 + 포커스 유지)
+    if (!userId.trim()) { setErrorField("userId"); firstRef.current?.focus(); return; }
+    if (!userPassword.trim()) { setErrorField("userPassword"); document.getElementById("passwordInput")?.focus(); return; }
+    if (!userName.trim()) { setErrorField("userName"); document.getElementById("nameInput")?.focus(); return; }
+    if (!phoneFirst || !phoneMiddle || !phoneEnd) { setErrorField("phone"); firstRef.current?.focus(); return; }
+    if (!postcode.trim()) { setErrorField("postcode"); document.getElementById("postcodeInput")?.focus(); return; }
+    if (!address1.trim()) { setErrorField("address1"); document.getElementById("address1Input")?.focus(); return; }
+    if (!detailAddress.trim()) { setErrorField("detailAddress"); detailRef.current?.focus(); return; }
+    if (!selectedFile) { setErrorField("file"); fileRef.current?.focus(); return; }
+
     setIsLoading(true);
     const phoneHyphen = `${phoneFirst}-${phoneMiddle}-${phoneEnd}`;
-    if (!selectedFile) {
-      alert("인증 파일을 업로드해주세요.");
-      setIsLoading(false);
+   
+
+     if (consent !== "yes") {
+      openError("개인정보 수집 및 이용에 동의해 주세요.");
       return;
     }
     const userPayload = {
@@ -450,9 +588,6 @@ function Signup() {
       form.append("file", selectedFile, selectedFile.name);
     }
     try {
-      for (let pair of form.entries()) {
-        console.log(`${pair[0]}:`, pair[1]);
-      }
       const response = await axios.post(
         `${import.meta.env.VITE_API_URL}/user/register`,
         form,
@@ -461,13 +596,12 @@ function Signup() {
         }
       );
       if (response.data !== "401error") {
-        alert("회원가입 성공");
-        navigate("/login");
+        openSuccess("회원가입 성공");
       } else {
-        alert("회원가입 실패. 다시 시도해주세요."); 
+        openError("회원가입 실패. 다시 시도해주세요.");
       }
     } catch (error) {
-      alert("요청 중 오류가 발생했습니다.");
+      openError("요청 중 오류가 발생했습니다.");
     } finally {
       setUserId("");
       setUserPassword("");
@@ -491,7 +625,7 @@ function Signup() {
           </MemberTitle>
           <MemberContent>
             <MemberRadio>
-              <RadioInput
+              <MemberRadioInput
                 name="memberType"
                 value="fisher"
                 onClick={() => setIsActive("fisher")}
@@ -499,7 +633,7 @@ function Signup() {
               <span>어민</span>
             </MemberRadio>
             <MemberRadio>
-              <RadioInput
+              <MemberRadioInput
                 name="memberType"
                 value="factory"
                 onClick={() => setIsActive("factory")}
@@ -554,12 +688,16 @@ function Signup() {
               type="text"
               value={userId}
               onChange={handleIdChange}
+              ref={firstRef}
+              id="userIdInput"
             />
             {idValid !== null && (
               <h1 className={styles.isValid}>
                 {validText}
-                {/*idValid ? "유효한 아이디 입니다." : "유효하지 않은 아이디 입니다."*/}
               </h1>
+            )}
+            {errorField === "userId" && (
+              <div className={styles.inputError}>필수 정보를 입력해 주세요</div>
             )}
           </div>
           <IsSameBtn onClick={onCheckId}>중복확인</IsSameBtn>
@@ -571,7 +709,11 @@ function Signup() {
             type="password"
             value={userPassword}
             onChange={handlePasswordChange}
+            id="passwordInput"
           />
+          {errorField === "userPassword" && (
+            <div className={styles.inputError}>필수 정보를 입력해 주세요</div>
+          )}
         </InfoInputLine>
         <InfoInputLine>
           <InfoTitle>이름</InfoTitle>
@@ -580,7 +722,11 @@ function Signup() {
             type="text"
             value={userName}
             onChange={handleNameChange}
+            id="nameInput"
           />
+          {errorField === "userName" && (
+            <div className={styles.inputError}>필수 정보를 입력해 주세요</div>
+          )}
         </InfoInputLine>
         <InfoInputLine>
           <InfoTitle>전화번호</InfoTitle>
@@ -615,33 +761,38 @@ function Signup() {
               onChange={handleEndNum}
             />
           </PhoneContainer>
+          {errorField === "phone" && (
+            <div className={styles.inputError}>필수 정보를 입력해 주세요</div>
+          )}
         </InfoInputLine>
-
         <InfoInputLine>
           <InfoTitle>주소</InfoTitle>
           <div className={styles.addressInputBox}>
-            {/* 1행: 우편번호 + 버튼 */}
             <div className={styles.addressSearchLine}>
               <InfoInput
                 placeholder="우편번호"
                 type="text"
                 value={postcode}
-                readOnly // 사용자가 직접 수정 못 하게
+                readOnly
+                id="postcodeInput"
               />
               <SearchAddress type="button" onClick={openPostcode}>
                 우편번호 검색
               </SearchAddress>
             </div>
-
-            {/* 2행: 기본 주소(도로명/지번 + 참고항목) */}
+            {errorField === "postcode" && (
+              <div className={styles.inputError}>필수 정보를 입력해 주세요</div>
+            )}
             <InfoInput
               placeholder="주소"
               type="text"
               value={address1}
               readOnly
+              id="address1Input"
             />
-
-            {/* 3행: 상세 주소(사용자 입력) */}
+            {errorField === "address1" && (
+              <div className={styles.inputError}>필수 정보를 입력해 주세요</div>
+            )}
             <InfoInput
               ref={detailRef as any}
               placeholder="상세 주소를 입력해 주세요"
@@ -649,17 +800,69 @@ function Signup() {
               value={detailAddress}
               onChange={(e) => setDetailAddress(e.target.value)}
             />
+            {errorField === "detailAddress" && (
+              <div className={styles.inputError}>필수 정보를 입력해 주세요</div>
+            )}
           </div>
         </InfoInputLine>
+        {/* 개인정보 동의 섹션 추가 */}
+        <ConsentInfoSection>
+          <ConsentTitleRow>
+            <ConsentTag>개인정보 수집 동의</ConsentTag>
+            <ConsentDesc>개인정보 수집 및 이용에 동의해주세요.</ConsentDesc>
+          </ConsentTitleRow>
+          <ConsentBody>
+            <SectionLine>1. 수집 목적: 본인 확인</SectionLine>
+            <SectionLine>2. 수집 항목: 이름, 전화번호, 주소, 어민 허가증 정보</SectionLine>
+            <SectionLine>
+              3. 보유 및 이용 기간
+            </SectionLine>
+            <SubLines>
+                <Line>a. 매칭을 신청한 어민 분들에게 담당자의 이름, 전화번호, 회사의 위치 정보가 제공됩니다.</Line>
+                <Line>b. 매칭이 완료된 경우 매칭이 된 어민을 제외하고는 타 연구소/공장 또는 어민 분들이 귀하의 개인 정보를 보실 수 없습니다.</Line>
+            </SubLines>
+          </ConsentBody>
+        </ConsentInfoSection>
+        <ConsentRadioSection>
+          <MemberRadio>
+            <RadioInput
+              name="consent"
+              checked={consent === "yes"}
+              onChange={() => setConsent("yes")}
+            />
+            <span>네, 동의합니다.</span>
+          </MemberRadio>
+          <MemberRadio>
+            <RadioInput
+              name="consent"
+              checked={consent === "no"}
+              onChange={() => setConsent("no")}
+            />
+            <span>동의하지 않습니다.</span>
+          </MemberRadio>
+        </ConsentRadioSection>
       </section>
-      {/*<div className = {styles.agreeTitle}>
-        <span className = {styles.title}>개인정보수집동의</span>
-        <span className = {styles.detail}>개인정보 수집 및 이용에 동의</span>
-      </div>*/}
-
       <button className={styles.next} onClick={onSubmitFile}>
         다음
       </button>
+
+      {/*ErrorModal */}
+      <ErrorModal
+        isOpen={errorOpen}
+        onClose={closeError}
+        message={errorMsg}
+      />
+
+      {/*ConfirmModal (성공 시) */}
+      <ConfirmModal
+        isOpen={confirmOpen}
+        onClose={handleSuccessClose}
+        onConfirm={handleSuccessClose}  /* isSuccess 모드에서 타입 충족용 */
+        title={confirmTitle}
+        body={confirmBody}              /* alert 문구엔 본문이 없어서 빈 문자열 */
+        isSuccess
+        singleText="완료"
+      />
     </>
   );
 }

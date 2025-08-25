@@ -4,7 +4,7 @@ import LoadingSpinner from "../components/LoadingSpinner";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faImage } from "@fortawesome/free-regular-svg-icons";
 import { useState, useRef } from "react";
-import { useParams } from "react-router-dom"; //링크에 param으로 붙어있는 articleID 받아오기
+import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import ErrorModal from "../components/ErrorModal";
@@ -181,10 +181,11 @@ const AnalysisArticle = () => {
   const [pickUpDate, setPickUpDate] = useState<string>(""); //포획 날짜 데이터 저장
   const [pickUpTime, setPickUpTime] = useState<string>("");
   const { articleId } = useParams<Params>(); //articleId
-  const [isErrorOpen, setErrorOpen] = useState(false); //error모달창 open 여부
-  const [isConfirmOpen, setConfirmOpen] = useState(false); //confirm모달창 open여부
+
+  // ✅ 모달 상태
+  const [isErrorOpen, setErrorOpen] = useState(false);
   const [modalMsg, setModalMsg] = useState("");
-  //success모달창 관련
+  const [isConfirmOpen, setConfirmOpen] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [modalTitle, setModalTitle] = useState("");
   const [modalBody, setModalBody] = useState("");
@@ -202,16 +203,15 @@ const AnalysisArticle = () => {
   const handleFileChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
     setIsLoading(true);
     setSelectedFile(e.currentTarget.files?.[0] ?? null);
-    console.log("업로드 파일:", selectedFile);
     setIsLoading(false);
   };
 
   const handleClose = () => setErrorOpen(false);
-  const handleConfirm = () => {
+  const handleSuccessClose = () => {
     setConfirmOpen(false);
     setIsSuccess(false);
     navigate("/article/end");
-  };
+    };
 
   const openSuccess = (title: string, body: string) => {
     setModalTitle(title);
@@ -225,6 +225,9 @@ const AnalysisArticle = () => {
     setErrorOpen(true);
   };
 
+  const isAllFilled = () =>
+    !!( caughtDate && caughtTime && pickUpDate && pickUpTime);
+
   /*백엔드한테 보내는 데이터*/
   const onSubmitArticle = async (e: React.MouseEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -234,6 +237,10 @@ const AnalysisArticle = () => {
     }
     if (!selectedFile) {
       openModal("사진 파일을 업로드 해주세요");
+      return;
+    }
+    if (!isAllFilled()) {
+      openModal("모든 정보를 입력해 주세요.");
       return;
     }
     const userPayload = {
@@ -253,9 +260,6 @@ const AnalysisArticle = () => {
       form.append("thumbnail", selectedFile, selectedFile.name);
     }
     try {
-      for (let pair of form.entries()) {
-        console.log(`${pair[0]}:`, pair[1]);
-      }
       const response = await axios.post(
         `${import.meta.env.VITE_API_URL}/fisher/post/info`,
         form,
@@ -268,7 +272,6 @@ const AnalysisArticle = () => {
       );
       if (response.data !== "401error") {
         openSuccess("신청 완료", "정상적으로 접수되었습니다.");
-        navigate("/article/end");
       } else {
         openModal("등록을 실패했습니다. 다시 시도해 주세요");
       }
@@ -327,7 +330,7 @@ const AnalysisArticle = () => {
                     </FileChip>
                   ) : (
                     // 파일이 없을 때: 안내문 렌더
-                    <span>글 등록에 필요한 사진을 업로드하세요.</span>
+                    <span>썸네일에 필요한 사진을 업로드하세요.</span>
                   )}
                 </FileContent>
                 <HiddenFile
@@ -358,7 +361,7 @@ const AnalysisArticle = () => {
                 />
               </DateAndTimeContainer>
               <DateAndTimeContainer>
-                <DateTitle>포획 날짜</DateTitle>
+                <DateTitle>포획 시간</DateTitle>
                 <DateContent
                   type="time"
                   value={caughtTime}
@@ -404,8 +407,8 @@ const AnalysisArticle = () => {
       />
       <ConfirmModal
         isOpen={isConfirmOpen}
-        onClose={() => setConfirmOpen(false)}
-        onConfirm={handleConfirm}
+        onClose={handleSuccessClose}
+        onConfirm={handleSuccessClose}
         title={modalTitle}
         body={modalBody}
         isSuccess={isSuccess}

@@ -1,5 +1,5 @@
 import styles from '../styles/process.module.css';
-import fishImg from "../assets/icons/fish.png";
+import restart from "../assets/icons/restart.png";
 import styled from "styled-components";
 
 const Highlight = styled.span`
@@ -14,14 +14,13 @@ const Icon = styled.img`
 
 `
 
-export default function Processing() {
+export default function Restart() {
     return (
         <>
         <section className={styles.main}>
             <div className = {styles.iconAndText}>
-                <Icon src={fishImg} alt="카메라"/>
-                <h1>혼획물 <Highlight>분석</Highlight> 중</h1>
-                <p>약 <Highlight>1~5분</Highlight>정도 소요됩니다!</p> 
+                <Icon src={restart} alt="돌아가기"/>
+                <h1>혼획물 <Highlight>재분석 요청</Highlight> 중</h1>
                 <div className = {styles.loader10} />
             </div>
            

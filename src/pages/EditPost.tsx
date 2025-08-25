@@ -167,7 +167,6 @@ function EditPost() {
         `${import.meta.env.VITE_API_URL}/fisher/mypage/posts`,
         token ? { headers: { Authorization: `Bearer ${token}` } } : undefined
       );
-      console.log("Fetched post data:", response.data);
       setMyPosts(
         Array.isArray(response.data.incompleteArticle)
           ? response.data.incompleteArticle
@@ -198,7 +197,7 @@ function EditPost() {
     setEditArticleId(articleId);
     setIsEditModalOpen(true);
     // articleId와 initialData 전달 확인용 로그
-    console.log("EditModal articleId:", articleId);
+
   };
 
   const handleEditModalClose = () => {
@@ -234,7 +233,9 @@ function EditPost() {
       );
       fetchPostData(); // 수정 후 데이터 갱신
     } catch (error) {
-      console.error("Error updating article:", error);
+      if (isTokenExpired(error)) {
+        logout();
+      }
     }
     setIsEditModalOpen(false);
     setEditArticleId(null);

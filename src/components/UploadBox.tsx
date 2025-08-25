@@ -3,58 +3,45 @@ import styles from '../styles/UploadBox.module.css';
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFilm } from "@fortawesome/free-solid-svg-icons";
-import { useState} from "react";
+import React, { useRef, useState } from "react";
 
 type UploadBoxProps = {
   handleSelect: (file: File) => void;
 };
 
+const Highlight = styled.span`
+  color: var(--Primary-2, #0966ff);
+`;
+
 const AnalyzeButton = styled.button`
   margin: 20px auto 133px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 235px;
-  height: 66px;
-  border-radius: 10px;
-  background: var(--Primary-2, #0966ff);
-  color: #fff;
-  font-size: clamp(20px, 3vw, 26px);
-  font-weight: 600;
-  cursor: pointer;
-  border: 0;
+  display: flex; align-items: center; justify-content: center;
+  width: 235px; height: 66px; border-radius: 10px;
+  background: var(--Primary-2, #0966ff); color: #fff;
+  font-size: clamp(20px, 3vw, 26px); font-weight: 600;
+  cursor: pointer; border: 0;
 
-  &:hover:enabled {
-    transition: all 0.3s ease;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(9, 102, 255, 0.3);
-  }
-
-  &:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-  }
+  &:hover:enabled { transition: all .3s; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(9,102,255,.3); }
+  &:disabled { opacity: .6; cursor: not-allowed; }
 `;
+
 const FileIcon = styled(FontAwesomeIcon)`
   color: var(--Secondary-5, #899EBB);
   font-size: 60px;
-  vertical-align: middle;  /* 텍스트와 수직 정렬시 유용 */
-`
+  vertical-align: middle;
+`;
+
 const FileChip = styled.div`
-  /* 부모 flex의 남는 공간을 차지하지 않게 */
   flex: 0 0 auto;
-
-  /* 내용 크기만큼 너비로 */
-  display: inline-flex;       /* block 대신 inline-flex */
-  width: fit-content;         /* 또는 width: max-content; */
-  white-space: nowrap;        /* 줄바꿈 방지 (이쁘게 유지) */
-
+  display: inline-flex;
+  width: fit-content;
+  white-space: nowrap;
   align-items: center;
   gap: 11px;
-  padding: 8px 12px;          /* 필요 시 칩 여백 */
+  padding: 8px 12px;
   border-radius: 8px;
+`;
 
-`
 function DownloadIcon() {
   return (
     <svg xmlns="http://www.w3.org/2000/svg" width="69" height="69" viewBox="0 0 69 69" fill="none">
@@ -67,50 +54,104 @@ function DownloadIcon() {
 
 export default function UploadBox({ handleSelect }: UploadBoxProps) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [isActive, setActive] = useState(false);   // 드래그 하이라이트
+  const dragCounter = useRef(0);    // 자식으로 들어갈 때 깜빡임 방지
+
+  //  드래그/드롭 핸들러
+  const handleDragEnter: React.DragEventHandler<HTMLLabelElement> = (e) => {
+    e.preventDefault(); e.stopPropagation();
+    dragCounter.current += 1;
+    setActive(true);
+  };
+
+  const handleDragOver: React.DragEventHandler<HTMLLabelElement> = (e) => {
+    e.preventDefault(); e.stopPropagation();             // ✅ 꼭 막아야 drop 가능
+    if (!isActive) setActive(true);
+  };
+
+  const handleDragLeave: React.DragEventHandler<HTMLLabelElement> = (e) => {
+    e.preventDefault(); e.stopPropagation();
+    dragCounter.current -= 1;
+    if (dragCounter.current <= 0) setActive(false);
+  };
+
+  const handleDrop: React.DragEventHandler<HTMLLabelElement> = (e) => {
+    e.preventDefault(); e.stopPropagation();             // ✅ 기본 동작 막기
+    setActive(false);
+    dragCounter.current = 0;
+
+    const files = e.dataTransfer.files;
+    if (!files || files.length === 0) return;
+
+    const file = files[0];
+    if (!file.type.startsWith("video/")) {
+      alert("영상 파일만 업로드할 수 있어요.");
+      return;
+    }
+
+    setSelectedFile(file); //  파일칩 UI로 전환
+
+    e.dataTransfer.clearData();
+  };
+
   return (
     <>
-    <div className = {styles.main}>
-      {/* label 안에 input을 넣으면 레이블 클릭 시 파일 선택창이 열립니다. */}
-      <label className={styles.preview}>
+      <section className={styles.title}>
+        <div className={styles.inner}>
+          <div className={styles.text}>
+            <p><Highlight>혼획물 AI 분석</Highlight>을 위해</p>
+            <p>영상을 업로드 해주세요 !</p>
+          </div>
+          <div className={styles.underLine} />
+        </div>
+      </section>
+
+      <div className={styles.main}>
+      {/* label 자체를 drop zone 으로 */}
+      <label
+        className={`${styles.preview} ${isActive ? styles.active : ""}`}
+        onDragEnter={handleDragEnter}
+        onDragOver={handleDragOver}
+        onDragLeave={handleDragLeave}
+        onDrop={handleDrop}
+      >
         <input
           type="file"
           className={styles.file}
-          accept="video/*"  // 영상만
-          onClick={(e) => { (e.currentTarget as HTMLInputElement).value = ''; }}
+          accept="video/*"
+          onClick={(e) => { (e.currentTarget as HTMLInputElement).value = ""; }}
           onChange={(e) => setSelectedFile(e.target.files?.[0] ?? null)}
         />
-        {selectedFile === null? 
-         <>
-           <DownloadIcon />
-           <div className = {styles.fileBeforeText}>
+
+        {selectedFile === null ? (
+          <>
+            <DownloadIcon />
+            <div className={styles.fileBeforeText}>
               <p className={styles.previewMsg}>파일을 선택하거나</p>
               <p className={styles.previewMsg}>여기로 끌어다 놓으세요</p>
-           </div>
-           
-         </> : (
-                // 파일이 선택됐을 때: 파일칩 렌더
-                <FileChip>
-                  <FileIcon icon={faFilm} /> 
-                  <div className = {styles.fileChipText}>
-                    <div className={styles.fileName}>{selectedFile.name}</div>
-                    <div className={styles.fileStatus}>업로드 완료</div>
-                  </div>
-                  
-                </FileChip>
-              )
-         }
-        
+            </div>
+          </>
+        ) : (
+          // 드롭해도 같은 스타일의 파일칩으로 보임
+          <FileChip>
+            <FileIcon icon={faFilm} />
+            <div className={styles.fileChipText}>
+              <div className={styles.fileName}>{selectedFile.name}</div>
+              <div className={styles.fileStatus}>업로드 완료</div>
+            </div>
+          </FileChip>
+        )}
       </label>
 
       <AnalyzeButton
         type="button"
         onClick={() => selectedFile && handleSelect(selectedFile)}
-        disabled={!selectedFile}                   // 파일 없으면 비활성화
+        disabled={!selectedFile}
       >
         분석하기
       </AnalyzeButton>
     </div>
-      
     </>
+    
   );
 }

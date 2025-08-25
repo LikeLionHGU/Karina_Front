@@ -4,12 +4,15 @@ import LoadingSpinner from "../components/LoadingSpinner";
 import axios from "axios";
 import UploadBox from "../components/UploadBox";
 import Processing from "../components/Processing";
+import Restart from "../components/Restart";
 import Result from "../components/Result";
 import { hasToken, isTokenExpired } from "../utils/token";
 import { logout } from "../utils/logout";
 import LogoutModal from "../components/LogoutModal";
+import ErrorModal from "../components/ErrorModal";
+import ConfirmModal from "../components/ConfirmModal";
 
-type Step = "idle" | "processing" | "done" | "error";
+type Step = "idle" | "processing" | "done" | "error" | "restart";
 
 export default function VideoAnalysisPage() {
   const [step, setStep] = useState<Step>("idle");
@@ -20,51 +23,96 @@ export default function VideoAnalysisPage() {
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
   const [isLogoutSuccess, setIsLogoutSuccess] = useState(false);
   const abortRef = useRef<AbortController | null>(null);
-  function parseJwt(t?: string | null) {
-    try {
-      if (!t) return null;
-      const b = t.split(".")[1].replace(/-/g, "+").replace(/_/g, "/");
-      return JSON.parse(atob(b));
-    } catch {
-      return null;
+
+  // 모달 상태
+  const [errorModalOpen, setErrorModalOpen] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [confirmModalOpen, setConfirmModalOpen] = useState(false);
+  const [confirmTitle, setConfirmTitle] = useState("");
+  const [confirmMessage, setConfirmMessage] = useState("");
+  //로그인 확인용
+  const [afterClose, setAfterClose] = useState<null | (() => void)>(null); 
+
+
+  const openError = (msg: string, onClose?: () => void) => {
+    setErrorMessage(msg);
+    setError(msg);
+    setAfterClose(() => onClose ?? null);
+    setErrorModalOpen(true);
+    setStep("error");
+    
+  };
+
+  const openSuccess = (title: string, msg: string) => {
+    setConfirmTitle(title);
+    setConfirmMessage(msg);
+    setConfirmModalOpen(true);
+  };
+
+  const closeSuccess = () => {
+    setConfirmModalOpen(false);
+  };
+
+  const closeError = () => {
+    setErrorModalOpen(false);
+    //비로그인시 모달 창 닫을때
+    if (afterClose) {
+      const fn = afterClose;
+      setAfterClose(null);
+      fn();
     }
-  }
+  };
 
   const postVideo = async (file: File) => {
     const form = new FormData();
     form.append("video", file, file.name);
+
     if (!hasToken()) {
       setIsLogoutModalOpen(true);
       return;
     }
+
     const token = localStorage.getItem("jwt");
     setStep("processing");
     const ctrl = new AbortController();
     abortRef.current = ctrl;
+
     try {
       const res = await axios.post(
         `${import.meta.env.VITE_API_URL}/fisher/post/upload`,
         form,
         {
           headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+          signal: ctrl.signal,
         }
       );
+
       setResultList(res.data.analysisResult);
       const id = String(res.data.articleId);
       setArticleId(id);
       setStep("done");
+
+      
     } catch (e: any) {
       if (isTokenExpired(e)) {
         setIsLogoutModalOpen(true);
         return;
       }
-      setStep("error");
+      // 에러 모달
+      openError(e?.message ?? "업로드 중 오류가 발생했습니다.");
     }
   };
 
-  // 재분석(수정 요청) — FormData로 articleId 전송
+  // 재분석(수정 요청)
   const reanalyze = async () => {
-    if (!articleId) return;
+    setStep("restart");
+
+    if (!articleId) {
+      // alert 대체
+      openError("articleId가 없습니다.");
+      return;
+    }
+
     const ctrl = new AbortController();
     abortRef.current = ctrl;
 
@@ -73,11 +121,10 @@ export default function VideoAnalysisPage() {
         setIsLogoutModalOpen(true);
         return;
       }
-      const requestData = {
-        articleId: articleId,
-      };
+      const requestData = { articleId };
       const token = localStorage.getItem("jwt");
-      const res = await axios.put(
+
+      await axios.put(
         `${import.meta.env.VITE_API_URL}/fisher/post/edit/info`,
         requestData,
         {
@@ -85,17 +132,21 @@ export default function VideoAnalysisPage() {
           signal: ctrl.signal,
         }
       );
+
       setResultList(null);
       setArticleId(null);
       setStep("idle");
+
+      //  성공 모달
+      openSuccess("재분석 요청 완료", "재분석 요청이 접수되었습니다.");
     } catch (e: any) {
       if (axios.isCancel(e)) return;
       if (isTokenExpired(e)) {
         setIsLogoutModalOpen(true);
         return;
       }
-      setError(e?.message ?? "재분석 요청 중 오류가 발생했습니다.");
-      setStep("error");
+      // 에러 모달
+      openError(e?.message ?? "재분석 요청 중 오류가 발생했습니다.");
     } finally {
       setIsLoading(false);
     }
@@ -105,6 +156,22 @@ export default function VideoAnalysisPage() {
 
   return (
     <main>
+      {/* 모달 */}
+      <ErrorModal
+        isOpen={errorModalOpen}
+        onClose={closeError}
+        message={errorMessage}
+      />
+      <ConfirmModal
+        isOpen={confirmModalOpen}
+        onClose={closeSuccess}
+        onConfirm={closeSuccess}     // 타입 충족용
+        title={confirmTitle}
+        body={confirmMessage}
+        isSuccess                     // 단일 버튼 모드
+        singleText="완료"             //가운데 ‘완료’ 버튼
+      />
+
       {isLoading && <LoadingSpinner />}
       <LogoutModal
         isOpen={isLogoutModalOpen}
@@ -122,6 +189,7 @@ export default function VideoAnalysisPage() {
       />
       {step === "idle" && <UploadBox handleSelect={postVideo} />}
       {step === "processing" && <Processing />}
+      {step === "restart" && <Restart />}
 
       {step === "done" && resultList && (
         <Result articleData={articleId} data={resultList} onReset={reanalyze} />

@@ -1,110 +1,98 @@
-import styles from "../styles/FactoryLogin.module.css";
+import styles from "../styles/Login.module.css";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
+import ErrorModal from "../components/ErrorModal";
+import ConfirmModal from "../components/ConfirmModal";
 
 interface BannerProps {
   active: boolean;
 }
 
 const Input = styled.input`
-  -webkit-appearance: none; /* 웹킷 브라우저에서 기본 스타일 제거 */
-  -moz-appearance: none; /* 모질라 브라우저에서 기본 스타일 제거 */
-  appearance: none; /* 기본 브라우저에서 기본 스타일 제거 */
-  width: 658px;
-  height: 81px;
-  flex-shrink: 0;
-  border-radius: 20px;
+  width:clamp(450px, 10vw, 550px);
+  height: 55px;
+  font-size: 16px;
+  border-radius: 12px;
   border: 1.5px solid var(--Secondary-3, #a5bee0);
   padding-left: 10px;
   &::placeholder {
-    margin-left: 5px;
-    color: var(--Secondary-5, #899ebb);
-    font-size: clamp(15px, 1.5vw, 20px);
-    font-style: normal;
-    font-weight: 700;
-    line-height: 30px; /* 150% */
+    font-size: 14px;
   }
 `;
-/*비밀번호&아이디 입력 칸*/
+
 const InputAndTitle = styled.div`
   display: flex;
   flex-direction: column;
   gap: 8px;
 `;
+
 const InputTitle = styled.h1`
+  font-size: clamp(15px, 3vw, 20px);
+  margin-bottom: 4px;
   color: var(--Black-4, #454545);
-  font-size: clamp(20px, 3vw, 26px);
   font-style: normal;
   font-weight: 600;
   line-height: normal;
-  margin-bottom: 8px;
 `;
-
-/* 글자 및 배너를 감싸는 컴포넌트를 만들어 1:1 비율로 있도록 함 */
-/* 동시에 이 컴포넌트에 폰트 CSS를 적용해 글자 컴포넌트를 따로 만들지 않음 */
 
 const FactoryBanner = styled.div<BannerProps>`
-  flex: 1; /* 부모 컨테이너에 flex가 적용되어 있을 때 1:1 비율로 공간을 차지 */
+  flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 271px;
-  height: 69px;
+  width: 160px;
+  height: 40px;
   flex-shrink: 0;
-  border-radius: 40px;
+  border-radius: 20px;
   background: ${(props) => (props.active ? "#0966FF" : "#E6E6E6")};
   color: ${(props) => (props.active ? "var(--White-1, #F8FBFE)" : "#000")};
-  font-size: clamp(20px, 2vw, 30px);
+  font-size: 18px;
   font-style: normal;
   font-weight: 600;
-  line-height: 45px;
+  line-height: 30px;
   cursor: pointer;
 `;
 
-/*글자 및 배경 스타일 한 태그에 모아둠*/
 const FisherBanner = styled.div<BannerProps>`
   flex: 1;
-  /*폰트 세로&가로 중앙정렬*/
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 271px;
-  height: 69px;
+  width: 160px;
+  height: 40px;
   flex-shrink: 0;
-  border-radius: 40px;
+  border-radius: 20px;
   background: ${(props) => (props.active ? "#0966FF" : "#E6E6E6")};
   color: ${(props) => (props.active ? "var(--White-1, #F8FBFE)" : "#000")};
-  font-size: clamp(20px, 2vw, 30px);
+  font-size: 18px;
   font-style: normal;
   font-weight: 600;
-  line-height: 45px;
+  line-height: 30px;
   cursor: pointer;
 `;
+
 const LoginComplete = styled.div`
+  margin-top: 50px;
+  margin-bottom: 20px;
+  width: clamp(450px, 10vw, 550px);
+  height: 50px;
+  border-radius: 8px;
   text-align: center;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  margin-top: 100px;
-  margin-bottom: 20px;
-  width: 658px;
-  height: 66px;
-  flex-shrink: 0;
-  border-radius: 10px;
   background: var(--Primary-2, #0966ff);
-  /*폰트 스타일 CSS*/
   h1 {
+    font-size: 18px;
     color: #fff;
-    font-size: clamp(20px, 3vw, 26px);
     font-style: normal;
-    font-weight: 600;
+    font-weight: 600; 
     line-height: normal;
   }
-  /*호버*/
   &:hover {
     transition: all 0.3s ease;
     transform: translateY(-2px);
@@ -112,13 +100,14 @@ const LoginComplete = styled.div`
     cursor: pointer;
   }
 `;
+
 const SignUpText = styled(Link)`
-  margin-bottom: 59px;
+  font-size: 14px;
+  margin-bottom: 50px;
   display: flex;
   align-items: center;
   justify-content: center;
   color: var(--Secondary-4, #92a9c7);
-  font-size: 20px;
   font-weight: 600;
   cursor: pointer;
 `;
@@ -129,26 +118,27 @@ const ButtonContainer = styled.div`
   align-items: center;
   justify-content: center;
 `;
-function Login() {
-  /*Styled-component에서 쓸 prpos의 변수 타입 지정*/
 
+function Login() {
   const navigate = useNavigate();
 
   const [isActive, setIsActive] = useState("");
   const [userId, setUserId] = useState("");
   const [userPassword, setUserPassword] = useState("");
-  /*onChange로 받는 아이디 저장*/
+  const [errorModalOpen, setErrorModalOpen] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [confirmModalOpen, setConfirmModalOpen] = useState(false);
+  const [confirmMessage, setConfirmMessage] = useState("");
+
   const handleIdChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setUserId(event.target.value);
   };
-  /*onChange로 받는 패스워드 저장*/
   const handlePasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setUserPassword(event.target.value);
   };
   const handleToggle = (status: string) => {
     setIsActive(status);
   };
-  /*placeholder 텍스트 변수 선언*/
   const helperText =
     isActive === "fisher"
       ? "잡아드림 어민 아이디를 입력하세요."
@@ -156,7 +146,6 @@ function Login() {
       ? "잡아드림 공장/연구소 아이디를 입력하세요."
       : "역할을 선택해주세요.";
 
-  /*버튼 텍스트 변수 선언*/
   const ButtonText =
     isActive === "fisher"
       ? "어민 로그인"
@@ -164,31 +153,21 @@ function Login() {
       ? "공장/연구소 로그인"
       : "역할을 선택해주세요.";
 
-  /*백엔드한테 데이터 보내기*/
   const onSubmitClick = async (event: React.MouseEvent<HTMLInputElement>) => {
     event.preventDefault();
     const formData = new FormData();
 
-    // 유저 아이디 추가
     formData.append("loginId", userId);
-
-    //유저 비밀번호 추가
     formData.append("password", userPassword);
+    formData.append("role", isActive);
 
-    //유저 타입 추가
-    formData.append("role", isActive); //isActive에 역할 정보 들어있음
-
-    //form data 내용 확인
     try {
-      console.log("FormData 내용:");
-      for (const [k, v] of formData.entries()) console.log(k, v);
       const res = await axios.post(
         `${import.meta.env.VITE_API_URL}/user/login`,
         formData,
         { withCredentials: true }
       );
 
-      //response로 받아올 토큰 저장
       const rawToken =
         res.headers["authorization"] || res.headers["Authorization"];
       const token = rawToken?.startsWith("Bearer ")
@@ -200,35 +179,62 @@ function Login() {
       localStorage.setItem("role", role) ?? "";
       localStorage.setItem("userName", userName) ?? "";
 
-      // 성공 처리
-      alert("로그인 성공");
-      console.log("JWT:", token);
-      console.log("Role:", role);
-      {
-        role === "ROLE_FACTORY"
-          ? navigate("/home/factory")
-          : navigate("/home/fisher");
-      }
+      setConfirmMessage("로그인 성공");
+      setConfirmModalOpen(true);
     } catch (err: any) {
       if (axios.isAxiosError(err)) {
-        // 401 등 상태 기반 메시지
         if (err.response?.status === 401) {
-          alert("아이디/비밀번호를 확인해 주세요.");
+          if (isActive === "") {
+            setErrorMessage("역할을 선택해 주세요");
+          } else {
+            setErrorMessage("아이디/비밀번호를 확인해 주세요.");
+          }
+          setErrorModalOpen(true);
         } else {
-          alert(`요청 실패 (${err.response?.status ?? "네트워크 오류"})`);
+          setErrorMessage(`요청 실패 (${err.response?.status ?? "네트워크 오류"})`);
+          setErrorModalOpen(true);
         }
-        console.error(err.response);
       } else {
-        alert("요청 중 오류가 발생했습니다.");
-        console.error(err);
+        setErrorMessage("요청 중 오류가 발생했습니다.");
+        setErrorModalOpen(true);
       }
     } finally {
       setUserId("");
       setUserPassword("");
     }
   };
+
+  const handleConfirmClose = () => {
+    setConfirmModalOpen(false);
+    const role = localStorage.getItem("role");
+    if (role === "ROLE_FACTORY") {
+      navigate("/home/factory");
+    } else {
+      navigate("/home/fisher");
+    }
+  };
+
+  const handleErrorClose = () => {
+    setErrorModalOpen(false);
+  };
+
   return (
     <>
+      <ErrorModal
+        isOpen={errorModalOpen}
+        onClose={handleErrorClose}
+        message={errorMessage}
+      />
+      <ConfirmModal
+        isOpen={confirmModalOpen}
+        title="로그인 성공"
+        body={confirmMessage}
+        isSuccess                              // 단일 버튼 모드
+        singleText="완료"                      // '확인' → '완료'
+        onClose={handleConfirmClose}           // 눌렀을 때 닫힘
+        onConfirm={handleConfirmClose}         // 타입 충족용(사용되지 않음)
+      />
+
       <div className={styles.FactoryLoginHeader}>
         <h1>로그인</h1>
         <div className={styles.LoginToggle}>
@@ -264,7 +270,7 @@ function Login() {
                 ? "역할을 선택해 주세요."
                 : "비밀번호를 입력하세요."
             }
-            type="text"
+            type="password"
             value={userPassword}
             onChange={handlePasswordChange}
           />

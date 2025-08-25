@@ -248,7 +248,6 @@ function Detail() {
         }
       );
       setFishData(response.data);
-      console.log("Fetched fish detail data:", response.data);
     } catch (error) {
       if (isTokenExpired(error)) {
         setIsLogoutModalOpen(true);
@@ -262,7 +261,6 @@ function Detail() {
 
   useEffect(() => {
     if (!articleId) {
-      console.error("articleId가 없습니다.");
       return;
     }
     getFishData();
