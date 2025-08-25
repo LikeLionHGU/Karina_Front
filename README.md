@@ -1,220 +1,109 @@
+# 혼획물을 기회로 바꾸는 지속가능한 연결, **잡어드림** 🥇  
 
-# 혼획물을 기회로 바꾸는 지속가능한 연결, 잡어드림 🥇
+<img width="100%" alt="메인 이미지" src="https://github.com/user-attachments/assets/3f9c7f04-4e42-4c1b-96d6-1ea1bc326878" />
 
-<img width="2744" height="1422" alt="Image" src="https://github.com/user-attachments/assets/3f9c7f04-4e42-4c1b-96d6-1ea1bc326878" />
+- **배포 URL** : [https://jabeodream.netlify.app/](https://jabeodream.netlify.app/)  
 
-- 배포 URL : https://jabeodream.netlify.app/
+---
 
-<br>
+## 📌 프로젝트 소개  
 
-## 프로젝트 소개
+잡어드림은 **AI 영상 분석 기술**을 활용해 어민이 촬영한 혼획 영상을 자동으로 판별하고, 어종·개체 수·이상 징후를 효율적으로 분석하는 서비스입니다.  
+분석된 데이터는 **공장 및 연구소와 실시간 연계**되어 가공 계획과 연구 분석에 활용됩니다.  
+또한, **품질 관리 및 이력 추적**을 통해 투명한 유통을 보장하며 소비자 신뢰와 수출 경쟁력을 높입니다.  
+마지막으로, **맞춤형 대시보드**를 통해 어민·공장·연구소 각각에 최적화된 정보를 제공합니다.  
 
-- Pick Abilities, Empower Disabled Persons
-- 피클은 장애인의 운동 기회를 위한 스포츠 강좌 선택 수강 플랫폼입니다.
-- 상세한 필터링을 통한 맞춤형 강좌를 선택할 수 있습니다.
-- 강사 프로필 확인을 통해 강좌 개설 내역을 확인하고 신뢰도를 높였습니다.
+---
 
-<br>
+## 📆 프로젝트 기간  
 
-## 프로젝트 기간
+2025.07.21 ~ 2025.08.24  
 
-25.07.21 ~ 25.08.24
+---
 
-<br>
-
-## 잡어드림 팀원 구성
+## 👥 팀원 구성  
 
 | 기획자 | 디자이너 | 프론트엔드 개발자 | 프론트엔드 개발자 | 백엔드 개발자 | 백엔드 개발자 |
 | :----: | :------: | :---------------: | :---------------: | :-----------: | :-----------: |
-| 오하경 |  김애현  |      박서연       |      김원진       |    강병찬     |    장세혁     |
+| 오하경 | 김애현 | 박서연 | 김원진 | 강병찬 | 장세혁 |
 
-<br />
+### 🔗 프론트엔드 개발자 깃허브  
 
-## 프론트엔드 개발자들의 개인 깃허브
+| 박서연 | 김원진 |
+| :----: | :----: |
+| [<img src="https://github.com/user-attachments/assets/24ac9407-972d-4ebd-a7d5-a4c0787f9dce" height=120 width=120><br/>@SeoyeonPark](https://github.com/yean1234) | [<img src="https://github.com/user-attachments/assets/284797d5-5923-44cb-832d-9e8e39e15cb2" height=120 width=120><br/>@WonjinKim](https://github.com/lingard09) |
 
-|                                                                                        **박서연**                                                                                        |                                                                                         **김원진**                                                                                         |
-| :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
-| [<img src="https://github.com/user-attachments/assets/24ac9407-972d-4ebd-a7d5-a4c0787f9dce" height=160 width=160> <br/> @SeoyeonPark](https://github.com/yean1234) | [<img width="1076" height="922" alt="image" src="https://github.com/user-attachments/assets/284797d5-5923-44cb-832d-9e8e39e15cb2" />
- <br/> @WonjinKim](https://github.com/lingard09) |
+---
 
+## ⚙️ 개발 환경  
 
-</div>
+- **Frontend** : React, TypeScript, styled-components, HTML/CSS  
+- **Build Tool** : Vite  
+- **협업 툴** : GitHub, GitHub Issues, Notion, Discord  
+- **배포 환경** : Netlify  
 
-<br>
+---
 
-## 1. 개발 환경
+## 🚀 서비스 핵심 기능 및 페이지  
 
-- Front : HTML, React, styled-components, Css, Typescript
-- 스택: HTML+CSS+TSX, REACT+VITE
-- 버전 및 이슈관리 : Github, Github Issues
-- 협업 툴 : Discord, Notion
-- 서비스 배포 환경 : Netlify
+### 1. AI 영상 분석  
+| ![영상분석](https://github.com/user-attachments/assets/84d88a64-70f7-4756-98f3-93ca46147345) | ![영상분석2](https://github.com/user-attachments/assets/40bced4c-d371-4ea7-952f-422d269ccd9d) |  
+| --- | --- |  
+- 혼획물 영상을 업로드하면 AI가 **어종 판별 및 개체 수 분석**을 자동으로 수행합니다.  
 
-<br>
+---
 
-## 2. 서비스 핵심 기능 및 페이지 소개
+### 2. 생산·가공 데이터 연계  
+| ![데이터연계](https://github.com/user-attachments/assets/b4677142-039d-4400-8bfc-25c61586c726) |  
+| --- |  
+- 어민의 AI 분석 데이터를 **공장·연구소에 실시간 전달**합니다.  
+- 이를 기반으로 가공 계획 수립과 연구 분석이 가능합니다.  
 
-### AI 영상 분석
+---
 
-!<img width="1224" height="1074" alt="image" src="https://github.com/user-attachments/assets/84d88a64-70f7-4756-98f3-93ca46147345" />
- |![image.jpg2](https://github.com/user-attachments/assets/40bced4c-d371-4ea7-952f-422d269ccd9d)
---- | --- | 
+### 3. 품질 관리 및 이력 추적  
+| ![품질관리](https://github.com/user-attachments/assets/13c9a442-388b-46dc-b7d5-0e7d13607112) |  
+| --- |  
+- **대기 → 매칭 대기 → 매칭 완료** 단계별 데이터를 기록합니다.  
+- 투명한 이력 관리로 **소비자 신뢰 확보** 및 **수출 경쟁력 강화**에 기여합니다.  
 
-- 혼획물 영상을 올리면 AI가 자동으로 분석해 줍니다! 
+---
 
-<br>
+### 4. 맞춤형 대시보드  
+| ![대시보드1](https://github.com/user-attachments/assets/be0b992d-c48e-422b-8b61-18029bae2b51) | ![대시보드2](https://github.com/user-attachments/assets/17fbb1f5-b164-4982-b9eb-4667dbc295c2) |  
+| --- | --- |  
+- **어민** : 다른 어민들의 정보, 게시글 등록일, 진행 현황 확인  
+- **공장/연구소** : 어민 정보, 어획량, 마감일시 등 종합 데이터 확인  
+- 사용자 그룹별로 **최적화된 UI** 제공  
 
-### 생산·가공 데이터 연계
+---
 
-!(<img width="2776" height="1416" alt="image" src="https://github.com/user-attachments/assets/b4677142-039d-4400-8bfc-25c61586c726" />
+## 📑 개발 가이드라인  
 
-)
+### 이슈 작성 규칙  
 
-- 어민 → 공장/연구소로 실시간 AI분석 생산 데이터를 제공해 줍니다.
-- 공장/연구소는 이를 기반으로 가공 계획 수립할 수 있으며 연구 분석이 가능합니다. 
+- Issue 제목 : `[타입] - 설명` (예: `[Style] - 텍스트 스타일 추가`)  
+- Assignees : 담당자 지정  
+- Labels : 작업 유형 태그  
+- 본문 : 작업 상세 내용, 참고 이슈/자료 기재  
 
-  <br>
+### 브랜치 규칙  
 
-### 품질 관리 및 이력 추적
+- 개인 브랜치에서만 작업  
+- 브랜치 네이밍 : `#이슈번호/파트/이름` (예: `#1/MainPage-Seoyeon`)  
 
-!(<img width="2836" height="1408" alt="image" src="https://github.com/user-attachments/assets/13c9a442-388b-46dc-b7d5-0e7d13607112" />
-)
+### 커밋 메시지 규칙  
 
-- 대기 중 → 매칭 대기 → 매칭 완료까지 데이터를 기록합니다.
-- 투명한 이력 관리로 소비자 신뢰 확보 및 수출 경쟁력 강화를 이끌어 낼 수 있습니다.
+| type     | Description                 | Example |
+| -------- | --------------------------- | ------- |
+| feat     | 새로운 기능 추가             | feat : 로그인 기능 구현 |
+| fix      | 버그 수정                   | fix : Color 버그 수정 |
+| style    | UI 스타일 변경              | style : 폰트 등록 |
+| refactor | 코드 리팩토링               | refactor : 변수명 수정 |
+| docs     | 문서 작업                   | docs : README 작성 |
+| chore    | 기타 변경                   | chore : 파일 경로 수정 |
 
-<br>
+---
 
-### 맞춤형 대시보드(어민/공장 및 연구소 별)
+## 📂 프로젝트 구조  
 
-(<img width="2758" height="1370" alt="image" src="https://github.com/user-attachments/assets/be0b992d-c48e-422b-8b61-18029bae2b51" />
-)|![image.jpg2](https://github.com/user-attachments/assets/17fbb1f5-b164-4982-b9eb-4667dbc295c2) 
---- | --- | 
-
-- 어민: 다른 어민들의 이름, 게시글 등록 일자, 진행 현황 확인 가능
-
-- 공장 및 연구소: 어민 정보, 어획량, 어획 및 마감일시 확인 가능
-
-- 이렇게 사용자 그룹별로 최적화된 UI를 제공하고 있습니다.
-
-<br>
-
-## 3. 개발 가이드라인
-
-### 이슈 작성
-
-✹ **Git Issue**
-
-- 작업할 기능에 대한 issue를 작성합니다.
-- issue 제목은 **[타입] - 설명**으로 통일합니다. (ex. [Style] - 텍스트 스타일 추가)
-- Assignees에는 작업을 맡은 사람을 태그합니다.
-- Labels에는 해당 작업과 맞는 유형을 태그합니다.
-- 설명란에는 어떤 작업을 할 예정인지, 관련된 이슈번호가 있는지 참고한 내용이 있는지 등 필요한 내용을 적습니다.
-  <br />
-
-### 브랜치 생성
-
-✹ **Git Branch**
-
-- 각자 생성한 브랜치에서만 작업합니다.
-- 브랜치 이름 구조는 <**/#이슈번호/본인파트/-본인이름**> 입니다. (ex. #1/MainPage-Yeara)
-  <br />
-
-### Commit 메시지 작성법
-
-|          |                                       |                                                         |
-| -------- | ------------------------------------- | ------------------------------------------------------- |
-| type     | Description                           | Example                                                 |
-| feat     | 새로운 기능 추가, 구현                | feat : 로그인 기능 구현                                 |
-| edit     | 단순 오타 수정                        | edit : 로그인 캐시 처리 방식 수정                       |
-| style    | UI작업, 스타일 관련 파일 추가 및 수정 | style : 폰트 등록                                       |
-| add      | asset 파일(이미지, 아이콘 등) 추가    | add : 위젯 이미지 추가                                  |
-| chore    | 파일, 경로를 옮기거나 이름 변경       | chore : feet -> feat 이름 변경                          |
-| delete   | 덤프 파일 삭제                        | delete : Empty.md 파일 삭제                             |
-| merge    | 브랜치 병합(merge)                    | merge : pull request #3 from LikeLionHGU/Haeun_Style/#1 |
-| fix      | 버그 픽스                             | fix : Color 버그 수정                                   |
-| docs     | 문서 작업                             | docs : Readme 작성                                      |
-| refactor | 코드 리팩토링                         | refactor : 변수명 수정                                  |
-| model    | 데이터베이스(모델) 작업               | model : 데이터 모델 생성                                |
-| init     | 프로젝트 생성                         | init : 프로젝트 생성                                    |
-| test     | 테스트 케이스 생성                    | test: 테스트 케이스 생성                                |
-| 빌드관련 |                                       |                                                         |
-| build    | 재빌드                                | build: 동일버전 재빌드(x.xx)                            |
-| version  | 버전 업                               | version : 버전(2.0.0) 업데이트                          |
-
-<br />
-
-## 4. 프로젝트 구조
-
-```
-
-src
- ┣ assets
- ┃ ┣ fonts
- ┃ ┃ ┣ PretendardTTF
- ┃ ┃ ┗ GlobalStyle.jsx
- ┃ ┣ img
- ┃ ┗ logo
- ┃ ┃ ┣ PickleLogo.svg
- ┃ ┃ ┗ PickleWhiteLogo.svg
- ┣ components
- ┃ ┣ Common
- ┃ ┃ ┣ CommonBtn
- ┃ ┃ ┃ ┣ BlueBtn.jsx
- ┃ ┃ ┃ ┣ DisabledBtn.jsx
- ┃ ┃ ┃ ┗ WhiteBtn.jsx
- ┃ ┃ ┣ BgColor.jsx
- ┃ ┃ ┣ CalendarCom.jsx
- ┃ ┃ ┣ CourseCard.jsx
- ┃ ┃ ┣ CourseDivideLine.jsx
- ┃ ┃ ┣ DaumPost.jsx
- ┃ ┃ ┣ Footer.jsx
- ┃ ┃ ┣ GrayInfoBox.jsx
- ┃ ┃ ┣ HeaderLightVer.jsx
- ┃ ┃ ┣ HeaderSearchBar.jsx
- ┃ ┃ ┣ MapCon.jsx
- ┃ ┃ ┣ PaginationCom.jsx
- ┃ ┃ ┣ ScrollToTop.jsx
- ┃ ┃ ┣ SliderCom.jsx
- ┃ ┃ ┗ StarRating.jsx
- ┃ ┣ LectureListPage
- ┃ ┃ ┣ LectureDetailContent.jsx
- ┃ ┃ ┣ LectureListContent.jsx
- ┃ ┃ ┣ LecturePurchaseCard.jsx
- ┃ ┃ ┣ LecturePurchaseContent.jsx
- ┃ ┃ ┣ ListAllContent.jsx
- ┃ ┃ ┣ TeacherProfileCard.jsx
- ┃ ┃ ┗ TeacherProfileModal.jsx
- ┃ ┣ MainPage
- ┃ ┃ ┣ BannerMain.jsx
- ┃ ┃ ┣ ContentMain.jsx
- ┃ ┃ ┣ CustomArrows.jsx
- ┃ ┃ ┣ FilterContainerMain.jsx
- ┃ ┃ ┣ HeaderMain.jsx
- ┃ ┃ ┣ LoginModal.jsx
- ┃ ┃ ┣ SelectedContentBox.jsx
- ┃ ┃ ┗ SignInContent.jsx
- ┃ ┗ UserPage
- ┃ ┃ ┣ SideBar.jsx
- ┃ ┃ ┣ UserCompleteLetureContent.jsx
- ┃ ┃ ┣ UserEditProfileContent.jsx
- ┃ ┃ ┣ UserLearningContent.jsx
- ┃ ┃ ┣ UserPointContent.jsx
- ┃ ┃ ┗ UserSavedLectureContent.jsx
- ┣ pages
- ┃ ┣ LectureDetailPage.jsx
- ┃ ┣ LectureListPage.jsx
- ┃ ┣ LecturePurchasePage.jsx
- ┃ ┣ ListAllPage.jsx
- ┃ ┣ LoginRedirection.jsx
- ┃ ┣ MainPage.jsx
- ┃ ┣ SignInPage.jsx
- ┃ ┣ UserCompleteLecturePage.jsx
- ┃ ┣ UserEditProfilePage.jsx
- ┃ ┣ UserLearningPage.jsx
- ┃ ┣ UserPage.jsx
- ┃ ┗ UserSavedLecturePage.jsx
-
- ```
-
-<br />
