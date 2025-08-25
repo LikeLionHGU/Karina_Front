@@ -11,6 +11,7 @@ import ErrorModal from "../components/ErrorModal";
 import ConfirmModal from "../components/ConfirmModal";
 import { hasToken, isTokenExpired } from "../utils/token";
 import { logout } from "../utils/logout";
+import LogoutModal from "../components/LogoutModal";
 
 const InputContainer = styled.div`
   display: flex;
@@ -188,6 +189,8 @@ const AnalysisArticle = () => {
   const [modalTitle, setModalTitle] = useState("");
   const [modalBody, setModalBody] = useState("");
   const [isLoading, setIsLoading] = useState(false); //로딩 스피너
+  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
+  const [isLogoutSuccess, setIsLogoutSuccess] = useState(false);
   /*파일 선택 관련 이벤트 관리*/
   const handleOpenFile: React.MouseEventHandler<HTMLButtonElement> = (e) => {
     e.preventDefault();
@@ -226,7 +229,7 @@ const AnalysisArticle = () => {
   const onSubmitArticle = async (e: React.MouseEvent<HTMLDivElement>) => {
     e.preventDefault();
     if (!hasToken()) {
-      logout();
+      setIsLogoutModalOpen(true);
       return;
     }
     if (!selectedFile) {
@@ -271,7 +274,7 @@ const AnalysisArticle = () => {
       }
     } catch (error) {
       if (isTokenExpired(error)) {
-        logout();
+        setIsLogoutModalOpen(true);
         return;
       }
       openModal("요청 중 오류가 발생했습니다");
@@ -280,6 +283,20 @@ const AnalysisArticle = () => {
   return (
     <>
       {isLoading && <LoadingSpinner />}
+      <LogoutModal
+        isOpen={isLogoutModalOpen}
+        onClose={() => {
+          setIsLogoutModalOpen(false);
+          setIsLogoutSuccess(false);
+        }}
+        onConfirm={() => {
+          setIsLogoutSuccess(true);
+          logout();
+        }}
+        title="로그아웃 하시겠습니까?"
+        body="토큰이 만료되어 로그아웃됩니다."
+        isSuccess={isLogoutSuccess}
+      />
       <section className={styles.title}>
         <div className={styles.inner}>
           <div className={styles.text}>

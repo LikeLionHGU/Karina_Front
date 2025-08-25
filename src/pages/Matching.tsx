@@ -6,6 +6,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { hasToken, isTokenExpired } from "../utils/token";
 import { logout } from "../utils/logout";
+import LogoutModal from "../components/LogoutModal";
 
 const MypageContainer = styled.div`
   max-width: 1200px;
@@ -120,6 +121,8 @@ function Matching() {
   const [currentPosts, setCurrentPosts] = useState<currentPostRow[]>([]);
   const [completedPosts, setCompletedPosts] = useState<CompletedPostRow[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
+  const [isLogoutSuccess, setIsLogoutSuccess] = useState(false);
 
   // Modal state and handlers
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
@@ -157,7 +160,7 @@ function Matching() {
       setCurrentPosts([]);
       setCompletedPosts([]);
       if (!hasToken()) {
-        logout();
+        setIsLogoutModalOpen(true);
         return;
       }
       const token = localStorage.getItem("jwt");
@@ -170,7 +173,7 @@ function Matching() {
       setCompletedPosts(response.data.matchingSuccessList);
     } catch (error) {
       if (isTokenExpired(error)) {
-        logout();
+        setIsLogoutModalOpen(true);
         return;
       }
       console.error("Error fetching post data:", error);
@@ -193,7 +196,7 @@ function Matching() {
     console.log("매칭 취소 요청 articleId:", editArticleId); // 값 확인
     try {
       if (!hasToken()) {
-        logout();
+        setIsLogoutModalOpen(true);
         return;
       }
       const token = localStorage.getItem("jwt");
@@ -212,7 +215,7 @@ function Matching() {
       fetchPostData();
     } catch (error) {
       if (isTokenExpired(error)) {
-        logout();
+        setIsLogoutModalOpen(true);
         return;
       }
       console.error("매칭 취소 요청 실패:", error);
@@ -224,6 +227,20 @@ function Matching() {
   return (
     <MypageContainer>
       {isLoading && <LoadingSpinner />}
+      <LogoutModal
+        isOpen={isLogoutModalOpen}
+        onClose={() => {
+          setIsLogoutModalOpen(false);
+          setIsLogoutSuccess(false);
+        }}
+        onConfirm={() => {
+          setIsLogoutSuccess(true);
+          logout();
+        }}
+        title="로그아웃 하시겠습니까?"
+        body="토큰이 만료되어 로그아웃됩니다."
+        isSuccess={isLogoutSuccess}
+      />
       <Title>마이페이지</Title>
       <Subtitle>
         마이페이지에서 등록, 조회, 거래 내역을 한눈에 확인하세요.

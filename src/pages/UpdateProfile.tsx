@@ -8,6 +8,7 @@ import axios from "axios";
 import DefaultImage from "../assets/profile/default.jpg";
 import SuccessModal from "../components/SuccessModal";
 import ErrorModal from "../components/ErrorModal";
+import LogoutModal from "../components/LogoutModal";
 
 const MypageContainer = styled.div`
   max-width: 1200px;
@@ -223,6 +224,8 @@ function UpdateProfile() {
   const [passwordError, setPasswordError] = useState("");
   const [showTooltip, setShowTooltip] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
+  const [isLogoutSuccess, setIsLogoutSuccess] = useState(false);
 
   const fetchUserData = async () => {
     setIsLoading(true);
@@ -231,6 +234,10 @@ function UpdateProfile() {
       const token = hasToken() ? localStorage.getItem("jwt") : null;
       const role = localStorage.getItem("role");
 
+      if (!hasToken()) {
+        setIsLogoutModalOpen(true);
+        return;
+      }
       if (role === "ROLE_FACTORY") {
         const response = await axios.get(
           `${import.meta.env.VITE_API_URL}/factory/mypage/profile`,
@@ -264,7 +271,7 @@ function UpdateProfile() {
       }
     } catch (error) {
       if (isTokenExpired(error)) {
-        logout();
+        setIsLogoutModalOpen(true);
       } else {
         console.error("Error fetching user data:", error);
       }
@@ -441,6 +448,20 @@ function UpdateProfile() {
   return (
     <MypageContainer>
       {isLoading && <LoadingSpinner />}
+      <LogoutModal
+        isOpen={isLogoutModalOpen}
+        onClose={() => {
+          setIsLogoutModalOpen(false);
+          setIsLogoutSuccess(false);
+        }}
+        onConfirm={() => {
+          setIsLogoutSuccess(true);
+          logout();
+        }}
+        title="로그아웃 하시겠습니까?"
+        body="토큰이 만료되어 로그아웃됩니다."
+        isSuccess={isLogoutSuccess}
+      />
       <Title>마이페이지</Title>
       <Subtitle>
         마이페이지에서 등록, 조회, 거래 내역을 한눈에 확인하세요.
